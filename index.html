@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>ThreadWave</title>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg: #eefbff;
+      --card: rgba(255, 255, 255, 0.72);
+      --text: #06141f;
+      --muted: #6c7a86;
+      --line: rgba(6, 20, 31, 0.08);
+      --cyan: #00cfff;
+      --blue: #087cff;
+      --danger: #ff4d6d;
+      --shadow: 0 20px 60px rgba(0, 90, 130, 0.14);
+    }
+
+    body.dark {
+      --bg: #061018;
+      --card: rgba(13, 25, 36, 0.72);
+      --text: #f4fbff;
+      --muted: #8da2b3;
+      --line: rgba(255, 255, 255, 0.09);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(0, 207, 255, 0.34), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(8, 124, 255, 0.24), transparent 36%),
+        var(--bg);
+      color: var(--text);
+      padding-bottom: 120px;
+    }
+
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      transition: 0.22s ease;
+    }
+
+    .app {
+      width: min(100%, 620px);
+      margin: 0 auto;
+      padding: 18px 16px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 12px 0 16px;
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand h1 {
+      font-size: 1.25rem;
+      letter-spacing: -0.04em;
+    }
+
+    .brand p {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0, 207, 255, 0.16);
+      color: var(--text);
+      font-size: 1.1rem;
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+    }
+
+    .composer,
+    .post,
+    .profile-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 16px;
+      margin-top: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+
+    .composer {
+      scroll-margin-top: 110px;
+    }
+
+    .composer-row,
+    .post-head {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      color: white;
+      font-weight: 800;
+      box-shadow: 0 12px 26px rgba(0, 156, 220, 0.22);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 86px;
+      resize: none;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    textarea::placeholder {
+      color: var(--muted);
+    }
+
+    .composer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-left: 56px;
+    }
+
+    .counter {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .post-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(0, 156, 220, 0.28);
+    }
+
+    .post-btn:active {
+      transform: scale(0.94);
+    }
+
+    .post-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .feed-title {
+      margin: 22px 4px 4px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .post {
+      animation: rise 0.28s ease;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .post-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .post-name {
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .post-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .post-text {
+      margin-top: 12px;
+      line-height: 1.55;
+      font-size: 0.96rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      padding-left: 56px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.22);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 0.84rem;
+      cursor: pointer;
+
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn:active {
+      transform: scale(0.94);
+    }
+
+    .liked {
+      background: rgba(0, 207, 255, 0.18);
+      border-color: rgba(0, 207, 255, 0.45);
+    }
+
+    .delete-btn {
+      margin-left: auto;
+      color: var(--danger);
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .profile-hero {
+      text-align: center;
+      padding: 20px 8px;
+    }
+
+    .profile-avatar {
+      width: 86px;
+      height: 86px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      color: white;
+      font-size: 2rem;
+      font-weight: 900;
+      box-shadow: 0 20px 40px rgba(0, 156, 220, 0.3);
+    }
+
+    .profile-hero h2 {
+      font-size: 1.45rem;
+      letter-spacing: -0.04em;
+    }
+
+    .profile-hero p {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 0.92rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .stat {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 14px 8px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.2rem;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 0.74rem;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      width: min(92%, 430px);
+      height: 78px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px);
+
+      display: grid;
+      grid-template-columns: 1fr 76px 1fr;
+      align-items: center;
+      gap: 8px;
+
+      padding: 8px;
+      z-index: 50;
+    }
+
+    .nav-btn {
+      height: 100%;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 999px;
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 1.3rem;
+    }
+
+    .nav-btn i {
+      transition: 0.22s ease;
+    }
+
+    .nav-btn.active {
+      color: white;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      box-shadow: 0 12px 26px rgba(0, 156, 220, 0.26);
+    }
+
+    .nav-btn:active {
+      transform: scale(0.92);
+    }
+
+    .add-thread-btn {
+      width: 66px;
+      height: 66px;
+      border: none;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      color: white;
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 1.4rem;
+      box-shadow: 0 14px 34px rgba(0, 156, 220, 0.36);
+      transform: translateY(-16px);
+    }
+
+    .add-thread-btn:active {
+      transform: translateY(-12px) scale(0.92);
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 30px 12px;
+      font-size: 0.92rem;
+    }
+
+    @media (min-width: 700px) {
+      .app {
+        padding-top: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <h1>ThreadWave</h1>
+          <p>Coastal social MVP</p>
+        </div>
+
+        <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">
+          <i class="fa-regular fa-moon"></i>
+        </button>
+      </div>
+    </header>
+
+    <section class="page active" id="homePage">
+      <div class="composer" id="composerBox">
+        <div class="composer-row">
+          <div class="avatar">A</div>
+
+          <textarea
+            id="postInput"
+            maxlength="280"
+            placeholder="What's moving today?"
+          ></textarea>
+        </div>
+
+        <div class="composer-actions">
+          <span class="counter">
+            <span id="charCount">0</span>/280
+          </span>
+
+          <button class="post-btn" id="publishBtn" disabled>
+            Post
+          </button>
+        </div>
+      </div>
+
+      <h3 class="feed-title">Live Feed</h3>
+
+      <div id="feed"></div>
+    </section>
+
+    <section class="page" id="profilePage">
+      <div class="profile-card">
+        <div class="profile-hero">
+          <div class="profile-avatar">A</div>
+
+          <h2>Aurilumix</h2>
+
+          <p>Building beautiful web apps. Future billionaire energy 🌊</p>
+
+          <div class="stats">
+            <div class="stat">
+              <strong id="profilePosts">0</strong>
+              <span>Posts</span>
+            </div>
+
+            <div class="stat">
+              <strong id="profileLikes">0</strong>
+              <span>Likes</span>
+            </div>
+
+            <div class="stat">
+              <strong>1</strong>
+              <span>Founder</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="feed-title">Your Posts</h3>
+
+      <div id="profileFeed"></div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-page="homePage" aria-label="Home">
+      <i class="fa-solid fa-house"></i>
+    </button>
+
+    <button class="add-thread-btn" id="addThreadBtn" aria-label="Add thread">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <button class="nav-btn" data-page="profilePage" aria-label="Profile">
+      <i class="fa-regular fa-user"></i>
+    </button>
+  </nav>
+
+  <script>
+    const body = document.body;
+
+    const themeBtn = document.getElementById("themeBtn");
+    const composerBox = document.getElementById("composerBox");
+    const addThreadBtn = document.getElementById("addThreadBtn");
+
+    const postInput = document.getElementById("postInput");
+    const publishBtn = document.getElementById("publishBtn");
+    const charCount = document.getElementById("charCount");
+
+    const feed = document.getElementById("feed");
+    const profileFeed = document.getElementById("profileFeed");
+
+    const profilePosts = document.getElementById("profilePosts");
+    const profileLikes = document.getElementById("profileLikes");
+
+    const pages = document.querySelectorAll(".page");
+    const navButtons = document.querySelectorAll(".nav-btn");
+
+    let posts = JSON.parse(localStorage.getItem("threadwave_posts")) || [];
+
+    function savePosts() {
+      localStorage.setItem("threadwave_posts", JSON.stringify(posts));
+    }
+
+    function timeAgo(timestamp) {
+      const seconds = Math.floor((Date.now() - timestamp) / 1000);
+
+      if (seconds < 60) return "now";
+
+      const minutes = Math.floor(seconds / 60);
+
+      if (minutes < 60) return `${minutes}m ago`;
+
+      const hours = Math.floor(minutes / 60);
+
+      if (hours < 24) return `${hours}h ago`;
+
+      const days = Math.floor(hours / 24);
+
+      return `${days}d ago`;
+    }
+
+    function escapeHTML(text) {
+      return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function createPostElement(post) {
+      const article = document.createElement("article");
+
+      article.className = "post";
+
+      article.innerHTML = `
+        <div class="post-head">
+          <div class="avatar">${post.avatar}</div>
+
+          <div class="post-info">
+            <div class="post-name">${post.author}</div>
+            <div class="post-meta">${post.username} · ${timeAgo(post.createdAt)}</div>
+            <div class="post-text">${escapeHTML(post.text)}</div>
+          </div>
+        </div>
+
+        <div class="post-actions">
+          <button class="action-btn ${post.liked ? "liked" : ""}" data-like="${post.id}">
+            <i class="${post.liked ? "fa-solid" : "fa-regular"} fa-heart"></i>
+            ${post.likes}
+          </button>
+
+          <button class="action-btn">
+            <i class="fa-regular fa-comment"></i>
+            Reply
+          </button>
+
+          <button class="action-btn delete-btn" data-delete="${post.id}">
+            <i class="fa-regular fa-trash-can"></i>
+            Delete
+          </button>
+        </div>
+      `;
+
+      return article;
+    }
+
+    function renderPosts() {
+      feed.innerHTML = "";
+      profileFeed.innerHTML = "";
+
+      if (posts.length === 0) {
+        feed.innerHTML = `
+          <div class="empty">
+            No posts yet. Tap the plus button and start the wave 🌊
+          </div>
+        `;
+
+        profileFeed.innerHTML = `
+          <div class="empty">
+            Your posts will appear here.
+          </div>
+        `;
+      }
+
+      posts.forEach(post => {
+        feed.appendChild(createPostElement(post));
+        profileFeed.appendChild(createPostElement(post));
+      });
+
+      const totalLikes = posts.reduce((sum, post) => sum + post.likes, 0);
+
+      profilePosts.textContent = posts.length;
+      profileLikes.textContent = totalLikes;
+
+      savePosts();
+    }
+
+    function publishPost() {
+      const text = postInput.value.trim();
+
+      if (!text) return;
+
+      const newPost = {
+        id: Date.now(),
+        author: "Aurilumix",
+        username: "@aurilumix",
+        avatar: "A",
+        text,
+        likes: 0,
+        liked: false,
+        createdAt: Date.now()
+      };
+
+      posts.unshift(newPost);
+
+      postInput.value = "";
+      charCount.textContent = "0";
+      publishBtn.disabled = true;
+
+      renderPosts();
+    }
+
+    function handlePostAction(event) {
+      const likeButton = event.target.closest("[data-like]");
+      const deleteButton = event.target.closest("[data-delete]");
+
+      if (likeButton) {
+        const likeId = Number(likeButton.dataset.like);
+
+        posts = posts.map(post => {
+          if (post.id === likeId) {
+            return {
+              ...post,
+              liked: !post.liked,
+              likes: post.liked ? post.likes - 1 : post.likes + 1
+            };
+          }
+
+          return post;
+        });
+
+        renderPosts();
+      }
+
+      if (deleteButton) {
+        const deleteId = Number(deleteButton.dataset.delete);
+
+        posts = posts.filter(post => post.id !== deleteId);
+
+        renderPosts();
+      }
+    }
+
+    function showPage(pageId) {
+      pages.forEach(page => {
+        page.classList.toggle("active", page.id === pageId);
+      });
+
+      navButtons.forEach(button => {
+        button.classList.toggle("active", button.dataset.page === pageId);
+      });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+    function openComposer() {
+      showPage("homePage");
+
+      setTimeout(() => {
+        composerBox.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+        postInput.focus();
+      }, 180);
+    }
+
+    postInput.addEventListener("input", () => {
+      const length = postInput.value.length;
+
+      charCount.textContent = length;
+      publishBtn.disabled = postInput.value.trim().length === 0;
+    });
+
+    publishBtn.addEventListener("click", publishPost);
+
+    postInput.addEventListener("keydown", event => {
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        publishPost();
+      }
+    });
+
+    feed.addEventListener("click", handlePostAction);
+    profileFeed.addEventListener("click", handlePostAction);
+
+    navButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        showPage(button.dataset.page);
+      });
+    });
+
+    addThreadBtn.addEventListener("click", openComposer);
+
+    themeBtn.addEventListener("click", () => {
+      body.classList.toggle("dark");
+
+      const isDark = body.classList.contains("dark");
+
+      themeBtn.innerHTML = isDark
+        ? `<i class="fa-regular fa-sun"></i>`
+        : `<i class="fa-regular fa-moon"></i>`;
+
+      localStorage.setItem("threadwave_theme", isDark ? "dark" : "light");
+    });
+
+    function loadTheme() {
+      const savedTheme = localStorage.getItem("threadwave_theme");
+
+      if (savedTheme === "dark") {
+        body.classList.add("dark");
+        themeBtn.innerHTML = `<i class="fa-regular fa-sun"></i>`;
+      }
+    }
+
+    loadTheme();
+    renderPosts();
+  </script>
+</body>
+</html>
