@@ -643,6 +643,31 @@
         align-items: center;
       }
     }
+    .email-login-box {
+  display: grid;
+  gap: 12px;
+}
+
+.email-input {
+  width: 100%;
+  border: 1px solid var(--line);
+  outline: none;
+  border-radius: 999px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.38);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.email-input::placeholder {
+  color: var(--muted);
+}
+
+.auth-note {
+  color: var(--muted);
+  font-size: 0.82rem;
+  min-height: 20px;
+}
   </style>
 </head>
 
@@ -664,18 +689,30 @@
     </header>
 
       <section class="auth-card" id="authCard">
-      <div class="auth-icon">
-        <i class="fa-brands fa-google"></i>
-      </div>
-    
-      <h2>Welcome to ThreadWave</h2>
-      <p>Login with Google to post threads and build your profile.</p>
-    
-      <button class="google-btn" id="googleLoginBtn">
-        <i class="fa-brands fa-google"></i>
-        Continue with Google
-      </button>
-    </section>
+  <div class="auth-icon">
+    <i class="fa-regular fa-envelope"></i>
+  </div>
+
+  <h2>Welcome to ThreadWave</h2>
+  <p>Enter your email and we’ll send you a magic login link.</p>
+
+  <div class="email-login-box">
+    <input
+      type="email"
+      id="emailInput"
+      class="email-input"
+      placeholder="Enter your email"
+      autocomplete="email"
+    />
+
+    <button class="google-btn" id="emailLoginBtn">
+      <i class="fa-regular fa-paper-plane"></i>
+      Send Magic Link
+    </button>
+
+    <p class="auth-note" id="authNote"></p>
+  </div>
+</section>
     
     <section class="page active" id="homePage">
       <div class="composer">
@@ -813,7 +850,9 @@
   const themeBtn = document.getElementById("themeBtn");
 
   const authCard = document.getElementById("authCard");
-  const googleLoginBtn = document.getElementById("googleLoginBtn");
+  const emailInput = document.getElementById("emailInput");
+  const emailLoginBtn = document.getElementById("emailLoginBtn");
+  const authNote = document.getElementById("authNote");
   const logoutBtn = document.getElementById("logoutBtn");
 
   const addThreadBtn = document.getElementById("addThreadBtn");
@@ -974,7 +1013,7 @@
     if (!cleanText) return;
 
     if (!currentUser) {
-      alert("Login with Google first to post.");
+      alert("Login with email first to post.");
       return;
     }
 
@@ -1063,7 +1102,7 @@
 
   function openModal() {
     if (!currentUser) {
-      alert("Login with Google first to start a thread.");
+      alert("Login with email first to start a thread.");
       return;
     }
 
@@ -1080,18 +1119,31 @@
     body.classList.remove("modal-open");
   }
 
-  async function loginWithGoogle() {
-    const { error } = await supabaseClient.auth.signInWithOAuth({
-      provider: "google",
+  async function loginWithEmail() {
+    const email = emailInput.value.trim();
+
+    if (!email) {
+      authNote.textContent = "Add your email first.";
+      return;
+    }
+
+    authNote.textContent = "Sending magic link...";
+
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email,
       options: {
-        redirectTo: window.location.origin
+        emailRedirectTo: window.location.origin
       }
     });
 
     if (error) {
-      console.error("Google login error:", error.message);
-      alert("Google login failed. Check Supabase Google provider settings.");
+      console.error("Magic link error:", error.message);
+      authNote.textContent = error.message;
+      return;
     }
+
+    authNote.textContent = "Magic link sent. Check your inbox or spam.";
+    emailInput.value = "";
   }
 
   async function logout() {
@@ -1181,8 +1233,8 @@
     addThreadBtn.disabled = !isLoggedIn;
 
     if (!isLoggedIn) {
-      postInput.placeholder = "Login with Google to post...";
-      modalPostInput.placeholder = "Login with Google to start a thread...";
+      postInput.placeholder = "Login with email to post...";
+      modalPostInput.placeholder = "Login with email to start a thread...";
 
       document.querySelectorAll(".avatar").forEach(avatar => {
         avatar.textContent = "G";
@@ -1235,6 +1287,12 @@
     modalPublishBtn.disabled = modalPostInput.value.trim().length === 0 || !currentUser;
   });
 
+  emailInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      loginWithEmail();
+    }
+  });
+
   publishBtn.addEventListener("click", publishPost);
   modalPublishBtn.addEventListener("click", publishModalPost);
 
@@ -1278,7 +1336,7 @@
     }
   });
 
-  googleLoginBtn.addEventListener("click", loginWithGoogle);
+  emailLoginBtn.addEventListener("click", loginWithEmail);
   logoutBtn.addEventListener("click", logout);
 
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
