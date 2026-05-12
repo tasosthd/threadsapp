@@ -668,6 +668,18 @@
   font-size: 0.82rem;
   min-height: 20px;
 }
+    .auth-switch-btn {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-weight: 800;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.auth-switch-btn:active {
+  transform: scale(0.96);
+}
   </style>
 </head>
 
@@ -690,24 +702,37 @@
 
       <section class="auth-card" id="authCard">
   <div class="auth-icon">
-    <i class="fa-regular fa-envelope"></i>
+    <i class="fa-solid fa-lock"></i>
   </div>
 
-  <h2>Welcome to ThreadWave</h2>
-  <p>Enter your email and we’ll send you a magic login link.</p>
+  <h2 id="authTitle">Welcome back</h2>
+  <p id="authSubtitle">Login to post threads and build your profile.</p>
 
   <div class="email-login-box">
     <input
       type="email"
       id="emailInput"
       class="email-input"
-      placeholder="Enter your email"
+      placeholder="Email"
       autocomplete="email"
     />
 
-    <button class="google-btn" id="emailLoginBtn">
-      <i class="fa-regular fa-paper-plane"></i>
-      Send Magic Link
+    <input
+      type="password"
+      id="passwordInput"
+      class="email-input"
+      placeholder="Password"
+      autocomplete="current-password"
+      minlength="6"
+    />
+
+    <button class="google-btn" id="authSubmitBtn">
+      <i class="fa-solid fa-right-to-bracket"></i>
+      Login
+    </button>
+
+    <button class="auth-switch-btn" id="authSwitchBtn" type="button">
+      Create a new account
     </button>
 
     <p class="auth-note" id="authNote"></p>
