@@ -1369,6 +1369,11 @@
 
     if (error) {
       console.error("Profile upsert error:", error.message);
+
+      if (authNote) {
+        authNote.textContent = "Profile error: " + error.message;
+      }
+
       return null;
     }
 
@@ -1376,54 +1381,52 @@
   }
 
   async function checkUserSession() {
-    if (authNote && window.location.search.includes("code=")) {
-      authNote.textContent = "Finishing Google login...";
-    }
+    try {
+      if (authNote && window.location.search.includes("code=")) {
+        authNote.textContent = "Google returned. Checking session...";
+      }
 
-    await new Promise(resolve => setTimeout(resolve, 1200));
+      console.log("URL:", window.location.href);
 
-    const { data, error } = await supabaseClient.auth.getSession();
+      await new Promise(resolve => setTimeout(resolve, 1200));
 
-    if (error) {
-      console.error("Session error:", error.message);
+      const { data, error } = await supabaseClient.auth.getSession();
 
-      currentUser = null;
-      currentProfile = null;
+      console.log("getSession data:", data);
+      console.log("getSession error:", error);
 
-      updateAuthUI(null);
+      if (error) {
+        authNote.textContent = "Session error: " + error.message;
+        console.error("Session error:", error);
+        return;
+      }
+
+      if (!data.session || !data.session.user) {
+        authNote.textContent = "No session created. Supabase did not convert Google login.";
+        console.error("No session:", data);
+        await loadPosts();
+        return;
+      }
+
+      authNote.textContent = "Session found. Loading profile...";
+
+      currentUser = data.session.user;
+      console.log("Current user:", currentUser);
+
+      currentProfile = await createOrUpdateProfile(currentUser);
+      console.log("Current profile:", currentProfile);
+
+      updateAuthUI(currentUser);
       await loadPosts();
+
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } catch (error) {
+      console.error("checkUserSession fatal error:", error);
 
       if (authNote) {
-        authNote.textContent = "Session error: " + error.message;
+        authNote.textContent = "Fatal error: " + error.message;
       }
-
-      return;
     }
-
-    const session = data.session;
-
-    if (!session || !session.user) {
-      currentUser = null;
-      currentProfile = null;
-
-      updateAuthUI(null);
-      await loadPosts();
-
-      if (window.location.search.includes("code=") && authNote) {
-        authNote.textContent =
-          "Login returned but no session was created. Check Supabase URL settings.";
-      }
-
-      return;
-    }
-
-    currentUser = session.user;
-    currentProfile = await createOrUpdateProfile(currentUser);
-
-    updateAuthUI(currentUser);
-    await loadPosts();
-
-    window.history.replaceState({}, document.title, window.location.pathname);
   }
 
   function updateAuthUI(user) {
@@ -1549,6 +1552,8 @@
   logoutBtn.addEventListener("click", logout);
 
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    console.log("Auth event:", event, session);
+
     if (session?.user) {
       currentUser = session.user;
       currentProfile = await createOrUpdateProfile(currentUser);
