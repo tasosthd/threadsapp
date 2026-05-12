@@ -729,6 +729,12 @@
   </div>
 
   <script>
+
+    const SUPABASE_URL = "https://rbmjbwvojakxvxeodkmp.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_QlCicVqJiBiMxyJxCriFTQ_31t2tVYq";
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
     const body = document.body;
 
     const themeBtn = document.getElementById("themeBtn");
