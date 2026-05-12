@@ -880,7 +880,13 @@
   const SUPABASE_URL = "https://rbmjbwvojakxvxeodkmp.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_QlCicVqJiBiMxyJxCriFTQ_31t2tVYq";
 
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  });
 
   const body = document.body;
 
@@ -918,6 +924,10 @@
   let currentProfile = null;
   let posts = [];
 
+  function getAppUrl() {
+    return "https://threadsapp-nu.vercel.app";
+  }
+
   function timeAgo(timestamp) {
     const seconds = Math.floor((Date.now() - timestamp) / 1000);
 
@@ -942,33 +952,91 @@
       .replaceAll("'", "&#039;");
   }
 
+  function getGoogleName(user) {
+    const metadata = user?.user_metadata || {};
+
+    return (
+      metadata.full_name ||
+      metadata.name ||
+      metadata.preferred_username ||
+      user?.email?.split("@")[0] ||
+      "ThreadWave User"
+    );
+  }
+
+  function getGoogleAvatar(user) {
+    const metadata = user?.user_metadata || {};
+    return metadata.avatar_url || metadata.picture || null;
+  }
+
+  function getCleanUsername(user) {
+    const metadata = user?.user_metadata || {};
+    const base =
+      metadata.preferred_username ||
+      metadata.name ||
+      metadata.full_name ||
+      user?.email?.split("@")[0] ||
+      "user";
+
+    return "@" + String(base)
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/[^a-z0-9_]/g, "");
+  }
+
   function getUserDisplayData() {
     if (!currentUser) {
       return {
         author: "Guest",
         username: "@guest",
-        avatar: "G"
+        avatar: "G",
+        avatarUrl: null
       };
     }
 
-    const metadata = currentUser.user_metadata || {};
-
     const name =
       currentProfile?.full_name ||
-      metadata.full_name ||
-      metadata.name ||
-      currentUser.email?.split("@")[0] ||
-      "ThreadWave User";
+      getGoogleName(currentUser);
 
     const username =
       currentProfile?.username ||
-      (currentUser.email ? "@" + currentUser.email.split("@")[0] : "@user");
+      getCleanUsername(currentUser);
+
+    const avatarUrl =
+      currentProfile?.avatar_url ||
+      getGoogleAvatar(currentUser);
 
     return {
       author: name,
       username,
-      avatar: name.charAt(0).toUpperCase()
+      avatar: name.charAt(0).toUpperCase(),
+      avatarUrl
     };
+  }
+
+  function avatarHTML(letter, avatarUrl = null, className = "avatar") {
+    if (avatarUrl) {
+      return `
+        <div class="${className}" style="background-image:url('${escapeHTML(avatarUrl)}'); background-size:cover; background-position:center;">
+        </div>
+      `;
+    }
+
+    return `<div class="${className}">${escapeHTML(letter)}</div>`;
+  }
+
+  function setAvatarElement(element, letter, avatarUrl = null) {
+    if (!element) return;
+
+    if (avatarUrl) {
+      element.textContent = "";
+      element.style.backgroundImage = `url("${avatarUrl}")`;
+      element.style.backgroundSize = "cover";
+      element.style.backgroundPosition = "center";
+    } else {
+      element.style.backgroundImage = "";
+      element.textContent = letter;
+    }
   }
 
   function createPostElement(post) {
@@ -979,7 +1047,7 @@
 
     article.innerHTML = `
       <div class="post-head">
-        <div class="avatar">${escapeHTML(post.avatar)}</div>
+        ${avatarHTML(post.avatar, post.avatarUrl)}
 
         <div class="post-info">
           <div class="post-name">${escapeHTML(post.author)}</div>
@@ -1091,6 +1159,7 @@
       const profile = row.profiles || {};
       const author = profile.full_name || "ThreadWave User";
       const username = profile.username || "@user";
+      const avatarUrl = profile.avatar_url || null;
 
       return {
         id: row.id,
@@ -1098,6 +1167,7 @@
         author,
         username,
         avatar: author.charAt(0).toUpperCase(),
+        avatarUrl,
         text: row.content,
         likes: 0,
         liked: false,
@@ -1241,7 +1311,7 @@
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.origin
+        redirectTo: getAppUrl()
       }
     });
 
@@ -1270,19 +1340,9 @@
   async function createOrUpdateProfile(user) {
     if (!user) return null;
 
-    const metadata = user.user_metadata || {};
-
-    const fullName =
-      metadata.full_name ||
-      metadata.name ||
-      user.email?.split("@")[0] ||
-      "ThreadWave User";
-
-    const username = user.email
-      ? "@" + user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, "")
-      : "@user";
-
-    const avatarUrl = metadata.avatar_url || metadata.picture || null;
+    const fullName = getGoogleName(user);
+    const username = getCleanUsername(user);
+    const avatarUrl = getGoogleAvatar(user);
 
     const profileData = {
       id: user.id,
@@ -1308,9 +1368,10 @@
   }
 
   async function checkUserSession() {
-    const { data, error } = await supabaseClient.auth.getUser();
+    const { data, error } = await supabaseClient.auth.getSession();
 
-    if (error || !data.user) {
+    if (error) {
+      console.error("Session error:", error.message);
       currentUser = null;
       currentProfile = null;
       updateAuthUI(null);
@@ -1318,11 +1379,23 @@
       return;
     }
 
-    currentUser = data.user;
+    const session = data.session;
+
+    if (!session || !session.user) {
+      currentUser = null;
+      currentProfile = null;
+      updateAuthUI(null);
+      await loadPosts();
+      return;
+    }
+
+    currentUser = session.user;
     currentProfile = await createOrUpdateProfile(currentUser);
 
     updateAuthUI(currentUser);
     await loadPosts();
+
+    window.history.replaceState({}, document.title, window.location.pathname);
   }
 
   function updateAuthUI(user) {
@@ -1353,10 +1426,10 @@
       modalPostInput.placeholder = "Login with Google to start a thread...";
 
       document.querySelectorAll(".avatar").forEach(avatar => {
-        avatar.textContent = "G";
+        setAvatarElement(avatar, "G", null);
       });
 
-      document.querySelector(".profile-avatar").textContent = "G";
+      setAvatarElement(document.querySelector(".profile-avatar"), "G", null);
       document.querySelector(".profile-hero h2").textContent = "Guest";
       document.querySelector(".profile-hero p").textContent = "Login to build your profile.";
 
@@ -1366,10 +1439,11 @@
     const userData = getUserDisplayData();
 
     document.querySelectorAll(".avatar").forEach(avatar => {
-      avatar.textContent = userData.avatar;
+      setAvatarElement(avatar, userData.avatar, userData.avatarUrl);
     });
 
-    document.querySelector(".profile-avatar").textContent = userData.avatar;
+    setAvatarElement(document.querySelector(".profile-avatar"), userData.avatar, userData.avatarUrl);
+
     document.querySelector(".profile-hero h2").textContent = userData.author;
     document.querySelector(".profile-hero p").textContent = userData.username;
 
@@ -1444,6 +1518,8 @@
       currentProfile = await createOrUpdateProfile(currentUser);
       updateAuthUI(currentUser);
       await loadPosts();
+
+      window.history.replaceState({}, document.title, window.location.pathname);
     } else {
       currentUser = null;
       currentProfile = null;
