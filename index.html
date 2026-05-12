@@ -803,318 +803,520 @@
   </div>
 
   <script>
+  const SUPABASE_URL = "https://rbmjbwvojakxvxeodkmp.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_QlCicVqJiBiMxyJxCriFTQ_31t2tVYq";
 
-    const SUPABASE_URL = "https://rbmjbwvojakxvxeodkmp.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_QlCicVqJiBiMxyJxCriFTQ_31t2tVYq";
-    
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    const body = document.body;
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const themeBtn = document.getElementById("themeBtn");
+  const body = document.body;
 
-    const addThreadBtn = document.getElementById("addThreadBtn");
-    const modalBackdrop = document.getElementById("modalBackdrop");
-    const closeModalBtn = document.getElementById("closeModalBtn");
+  const themeBtn = document.getElementById("themeBtn");
 
-    const postInput = document.getElementById("postInput");
-    const publishBtn = document.getElementById("publishBtn");
-    const charCount = document.getElementById("charCount");
+  const authCard = document.getElementById("authCard");
+  const googleLoginBtn = document.getElementById("googleLoginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-    const modalPostInput = document.getElementById("modalPostInput");
-    const modalPublishBtn = document.getElementById("modalPublishBtn");
-    const modalCharCount = document.getElementById("modalCharCount");
+  const addThreadBtn = document.getElementById("addThreadBtn");
+  const modalBackdrop = document.getElementById("modalBackdrop");
+  const closeModalBtn = document.getElementById("closeModalBtn");
 
-    const feed = document.getElementById("feed");
-    const profileFeed = document.getElementById("profileFeed");
+  const postInput = document.getElementById("postInput");
+  const publishBtn = document.getElementById("publishBtn");
+  const charCount = document.getElementById("charCount");
 
-    const profilePosts = document.getElementById("profilePosts");
-    const profileLikes = document.getElementById("profileLikes");
+  const modalPostInput = document.getElementById("modalPostInput");
+  const modalPublishBtn = document.getElementById("modalPublishBtn");
+  const modalCharCount = document.getElementById("modalCharCount");
 
-    const pages = document.querySelectorAll(".page");
-    const navButtons = document.querySelectorAll(".nav-btn");
+  const feed = document.getElementById("feed");
+  const profileFeed = document.getElementById("profileFeed");
 
-    let posts = JSON.parse(localStorage.getItem("threadwave_posts")) || [];
+  const profilePosts = document.getElementById("profilePosts");
+  const profileLikes = document.getElementById("profileLikes");
 
-    function savePosts() {
-      localStorage.setItem("threadwave_posts", JSON.stringify(posts));
+  const pages = document.querySelectorAll(".page");
+  const navButtons = document.querySelectorAll(".nav-btn");
+
+  let currentUser = null;
+  let currentProfile = null;
+
+  let posts = JSON.parse(localStorage.getItem("threadwave_posts")) || [];
+
+  function savePosts() {
+    localStorage.setItem("threadwave_posts", JSON.stringify(posts));
+  }
+
+  function timeAgo(timestamp) {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+
+    if (seconds < 60) return "now";
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  }
+
+  function escapeHTML(text) {
+    return text
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function getUserDisplayData() {
+    if (!currentUser) {
+      return {
+        author: "Guest",
+        username: "@guest",
+        avatar: "G"
+      };
     }
 
-    function timeAgo(timestamp) {
-      const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    const metadata = currentUser.user_metadata || {};
 
-      if (seconds < 60) return "now";
+    const name =
+      metadata.full_name ||
+      metadata.name ||
+      currentUser.email?.split("@")[0] ||
+      "ThreadWave User";
 
-      const minutes = Math.floor(seconds / 60);
+    const username =
+      currentProfile?.username ||
+      (currentUser.email ? "@" + currentUser.email.split("@")[0] : "@user");
 
-      if (minutes < 60) return `${minutes}m ago`;
+    const avatar = name.charAt(0).toUpperCase();
 
-      const hours = Math.floor(minutes / 60);
+    return {
+      author: name,
+      username,
+      avatar
+    };
+  }
 
-      if (hours < 24) return `${hours}h ago`;
+  function createPostElement(post) {
+    const article = document.createElement("article");
 
-      const days = Math.floor(hours / 24);
+    article.className = "post";
 
-      return `${days}d ago`;
-    }
+    article.innerHTML = `
+      <div class="post-head">
+        <div class="avatar">${post.avatar}</div>
 
-    function escapeHTML(text) {
-      return text
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function createPostElement(post) {
-      const article = document.createElement("article");
-
-      article.className = "post";
-
-      article.innerHTML = `
-        <div class="post-head">
-          <div class="avatar">${post.avatar}</div>
-
-          <div class="post-info">
-            <div class="post-name">${post.author}</div>
-            <div class="post-meta">${post.username} · ${timeAgo(post.createdAt)}</div>
-            <div class="post-text">${escapeHTML(post.text)}</div>
-          </div>
+        <div class="post-info">
+          <div class="post-name">${escapeHTML(post.author)}</div>
+          <div class="post-meta">${escapeHTML(post.username)} · ${timeAgo(post.createdAt)}</div>
+          <div class="post-text">${escapeHTML(post.text)}</div>
         </div>
+      </div>
 
-        <div class="post-actions">
-          <button class="action-btn ${post.liked ? "liked" : ""}" data-like="${post.id}">
-            <i class="${post.liked ? "fa-solid" : "fa-regular"} fa-heart"></i>
-            ${post.likes}
-          </button>
+      <div class="post-actions">
+        <button class="action-btn ${post.liked ? "liked" : ""}" data-like="${post.id}">
+          <i class="${post.liked ? "fa-solid" : "fa-regular"} fa-heart"></i>
+          ${post.likes}
+        </button>
 
-          <button class="action-btn">
-            <i class="fa-regular fa-comment"></i>
-            Reply
-          </button>
+        <button class="action-btn">
+          <i class="fa-regular fa-comment"></i>
+          Reply
+        </button>
 
-          <button class="action-btn delete-btn" data-delete="${post.id}">
-            <i class="fa-regular fa-trash-can"></i>
-            Delete
-          </button>
+        <button class="action-btn delete-btn" data-delete="${post.id}">
+          <i class="fa-regular fa-trash-can"></i>
+          Delete
+        </button>
+      </div>
+    `;
+
+    return article;
+  }
+
+  function renderPosts() {
+    feed.innerHTML = "";
+    profileFeed.innerHTML = "";
+
+    if (posts.length === 0) {
+      feed.innerHTML = `
+        <div class="empty">
+          No posts yet. Tap the plus button and start the wave 🌊
         </div>
       `;
 
-      return article;
+      profileFeed.innerHTML = `
+        <div class="empty">
+          Your posts will appear here.
+        </div>
+      `;
     }
 
-    function renderPosts() {
-      feed.innerHTML = "";
-      profileFeed.innerHTML = "";
+    posts.forEach(post => {
+      feed.appendChild(createPostElement(post));
+      profileFeed.appendChild(createPostElement(post));
+    });
 
-      if (posts.length === 0) {
-        feed.innerHTML = `
-          <div class="empty">
-            No posts yet. Tap the plus button and start the wave 🌊
-          </div>
-        `;
+    const totalLikes = posts.reduce((sum, post) => sum + post.likes, 0);
 
-        profileFeed.innerHTML = `
-          <div class="empty">
-            Your posts will appear here.
-          </div>
-        `;
-      }
+    profilePosts.textContent = posts.length;
+    profileLikes.textContent = totalLikes;
 
-      posts.forEach(post => {
-        feed.appendChild(createPostElement(post));
-        profileFeed.appendChild(createPostElement(post));
+    savePosts();
+  }
+
+  function createNewPost(text) {
+    const cleanText = text.trim();
+
+    if (!cleanText) return;
+
+    if (!currentUser) {
+      alert("Login with Google first to post.");
+      return;
+    }
+
+    const userData = getUserDisplayData();
+
+    const newPost = {
+      id: Date.now(),
+      author: userData.author,
+      username: userData.username,
+      avatar: userData.avatar,
+      text: cleanText,
+      likes: 0,
+      liked: false,
+      createdAt: Date.now()
+    };
+
+    posts.unshift(newPost);
+
+    renderPosts();
+    showPage("homePage");
+  }
+
+  function publishPost() {
+    createNewPost(postInput.value);
+
+    postInput.value = "";
+    charCount.textContent = "0";
+    publishBtn.disabled = true;
+  }
+
+  function publishModalPost() {
+    createNewPost(modalPostInput.value);
+
+    modalPostInput.value = "";
+    modalCharCount.textContent = "0";
+    modalPublishBtn.disabled = true;
+
+    closeModal();
+  }
+
+  function handlePostAction(event) {
+    const likeButton = event.target.closest("[data-like]");
+    const deleteButton = event.target.closest("[data-delete]");
+
+    if (likeButton) {
+      const likeId = Number(likeButton.dataset.like);
+
+      posts = posts.map(post => {
+        if (post.id === likeId) {
+          return {
+            ...post,
+            liked: !post.liked,
+            likes: post.liked ? post.likes - 1 : post.likes + 1
+          };
+        }
+
+        return post;
       });
-
-      const totalLikes = posts.reduce((sum, post) => sum + post.likes, 0);
-
-      profilePosts.textContent = posts.length;
-      profileLikes.textContent = totalLikes;
-
-      savePosts();
-    }
-
-    function createNewPost(text) {
-      const cleanText = text.trim();
-
-      if (!cleanText) return;
-
-      const newPost = {
-        id: Date.now(),
-        author: "Aurilumix",
-        username: "@aurilumix",
-        avatar: "A",
-        text: cleanText,
-        likes: 0,
-        liked: false,
-        createdAt: Date.now()
-      };
-
-      posts.unshift(newPost);
 
       renderPosts();
-      showPage("homePage");
     }
 
-    function publishPost() {
-      createNewPost(postInput.value);
+    if (deleteButton) {
+      const deleteId = Number(deleteButton.dataset.delete);
 
-      postInput.value = "";
-      charCount.textContent = "0";
-      publishBtn.disabled = true;
+      posts = posts.filter(post => post.id !== deleteId);
+
+      renderPosts();
     }
+  }
 
-    function publishModalPost() {
-      createNewPost(modalPostInput.value);
-
-      modalPostInput.value = "";
-      modalCharCount.textContent = "0";
-      modalPublishBtn.disabled = true;
-
-      closeModal();
-    }
-
-    function handlePostAction(event) {
-      const likeButton = event.target.closest("[data-like]");
-      const deleteButton = event.target.closest("[data-delete]");
-
-      if (likeButton) {
-        const likeId = Number(likeButton.dataset.like);
-
-        posts = posts.map(post => {
-          if (post.id === likeId) {
-            return {
-              ...post,
-              liked: !post.liked,
-              likes: post.liked ? post.likes - 1 : post.likes + 1
-            };
-          }
-
-          return post;
-        });
-
-        renderPosts();
-      }
-
-      if (deleteButton) {
-        const deleteId = Number(deleteButton.dataset.delete);
-
-        posts = posts.filter(post => post.id !== deleteId);
-
-        renderPosts();
-      }
-    }
-
-    function showPage(pageId) {
-      pages.forEach(page => {
-        page.classList.toggle("active", page.id === pageId);
-      });
-
-      navButtons.forEach(button => {
-        button.classList.toggle("active", button.dataset.page === pageId);
-      });
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    }
-
-    function openModal() {
-      modalBackdrop.classList.add("active");
-      body.classList.add("modal-open");
-
-      setTimeout(() => {
-        modalPostInput.focus();
-      }, 180);
-    }
-
-    function closeModal() {
-      modalBackdrop.classList.remove("active");
-      body.classList.remove("modal-open");
-    }
-
-    postInput.addEventListener("input", () => {
-      const length = postInput.value.length;
-
-      charCount.textContent = length;
-      publishBtn.disabled = postInput.value.trim().length === 0;
+  function showPage(pageId) {
+    pages.forEach(page => {
+      page.classList.toggle("active", page.id === pageId);
     });
-
-    modalPostInput.addEventListener("input", () => {
-      const length = modalPostInput.value.length;
-
-      modalCharCount.textContent = length;
-      modalPublishBtn.disabled = modalPostInput.value.trim().length === 0;
-    });
-
-    publishBtn.addEventListener("click", publishPost);
-    modalPublishBtn.addEventListener("click", publishModalPost);
-
-    postInput.addEventListener("keydown", event => {
-      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
-        publishPost();
-      }
-    });
-
-    modalPostInput.addEventListener("keydown", event => {
-      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
-        publishModalPost();
-      }
-
-      if (event.key === "Escape") {
-        closeModal();
-      }
-    });
-
-    feed.addEventListener("click", handlePostAction);
-    profileFeed.addEventListener("click", handlePostAction);
 
     navButtons.forEach(button => {
-      button.addEventListener("click", () => {
-        showPage(button.dataset.page);
-      });
+      button.classList.toggle("active", button.dataset.page === pageId);
     });
 
-    addThreadBtn.addEventListener("click", openModal);
-    closeModalBtn.addEventListener("click", closeModal);
-
-    modalBackdrop.addEventListener("click", event => {
-      if (event.target === modalBackdrop) {
-        closeModal();
-      }
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
     });
+  }
 
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape" && modalBackdrop.classList.contains("active")) {
-        closeModal();
-      }
-    });
-
-    themeBtn.addEventListener("click", () => {
-      body.classList.toggle("dark");
-
-      const isDark = body.classList.contains("dark");
-
-      themeBtn.innerHTML = isDark
-        ? `<i class="fa-regular fa-sun"></i>`
-        : `<i class="fa-regular fa-moon"></i>`;
-
-      localStorage.setItem("threadwave_theme", isDark ? "dark" : "light");
-    });
-
-    function loadTheme() {
-      const savedTheme = localStorage.getItem("threadwave_theme");
-
-      if (savedTheme === "dark") {
-        body.classList.add("dark");
-        themeBtn.innerHTML = `<i class="fa-regular fa-sun"></i>`;
-      }
+  function openModal() {
+    if (!currentUser) {
+      alert("Login with Google first to start a thread.");
+      return;
     }
 
-    loadTheme();
-    renderPosts();
-  </script>
+    modalBackdrop.classList.add("active");
+    body.classList.add("modal-open");
+
+    setTimeout(() => {
+      modalPostInput.focus();
+    }, 180);
+  }
+
+  function closeModal() {
+    modalBackdrop.classList.remove("active");
+    body.classList.remove("modal-open");
+  }
+
+  async function loginWithGoogle() {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+
+    if (error) {
+      console.error("Google login error:", error.message);
+      alert("Google login failed. Check Supabase Google provider settings.");
+    }
+  }
+
+  async function logout() {
+    const { error } = await supabaseClient.auth.signOut();
+
+    if (error) {
+      console.error("Logout error:", error.message);
+      alert("Logout failed.");
+      return;
+    }
+
+    currentUser = null;
+    currentProfile = null;
+
+    updateAuthUI(null);
+  }
+
+  async function createOrUpdateProfile(user) {
+    if (!user) return null;
+
+    const metadata = user.user_metadata || {};
+
+    const fullName =
+      metadata.full_name ||
+      metadata.name ||
+      user.email?.split("@")[0] ||
+      "ThreadWave User";
+
+    const username = user.email
+      ? "@" + user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, "")
+      : "@user";
+
+    const avatarUrl = metadata.avatar_url || metadata.picture || null;
+
+    const profileData = {
+      id: user.id,
+      full_name: fullName,
+      username: username,
+      avatar_url: avatarUrl
+    };
+
+    const { data, error } = await supabaseClient
+      .from("profiles")
+      .upsert(profileData, {
+        onConflict: "id"
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Profile upsert error:", error.message);
+      return null;
+    }
+
+    return data;
+  }
+
+  async function checkUserSession() {
+    const { data, error } = await supabaseClient.auth.getUser();
+
+    if (error || !data.user) {
+      currentUser = null;
+      currentProfile = null;
+      updateAuthUI(null);
+      return;
+    }
+
+    currentUser = data.user;
+    currentProfile = await createOrUpdateProfile(currentUser);
+
+    updateAuthUI(currentUser);
+  }
+
+  function updateAuthUI(user) {
+    const isLoggedIn = !!user;
+
+    if (authCard) {
+      authCard.classList.toggle("hidden", isLoggedIn);
+    }
+
+    if (logoutBtn) {
+      logoutBtn.classList.toggle("hidden", !isLoggedIn);
+    }
+
+    postInput.disabled = !isLoggedIn;
+    publishBtn.disabled = true;
+    addThreadBtn.disabled = !isLoggedIn;
+
+    if (!isLoggedIn) {
+      postInput.placeholder = "Login with Google to post...";
+      modalPostInput.placeholder = "Login with Google to start a thread...";
+
+      document.querySelectorAll(".avatar").forEach(avatar => {
+        avatar.textContent = "G";
+      });
+
+      document.querySelector(".profile-avatar").textContent = "G";
+      document.querySelector(".profile-hero h2").textContent = "Guest";
+      document.querySelector(".profile-hero p").textContent = "Login to build your profile.";
+
+      return;
+    }
+
+    const metadata = user.user_metadata || {};
+
+    const name =
+      metadata.full_name ||
+      metadata.name ||
+      user.email?.split("@")[0] ||
+      "ThreadWave User";
+
+    const username =
+      currentProfile?.username ||
+      (user.email ? "@" + user.email.split("@")[0] : "@user");
+
+    const firstLetter = name.charAt(0).toUpperCase();
+
+    document.querySelectorAll(".avatar").forEach(avatar => {
+      avatar.textContent = firstLetter;
+    });
+
+    document.querySelector(".profile-avatar").textContent = firstLetter;
+    document.querySelector(".profile-hero h2").textContent = name;
+    document.querySelector(".profile-hero p").textContent = username;
+
+    postInput.placeholder = "What's moving today?";
+    modalPostInput.placeholder = "Start a thread...";
+  }
+
+  postInput.addEventListener("input", () => {
+    const length = postInput.value.length;
+
+    charCount.textContent = length;
+    publishBtn.disabled = postInput.value.trim().length === 0 || !currentUser;
+  });
+
+  modalPostInput.addEventListener("input", () => {
+    const length = modalPostInput.value.length;
+
+    modalCharCount.textContent = length;
+    modalPublishBtn.disabled = modalPostInput.value.trim().length === 0 || !currentUser;
+  });
+
+  publishBtn.addEventListener("click", publishPost);
+  modalPublishBtn.addEventListener("click", publishModalPost);
+
+  postInput.addEventListener("keydown", event => {
+    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+      publishPost();
+    }
+  });
+
+  modalPostInput.addEventListener("keydown", event => {
+    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+      publishModalPost();
+    }
+
+    if (event.key === "Escape") {
+      closeModal();
+    }
+  });
+
+  feed.addEventListener("click", handlePostAction);
+  profileFeed.addEventListener("click", handlePostAction);
+
+  navButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      showPage(button.dataset.page);
+    });
+  });
+
+  addThreadBtn.addEventListener("click", openModal);
+  closeModalBtn.addEventListener("click", closeModal);
+
+  modalBackdrop.addEventListener("click", event => {
+    if (event.target === modalBackdrop) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && modalBackdrop.classList.contains("active")) {
+      closeModal();
+    }
+  });
+
+  googleLoginBtn.addEventListener("click", loginWithGoogle);
+  logoutBtn.addEventListener("click", logout);
+
+  supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (session?.user) {
+      currentUser = session.user;
+      currentProfile = await createOrUpdateProfile(currentUser);
+      updateAuthUI(currentUser);
+    } else {
+      currentUser = null;
+      currentProfile = null;
+      updateAuthUI(null);
+    }
+  });
+
+  themeBtn.addEventListener("click", () => {
+    body.classList.toggle("dark");
+
+    const isDark = body.classList.contains("dark");
+
+    themeBtn.innerHTML = isDark
+      ? `<i class="fa-regular fa-sun"></i>`
+      : `<i class="fa-regular fa-moon"></i>`;
+
+    localStorage.setItem("threadwave_theme", isDark ? "dark" : "light");
+  });
+
+  function loadTheme() {
+    const savedTheme = localStorage.getItem("threadwave_theme");
+
+    if (savedTheme === "dark") {
+      body.classList.add("dark");
+      themeBtn.innerHTML = `<i class="fa-regular fa-sun"></i>`;
+    }
+  }
+
+  loadTheme();
+  renderPosts();
+  checkUserSession();
+</script>
 </body>
 </html>
