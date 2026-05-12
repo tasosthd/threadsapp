@@ -875,8 +875,12 @@
   const themeBtn = document.getElementById("themeBtn");
 
   const authCard = document.getElementById("authCard");
+  const authTitle = document.getElementById("authTitle");
+  const authSubtitle = document.getElementById("authSubtitle");
   const emailInput = document.getElementById("emailInput");
-  const emailLoginBtn = document.getElementById("emailLoginBtn");
+  const passwordInput = document.getElementById("passwordInput");
+  const authSubmitBtn = document.getElementById("authSubmitBtn");
+  const authSwitchBtn = document.getElementById("authSwitchBtn");
   const authNote = document.getElementById("authNote");
   const logoutBtn = document.getElementById("logoutBtn");
 
@@ -904,6 +908,7 @@
   let currentUser = null;
   let currentProfile = null;
   let posts = [];
+  let isSignupMode = false;
 
   function timeAgo(timestamp) {
     const seconds = Math.floor((Date.now() - timestamp) / 1000);
@@ -951,21 +956,18 @@
       currentProfile?.username ||
       (currentUser.email ? "@" + currentUser.email.split("@")[0] : "@user");
 
-    const avatar = name.charAt(0).toUpperCase();
-
     return {
       author: name,
       username,
-      avatar
+      avatar: name.charAt(0).toUpperCase()
     };
   }
 
   function createPostElement(post) {
     const article = document.createElement("article");
-
     article.className = "post";
 
-    const canDelete = currentUser && post.userId === currentUser.id;
+    const canDelete = currentUser && String(post.userId) === String(currentUser.id);
 
     article.innerHTML = `
       <div class="post-head">
@@ -1010,8 +1012,8 @@
     profileFeed.innerHTML = "";
 
     const myPosts = currentUser
-    ? posts.filter(post => String(post.userId) === String(currentUser.id))
-    : [];
+      ? posts.filter(post => String(post.userId) === String(currentUser.id))
+      : [];
 
     if (posts.length === 0) {
       feed.innerHTML = `
@@ -1098,38 +1100,34 @@
     renderPosts();
   }
 
-async function createNewPost(text) {
-  const cleanText = text.trim();
+  async function createNewPost(text) {
+    const cleanText = text.trim();
 
-  if (!cleanText) return;
+    if (!cleanText) return;
 
-  if (!currentUser) {
-    alert("Login with email first to post.");
-    return;
+    if (!currentUser) {
+      alert("Login first to post.");
+      return;
+    }
+
+    await createOrUpdateProfile(currentUser);
+
+    const { error } = await supabaseClient
+      .from("posts")
+      .insert({
+        user_id: currentUser.id,
+        content: cleanText
+      });
+
+    if (error) {
+      console.error("Create post error:", error);
+      alert("Post failed: " + error.message);
+      return;
+    }
+
+    await loadPosts();
+    showPage("homePage");
   }
-
-  await createOrUpdateProfile(currentUser);
-
-  const { data, error } = await supabaseClient
-    .from("posts")
-    .insert({
-      user_id: currentUser.id,
-      content: cleanText
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error("Create post error:", error);
-    alert("Post failed: " + error.message);
-    return;
-  }
-
-  console.log("Post created:", data);
-
-  await loadPosts();
-  showPage("homePage");
-}
 
   async function publishPost() {
     await createNewPost(postInput.value);
@@ -1207,7 +1205,7 @@ async function createNewPost(text) {
 
   function openModal() {
     if (!currentUser) {
-      alert("Login with email first to start a thread.");
+      alert("Login first to start a thread.");
       return;
     }
 
@@ -1224,31 +1222,87 @@ async function createNewPost(text) {
     body.classList.remove("modal-open");
   }
 
-  async function loginWithEmail() {
-    const email = emailInput.value.trim();
+  function updateAuthModeUI() {
+    if (isSignupMode) {
+      authTitle.textContent = "Create account";
+      authSubtitle.textContent = "Start your ThreadWave profile in seconds.";
+      authSubmitBtn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Create Account`;
+      authSwitchBtn.textContent = "Already have an account? Login";
+      passwordInput.setAttribute("autocomplete", "new-password");
+    } else {
+      authTitle.textContent = "Welcome back";
+      authSubtitle.textContent = "Login to post threads and build your profile.";
+      authSubmitBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Login`;
+      authSwitchBtn.textContent = "Create a new account";
+      passwordInput.setAttribute("autocomplete", "current-password");
+    }
 
-    if (!email) {
-      authNote.textContent = "Add your email first.";
+    authNote.textContent = "";
+  }
+
+  async function handleAuthSubmit() {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (!email || !password) {
+      authNote.textContent = "Add email and password.";
       return;
     }
 
-    authNote.textContent = "Sending magic link...";
+    if (password.length < 6) {
+      authNote.textContent = "Password needs at least 6 characters.";
+      return;
+    }
 
-    const { error } = await supabaseClient.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: window.location.origin
+    authSubmitBtn.disabled = true;
+    authNote.textContent = isSignupMode ? "Creating account..." : "Logging in...";
+
+    if (isSignupMode) {
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: email.split("@")[0]
+          }
+        }
+      });
+
+      authSubmitBtn.disabled = false;
+
+      if (error) {
+        console.error("Signup error:", error.message);
+        authNote.textContent = error.message;
+        return;
       }
+
+      if (data.user && !data.session) {
+        authNote.textContent = "Account created. Check your email to confirm, then login.";
+        return;
+      }
+
+      authNote.textContent = "Account created. You are logged in.";
+      emailInput.value = "";
+      passwordInput.value = "";
+      return;
+    }
+
+    const { error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
     });
 
+    authSubmitBtn.disabled = false;
+
     if (error) {
-      console.error("Magic link error:", error.message);
+      console.error("Login error:", error.message);
       authNote.textContent = error.message;
       return;
     }
 
-    authNote.textContent = "Magic link sent. Check your inbox or spam.";
+    authNote.textContent = "";
     emailInput.value = "";
+    passwordInput.value = "";
   }
 
   async function logout() {
@@ -1287,7 +1341,7 @@ async function createNewPost(text) {
     const profileData = {
       id: user.id,
       full_name: fullName,
-      username: username,
+      username,
       avatar_url: avatarUrl
     };
 
@@ -1341,8 +1395,8 @@ async function createNewPost(text) {
     addThreadBtn.disabled = !isLoggedIn;
 
     if (!isLoggedIn) {
-      postInput.placeholder = "Login with email to post...";
-      modalPostInput.placeholder = "Login with email to start a thread...";
+      postInput.placeholder = "Login to post...";
+      modalPostInput.placeholder = "Login to start a thread...";
 
       document.querySelectorAll(".avatar").forEach(avatar => {
         avatar.textContent = "G";
@@ -1383,10 +1437,19 @@ async function createNewPost(text) {
     modalPublishBtn.disabled = modalPostInput.value.trim().length === 0 || !currentUser;
   });
 
-  emailInput.addEventListener("keydown", event => {
-    if (event.key === "Enter") {
-      loginWithEmail();
-    }
+  [emailInput, passwordInput].forEach(input => {
+    input.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        handleAuthSubmit();
+      }
+    });
+  });
+
+  authSubmitBtn.addEventListener("click", handleAuthSubmit);
+
+  authSwitchBtn.addEventListener("click", () => {
+    isSignupMode = !isSignupMode;
+    updateAuthModeUI();
   });
 
   publishBtn.addEventListener("click", publishPost);
@@ -1432,7 +1495,6 @@ async function createNewPost(text) {
     }
   });
 
-  emailLoginBtn.addEventListener("click", loginWithEmail);
   logoutBtn.addEventListener("click", logout);
 
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
@@ -1471,6 +1533,7 @@ async function createNewPost(text) {
   }
 
   loadTheme();
+  updateAuthModeUI();
   checkUserSession();
 </script>
 </body>
