@@ -1073,32 +1073,38 @@
     renderPosts();
   }
 
-  async function createNewPost(text) {
-    const cleanText = text.trim();
+async function createNewPost(text) {
+  const cleanText = text.trim();
 
-    if (!cleanText) return;
+  if (!cleanText) return;
 
-    if (!currentUser) {
-      alert("Login with email first to post.");
-      return;
-    }
-
-    const { error } = await supabaseClient
-      .from("posts")
-      .insert({
-        user_id: currentUser.id,
-        content: cleanText
-      });
-
-    if (error) {
-      console.error("Create post error:", error.message);
-      alert("Post failed. Check Supabase RLS policies.");
-      return;
-    }
-
-    await loadPosts();
-    showPage("homePage");
+  if (!currentUser) {
+    alert("Login with email first to post.");
+    return;
   }
+
+  await createOrUpdateProfile(currentUser);
+
+  const { data, error } = await supabaseClient
+    .from("posts")
+    .insert({
+      user_id: currentUser.id,
+      content: cleanText
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Create post error:", error);
+    alert("Post failed: " + error.message);
+    return;
+  }
+
+  console.log("Post created:", data);
+
+  await loadPosts();
+  showPage("homePage");
+}
 
   async function publishPost() {
     await createNewPost(postInput.value);
