@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <title>ThreadWave</title>
 
   <link
@@ -29,88 +27,100 @@
 
     :root {
       --bg: #eefbff;
+      --bg-2: #d7f4ff;
       --card: rgba(255, 255, 255, 0.72);
-      --text: #06141f;
-      --muted: #6c7a86;
-      --line: rgba(6, 20, 31, 0.08);
-      --cyan: #00cfff;
-      --blue: #087cff;
-      --danger: #ff4d6d;
-      --shadow: 0 20px 60px rgba(0, 90, 130, 0.14);
+      --card-strong: rgba(255, 255, 255, 0.92);
+      --text: #071923;
+      --muted: #6a7f89;
+      --line: rgba(8, 45, 62, 0.1);
+      --cyan: #00c8ff;
+      --cyan-dark: #0099cc;
+      --blue: #3b82f6;
+      --danger: #ff4b6e;
+      --shadow: 0 22px 60px rgba(8, 70, 95, 0.16);
+      --radius: 28px;
     }
 
     body.dark {
-      --bg: #061018;
-      --card: rgba(13, 25, 36, 0.72);
-      --text: #f4fbff;
-      --muted: #8da2b3;
-      --line: rgba(255, 255, 255, 0.09);
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --bg: #061016;
+      --bg-2: #0b1d26;
+      --card: rgba(13, 31, 42, 0.72);
+      --card-strong: rgba(17, 42, 56, 0.96);
+      --text: #effaff;
+      --muted: #9db1bb;
+      --line: rgba(255, 255, 255, 0.1);
+      --shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
     }
 
     body {
       min-height: 100vh;
       background:
-        radial-gradient(circle at top left, rgba(0, 207, 255, 0.34), transparent 34%),
-        radial-gradient(circle at bottom right, rgba(8, 124, 255, 0.24), transparent 36%),
-        var(--bg);
+        radial-gradient(circle at top left, rgba(0, 200, 255, 0.28), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.16), transparent 30%),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
       color: var(--text);
-      padding-bottom: 120px;
-    }
-
-    body.modal-open {
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     button,
-    textarea,
-    input {
+    input,
+    textarea {
+      border: none;
+      outline: none;
       font: inherit;
     }
 
     button {
-      transition: 0.22s ease;
+      cursor: pointer;
     }
 
     .app {
-      width: min(100%, 620px);
+      width: min(100%, 560px);
       margin: 0 auto;
-      padding: 18px 16px;
+      min-height: 100vh;
+      padding: 18px 14px 96px;
     }
 
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 10;
-      padding: 12px 0 16px;
-      backdrop-filter: blur(18px);
-    }
-
-    .topbar-inner {
+      z-index: 20;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 26px;
-      padding: 14px 16px;
-      box-shadow: var(--shadow);
+      gap: 14px;
+      padding: 14px 4px 18px;
+      backdrop-filter: blur(18px);
     }
 
     .brand {
-      flex: 1;
-      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      box-shadow: 0 14px 32px rgba(0, 200, 255, 0.28);
+      color: white;
+      font-size: 20px;
     }
 
     .brand h1 {
-      font-size: 1.25rem;
+      font-size: 1.22rem;
+      line-height: 1;
       letter-spacing: -0.04em;
     }
 
     .brand p {
-      font-size: 0.78rem;
       color: var(--muted);
+      font-size: 0.75rem;
+      margin-top: 5px;
     }
 
     .top-actions {
@@ -120,183 +130,266 @@
     }
 
     .icon-btn {
-      width: 44px;
-      height: 44px;
-      border: none;
-      border-radius: 50%;
-      background: rgba(0, 207, 255, 0.16);
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: var(--card);
       color: var(--text);
-      font-size: 1.1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+      transition: 0.2s ease;
     }
 
     .icon-btn:active {
-      transform: scale(0.92);
+      transform: scale(0.94);
     }
 
+    .profile-card,
     .composer,
-    .post,
-    .profile-card {
+    .thread-card,
+    .empty-card,
+    .modal-card {
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 28px;
-      padding: 16px;
-      margin-top: 16px;
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(22px);
     }
 
-    .composer-row,
-    .post-head,
-    .modal-composer-row {
+    .profile-card {
+      padding: 18px;
+      margin-bottom: 14px;
       display: flex;
-      gap: 12px;
-      align-items: flex-start;
+      align-items: center;
+      gap: 14px;
     }
 
     .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      border-radius: 18px;
       display: grid;
       place-items: center;
-      flex-shrink: 0;
-      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      background: linear-gradient(135deg, #00c8ff, #4f46e5);
       color: white;
       font-weight: 800;
-      box-shadow: 0 12px 26px rgba(0, 156, 220, 0.22);
+      box-shadow: 0 12px 28px rgba(0, 200, 255, 0.25);
     }
 
-    textarea {
-      width: 100%;
-      min-height: 86px;
+    .profile-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .profile-info h2 {
+      font-size: 0.98rem;
+      letter-spacing: -0.03em;
+    }
+
+    .profile-info p {
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 3px;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 10px;
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .profile-stats strong {
+      color: var(--text);
+    }
+
+    .composer {
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .composer-head {
+      display: flex;
+      gap: 12px;
+    }
+
+    .composer textarea {
+      flex: 1;
+      min-height: 88px;
       resize: none;
-      border: none;
-      outline: none;
       background: transparent;
       color: var(--text);
-      font-size: 0.98rem;
-      line-height: 1.5;
+      font-size: 0.95rem;
+      line-height: 1.55;
     }
 
-    textarea::placeholder {
+    .composer textarea::placeholder {
       color: var(--muted);
     }
 
-    .composer-actions {
+    .composer-bottom {
+      margin-top: 14px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-top: 12px;
-      padding-left: 56px;
+      justify-content: space-between;
+      gap: 12px;
     }
 
-    .counter {
-      font-size: 0.8rem;
+    .char-count {
       color: var(--muted);
+      font-size: 0.76rem;
     }
 
     .post-btn {
-      border: none;
+      padding: 12px 18px;
       border-radius: 999px;
-      padding: 12px 20px;
       background: linear-gradient(135deg, var(--cyan), var(--blue));
       color: white;
       font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 12px 30px rgba(0, 156, 220, 0.28);
-    }
-
-    .post-btn:active {
-      transform: scale(0.94);
+      box-shadow: 0 14px 30px rgba(0, 200, 255, 0.26);
+      transition: 0.2s ease;
     }
 
     .post-btn:disabled {
       opacity: 0.45;
       cursor: not-allowed;
-      transform: none;
+      box-shadow: none;
     }
 
-    .feed-title {
-      margin: 22px 4px 4px;
-      font-size: 0.88rem;
+    .post-btn:active {
+      transform: scale(0.96);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 6px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(18px);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 11px 12px;
+      border-radius: 999px;
+      background: transparent;
       color: var(--muted);
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      font-size: 0.82rem;
+      transition: 0.2s ease;
     }
 
-    .post {
-      animation: rise 0.28s ease;
+    .tab-btn.active {
+      background: var(--card-strong);
+      color: var(--text);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.06);
+    }
+
+    .feed {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .thread-card {
+      padding: 16px;
+      animation: rise 0.32s ease both;
     }
 
     @keyframes rise {
       from {
+        transform: translateY(10px);
         opacity: 0;
-        transform: translateY(12px);
       }
-
       to {
-        opacity: 1;
         transform: translateY(0);
+        opacity: 1;
       }
     }
 
-    .post-info {
+    .thread-top {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .thread-main {
       flex: 1;
       min-width: 0;
     }
 
-    .post-name {
-      font-weight: 800;
-      font-size: 0.95rem;
-    }
-
-    .post-meta {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .post-text {
-      margin-top: 12px;
-      line-height: 1.55;
-      font-size: 0.96rem;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-
-    .post-actions {
+    .thread-author {
       display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 10px;
+    }
+
+    .thread-author h3 {
+      font-size: 0.92rem;
+      letter-spacing: -0.02em;
+    }
+
+    .thread-author span {
+      color: var(--muted);
+      font-size: 0.74rem;
+      white-space: nowrap;
+    }
+
+    .thread-text {
+      margin-top: 8px;
+      font-size: 0.94rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .thread-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       margin-top: 14px;
-      padding-left: 56px;
       flex-wrap: wrap;
     }
 
     .action-btn {
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.22);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 9px 13px;
-      font-size: 0.84rem;
-      cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
+      padding: 9px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.34);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      font-size: 0.78rem;
+      font-weight: 700;
+      transition: 0.18s ease;
+    }
+
+    body.dark .action-btn {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .action-btn.active.like {
+      color: var(--danger);
+      background: rgba(255, 75, 110, 0.12);
+    }
+
+    .action-btn.active.repost {
+      color: #00b894;
+      background: rgba(0, 184, 148, 0.12);
     }
 
     .action-btn:active {
       transform: scale(0.94);
-    }
-
-    .liked {
-      background: rgba(0, 207, 255, 0.18);
-      border-color: rgba(0, 207, 255, 0.45);
     }
 
     .delete-btn {
@@ -304,409 +397,248 @@
       color: var(--danger);
     }
 
-    .page {
+    .comments {
+      margin-top: 13px;
+      padding-top: 13px;
+      border-top: 1px solid var(--line);
       display: none;
     }
 
-    .page.active {
+    .comments.open {
       display: block;
     }
 
-    .profile-hero {
-      text-align: center;
-      padding: 20px 8px;
+    .comment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
-    .profile-avatar {
-      width: 86px;
-      height: 86px;
-      margin: 0 auto 12px;
+    .comment {
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.42);
+      color: var(--text);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    body.dark .comment {
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .comment small {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .comment-form {
+      display: flex;
+      gap: 8px;
+    }
+
+    .comment-form input {
+      flex: 1;
+      padding: 12px 13px;
+      border-radius: 999px;
+      background: var(--card-strong);
+      color: var(--text);
+      border: 1px solid var(--line);
+      min-width: 0;
+    }
+
+    .comment-form button {
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       display: grid;
       place-items: center;
       background: linear-gradient(135deg, var(--cyan), var(--blue));
       color: white;
-      font-size: 2rem;
-      font-weight: 900;
-      box-shadow: 0 20px 40px rgba(0, 156, 220, 0.3);
+      box-shadow: 0 10px 22px rgba(0, 200, 255, 0.22);
     }
 
-    .profile-hero h2 {
-      font-size: 1.45rem;
-      letter-spacing: -0.04em;
-    }
-
-    .profile-hero p {
-      color: var(--muted);
-      margin-top: 6px;
-      font-size: 0.92rem;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .stat {
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 14px 8px;
+    .empty-card {
       text-align: center;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 1.2rem;
-    }
-
-    .stat span {
+      padding: 34px 20px;
       color: var(--muted);
-      font-size: 0.74rem;
+    }
+
+    .empty-card i {
+      font-size: 2rem;
+      color: var(--cyan);
+      margin-bottom: 12px;
+    }
+
+    .empty-card h3 {
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 5px;
     }
 
     .bottom-nav {
       position: fixed;
       left: 50%;
-      bottom: 20px;
+      bottom: 18px;
       transform: translateX(-50%);
-      width: min(92%, 430px);
-      height: 78px;
+      width: min(calc(100% - 28px), 520px);
+      padding: 8px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      border-radius: 26px;
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 999px;
       box-shadow: var(--shadow);
       backdrop-filter: blur(24px);
-      display: grid;
-      grid-template-columns: 1fr 76px 1fr;
-      align-items: center;
-      gap: 8px;
-      padding: 8px;
-      z-index: 50;
+      z-index: 30;
     }
 
     .nav-btn {
-      height: 100%;
-      border: none;
+      height: 52px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
       background: transparent;
       color: var(--muted);
-      border-radius: 999px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
+      font-size: 1.05rem;
+      transition: 0.2s ease;
     }
 
     .nav-btn.active {
-      color: white;
-      background: linear-gradient(135deg, var(--cyan), var(--blue));
-      box-shadow: 0 12px 26px rgba(0, 156, 220, 0.26);
-    }
-
-    .nav-btn:active {
-      transform: scale(0.92);
-    }
-
-    .add-thread-btn {
-      width: 66px;
-      height: 66px;
-      border: none;
-      border-radius: 50%;
       background: linear-gradient(135deg, var(--cyan), var(--blue));
       color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      box-shadow: 0 14px 34px rgba(0, 156, 220, 0.36);
-      transform: translateY(-16px);
+      box-shadow: 0 12px 26px rgba(0, 200, 255, 0.24);
     }
 
-    .add-thread-btn:active {
-      transform: translateY(-12px) scale(0.92);
-    }
-
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 30px 12px;
-      font-size: 0.92rem;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .auth-card {
-      background: var(--card);
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 92px;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--card-strong);
+      color: var(--text);
       border: 1px solid var(--line);
-      border-radius: 32px;
-      padding: 26px 18px;
-      margin-top: 22px;
       box-shadow: var(--shadow);
-      backdrop-filter: blur(22px);
-      text-align: center;
-    }
-
-    .auth-icon {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      margin: 0 auto 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--cyan), var(--blue));
-      color: white;
-      font-size: 1.7rem;
-      box-shadow: 0 18px 40px rgba(0, 156, 220, 0.28);
-    }
-
-    .auth-card h2 {
-      font-size: 1.35rem;
-      letter-spacing: -0.04em;
-    }
-
-    .auth-card p {
-      color: var(--muted);
-      margin: 8px auto 18px;
-      font-size: 0.92rem;
-      max-width: 320px;
-    }
-
-    .email-login-box {
-      display: grid;
-      gap: 12px;
-    }
-
-    .email-input {
-      width: 100%;
-      border: 1px solid var(--line);
-      outline: none;
       border-radius: 999px;
-      padding: 14px 16px;
-      background: rgba(255, 255, 255, 0.38);
-      color: var(--text);
-      font-size: 0.95rem;
-    }
-
-    .email-input::placeholder {
-      color: var(--muted);
-    }
-
-    .google-btn {
-      width: 100%;
-      border: none;
-      border-radius: 999px;
-      padding: 14px 18px;
-      background: white;
-      color: #111;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.1);
-    }
-
-    .google-btn:active {
-      transform: scale(0.96);
-    }
-
-    .auth-divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--muted);
-      font-size: 0.78rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin: 2px 0;
-    }
-
-    .auth-divider span {
-      flex: 1;
-      height: 1px;
-      background: var(--line);
-    }
-
-    .auth-divider p {
-      margin: 0;
-      font-size: 0.78rem;
-    }
-
-    .auth-note {
-      color: var(--muted);
+      padding: 12px 16px;
       font-size: 0.82rem;
-      min-height: 20px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.25s ease;
+      z-index: 50;
+      backdrop-filter: blur(18px);
     }
 
-    .auth-switch-btn {
-      border: none;
-      background: transparent;
-      color: var(--text);
-      font-weight: 800;
-      cursor: pointer;
-      padding: 8px;
-    }
-
-    .auth-switch-btn:active {
-      transform: scale(0.96);
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      z-index: 100;
-      padding: 18px;
-      background:
-        radial-gradient(circle at top, rgba(0, 207, 255, 0.2), transparent 36%),
-        rgba(0, 12, 20, 0.46);
-      backdrop-filter: blur(18px);
-      display: flex;
+      background: rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(8px);
+      z-index: 60;
+      display: none;
       align-items: flex-end;
       justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: 0.25s ease;
-    }
-
-    .modal-backdrop.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal-card {
-      width: min(100%, 560px);
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 32px;
-      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
-      backdrop-filter: blur(24px);
-      padding: 16px;
-      transform: translateY(24px) scale(0.96);
-      opacity: 0;
-      transition: 0.25s ease;
-    }
-
-    .modal-backdrop.active .modal-card {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
-
-    .modal-handle {
-      width: 44px;
-      height: 5px;
-      border-radius: 999px;
-      background: var(--line);
-      margin: 0 auto 14px;
-    }
-
-    .modal-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .modal-title h2 {
-      font-size: 1.12rem;
-      letter-spacing: -0.04em;
-    }
-
-    .modal-title p {
-      color: var(--muted);
-      font-size: 0.78rem;
-      margin-top: 2px;
-    }
-
-    .close-modal-btn {
-      width: 42px;
-      height: 42px;
-      border: none;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.22);
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .close-modal-btn:active {
-      transform: scale(0.92);
-    }
-
-    .modal-composer {
-      background: rgba(255, 255, 255, 0.18);
-      border: 1px solid var(--line);
-      border-radius: 24px;
       padding: 14px;
     }
 
-    #modalPostInput {
-      min-height: 140px;
-      font-size: 1rem;
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(100%, 520px);
+      padding: 18px;
+      animation: modalUp 0.25s ease both;
+    }
+
+    @keyframes modalUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+    }
+
+    .modal-card label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin: 12px 0 6px;
+    }
+
+    .modal-card input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 16px;
+      background: var(--card-strong);
+      color: var(--text);
+      border: 1px solid var(--line);
     }
 
     .modal-actions {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding-left: 56px;
-      margin-top: 14px;
+      gap: 10px;
+      margin-top: 16px;
     }
 
-    .modal-tools {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 0.92rem;
+    .modal-actions button {
+      flex: 1;
+      padding: 13px 14px;
+      border-radius: 18px;
+      font-weight: 800;
     }
 
-    .tool-dot {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.18);
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-post-btn {
-      border: none;
-      border-radius: 999px;
-      padding: 12px 18px;
+    .save-btn {
       background: linear-gradient(135deg, var(--cyan), var(--blue));
       color: white;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 12px 30px rgba(0, 156, 220, 0.28);
     }
 
-    .modal-post-btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
+    .cancel-btn {
+      background: var(--card-strong);
+      color: var(--text);
+      border: 1px solid var(--line);
     }
 
-    @media (min-width: 700px) {
+    @media (max-width: 420px) {
       .app {
-        padding-top: 24px;
+        padding-inline: 12px;
       }
 
-      .modal-backdrop {
-        align-items: center;
+      .profile-card,
+      .composer,
+      .thread-card {
+        border-radius: 24px;
+      }
+
+      .brand h1 {
+        font-size: 1.1rem;
+      }
+
+      .thread-actions {
+        gap: 5px;
+      }
+
+      .action-btn {
+        padding: 8px 10px;
       }
     }
   </style>
@@ -715,885 +647,674 @@
 <body>
   <main class="app">
     <header class="topbar">
-      <div class="topbar-inner">
-        <div class="brand">
+      <div class="brand">
+        <div class="logo">
+          <i class="fa-solid fa-water"></i>
+        </div>
+        <div>
           <h1>ThreadWave</h1>
-          <p>Coastal social MVP</p>
+          <p>micro-posts with ocean energy</p>
         </div>
+      </div>
 
-        <div class="top-actions">
-          <button class="icon-btn hidden" id="logoutBtn" aria-label="Logout">
-            <i class="fa-solid fa-right-from-bracket"></i>
-          </button>
+      <div class="top-actions">
+        <button class="icon-btn" id="profileBtn" aria-label="Edit profile">
+          <i class="fa-regular fa-user"></i>
+        </button>
 
-          <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">
-            <i class="fa-regular fa-moon"></i>
-          </button>
-        </div>
+        <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">
+          <i class="fa-regular fa-moon"></i>
+        </button>
       </div>
     </header>
 
-<section class="auth-card" id="authCard">
-  <div class="auth-icon">
-    <i class="fa-brands fa-google"></i>
-  </div>
+    <section class="profile-card">
+      <div class="avatar" id="profileAvatar">A</div>
 
-  <h2 id="authTitle">Welcome to ThreadWave</h2>
-  <p id="authSubtitle">Continue with Google to post threads and build your profile.</p>
+      <div class="profile-info">
+        <h2 id="profileName">Aurilumix</h2>
+        <p id="profileHandle">@futurebillionaire</p>
 
-  <div class="email-login-box">
-    <button class="google-btn" id="googleLoginBtn" type="button">
-      <i class="fa-brands fa-google"></i>
-      Continue with Google
-    </button>
-
-    <p class="auth-note" id="authNote"></p>
-  </div>
-</section>
-
-    <section class="page active" id="homePage">
-      <div class="composer">
-        <div class="composer-row">
-          <div class="avatar">A</div>
-
-          <textarea
-            id="postInput"
-            maxlength="280"
-            placeholder="What's moving today?"
-          ></textarea>
-        </div>
-
-        <div class="composer-actions">
-          <span class="counter">
-            <span id="charCount">0</span>/280
-          </span>
-
-          <button class="post-btn" id="publishBtn" disabled>
-            Post
-          </button>
+        <div class="profile-stats">
+          <span><strong id="postCount">0</strong> posts</span>
+          <span><strong id="likeCount">0</strong> likes</span>
+          <span><strong id="commentCount">0</strong> comments</span>
         </div>
       </div>
-
-      <h3 class="feed-title">Live Feed</h3>
-
-      <div id="feed"></div>
     </section>
 
-    <section class="page" id="profilePage">
-      <div class="profile-card">
-        <div class="profile-hero">
-          <div class="profile-avatar">A</div>
+    <section class="composer">
+      <div class="composer-head">
+        <div class="avatar" id="composerAvatar">A</div>
 
-          <h2>Aurilumix</h2>
-
-          <p>Building beautiful web apps. Future billionaire energy 🌊</p>
-
-          <div class="stats">
-            <div class="stat">
-              <strong id="profilePosts">0</strong>
-              <span>Posts</span>
-            </div>
-
-            <div class="stat">
-              <strong id="profileLikes">0</strong>
-              <span>Likes</span>
-            </div>
-
-            <div class="stat">
-              <strong>1</strong>
-              <span>Founder</span>
-            </div>
-          </div>
-        </div>
+        <textarea
+          id="postInput"
+          maxlength="280"
+          placeholder="Drop a wave..."
+        ></textarea>
       </div>
 
-      <h3 class="feed-title">Your Posts</h3>
+      <div class="composer-bottom">
+        <span class="char-count">
+          <span id="charCount">0</span>/280
+        </span>
 
-      <div id="profileFeed"></div>
+        <button class="post-btn" id="postBtn" disabled>
+          Post Wave
+        </button>
+      </div>
     </section>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-filter="all">All</button>
+      <button class="tab-btn" data-filter="hot">Hot</button>
+      <button class="tab-btn" data-filter="mine">Mine</button>
+    </nav>
+
+    <section class="feed" id="feed"></section>
   </main>
 
   <nav class="bottom-nav">
-    <button class="nav-btn active" data-page="homePage" aria-label="Home">
+    <button class="nav-btn active" data-filter="all" aria-label="Home">
       <i class="fa-solid fa-house"></i>
     </button>
 
-    <button class="add-thread-btn" id="addThreadBtn" aria-label="Add thread">
+    <button class="nav-btn" data-filter="hot" aria-label="Hot">
+      <i class="fa-solid fa-fire"></i>
+    </button>
+
+    <button class="nav-btn" id="focusComposerBtn" aria-label="Create">
       <i class="fa-solid fa-plus"></i>
     </button>
 
-    <button class="nav-btn" data-page="profilePage" aria-label="Profile">
-      <i class="fa-regular fa-user"></i>
+    <button class="nav-btn" data-filter="mine" aria-label="Profile">
+      <i class="fa-solid fa-user"></i>
     </button>
   </nav>
 
-  <div class="modal-backdrop" id="modalBackdrop">
+  <div class="toast" id="toast">Saved</div>
+
+  <div class="modal-backdrop" id="profileModal">
     <div class="modal-card">
-      <div class="modal-handle"></div>
+      <h2>Edit profile</h2>
 
-      <div class="modal-head">
-        <div class="modal-title">
-          <h2>New Thread</h2>
-          <p>Share something clean, sharp, and valuable.</p>
-        </div>
+      <label for="nameInput">Display name</label>
+      <input id="nameInput" maxlength="24" placeholder="Your name" />
 
-        <button class="close-modal-btn" id="closeModalBtn" aria-label="Close composer">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
+      <label for="handleInput">Handle</label>
+      <input id="handleInput" maxlength="24" placeholder="@username" />
 
-      <div class="modal-composer">
-        <div class="modal-composer-row">
-          <div class="avatar">A</div>
-
-          <textarea
-            id="modalPostInput"
-            maxlength="280"
-            placeholder="Start a thread..."
-          ></textarea>
-        </div>
-
-        <div class="modal-actions">
-          <div class="modal-tools">
-            <span class="tool-dot">
-              <i class="fa-regular fa-image"></i>
-            </span>
-
-            <span class="tool-dot">
-              <i class="fa-solid fa-hashtag"></i>
-            </span>
-
-            <span class="counter">
-              <span id="modalCharCount">0</span>/280
-            </span>
-          </div>
-
-          <button class="modal-post-btn" id="modalPublishBtn" disabled>
-            Post
-          </button>
-        </div>
+      <div class="modal-actions">
+        <button class="cancel-btn" id="cancelProfileBtn">Cancel</button>
+        <button class="save-btn" id="saveProfileBtn">Save</button>
       </div>
     </div>
   </div>
 
-<script>
-  const SUPABASE_URL = "https://rbmjbwvojakxvxeodkmp.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_QlCicVqJiBiMxyJxCriFTQ_31t2tVYq";
-
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      flowType: "pkce"
-    }
-  });
-
-  const body = document.body;
-
-  const themeBtn = document.getElementById("themeBtn");
-
-  const authCard = document.getElementById("authCard");
-  const authTitle = document.getElementById("authTitle");
-  const authSubtitle = document.getElementById("authSubtitle");
-  const googleLoginBtn = document.getElementById("googleLoginBtn");
-  const authNote = document.getElementById("authNote");
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  const addThreadBtn = document.getElementById("addThreadBtn");
-  const modalBackdrop = document.getElementById("modalBackdrop");
-  const closeModalBtn = document.getElementById("closeModalBtn");
-
-  const postInput = document.getElementById("postInput");
-  const publishBtn = document.getElementById("publishBtn");
-  const charCount = document.getElementById("charCount");
-
-  const modalPostInput = document.getElementById("modalPostInput");
-  const modalPublishBtn = document.getElementById("modalPublishBtn");
-  const modalCharCount = document.getElementById("modalCharCount");
-
-  const feed = document.getElementById("feed");
-  const profileFeed = document.getElementById("profileFeed");
-
-  const profilePosts = document.getElementById("profilePosts");
-  const profileLikes = document.getElementById("profileLikes");
-
-  const pages = document.querySelectorAll(".page");
-  const navButtons = document.querySelectorAll(".nav-btn");
-
-  let currentUser = null;
-  let currentProfile = null;
-  let posts = [];
-
-  function getAppUrl() {
-    return "https://threadsapp-nu.vercel.app";
-  }
-
-  function timeAgo(timestamp) {
-    const seconds = Math.floor((Date.now() - timestamp) / 1000);
-
-    if (seconds < 60) return "now";
-
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
-  }
-
-  function escapeHTML(text) {
-    return String(text || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function getGoogleName(user) {
-    const metadata = user?.user_metadata || {};
-
-    return (
-      metadata.full_name ||
-      metadata.name ||
-      metadata.preferred_username ||
-      user?.email?.split("@")[0] ||
-      "ThreadWave User"
-    );
-  }
-
-  function getGoogleAvatar(user) {
-    const metadata = user?.user_metadata || {};
-    return metadata.avatar_url || metadata.picture || null;
-  }
-
-  function getCleanUsername(user) {
-    const metadata = user?.user_metadata || {};
-
-    const base =
-      metadata.preferred_username ||
-      metadata.name ||
-      metadata.full_name ||
-      user?.email?.split("@")[0] ||
-      "user";
-
-    return "@" + String(base)
-      .toLowerCase()
-      .replace(/\s+/g, "")
-      .replace(/[^a-z0-9_]/g, "");
-  }
-
-  function getUserDisplayData() {
-    if (!currentUser) {
-      return {
-        author: "Guest",
-        username: "@guest",
-        avatar: "G",
-        avatarUrl: null
-      };
-    }
-
-    const name =
-      currentProfile?.full_name ||
-      getGoogleName(currentUser);
-
-    const username =
-      currentProfile?.username ||
-      getCleanUsername(currentUser);
-
-    const avatarUrl =
-      currentProfile?.avatar_url ||
-      getGoogleAvatar(currentUser);
-
-    return {
-      author: name,
-      username,
-      avatar: name.charAt(0).toUpperCase(),
-      avatarUrl
+  <script>
+    const STORAGE_KEYS = {
+      threads: "threadwave_threads_v1",
+      profile: "threadwave_profile_v1",
+      theme: "threadwave_theme_v1"
     };
-  }
 
-  function avatarHTML(letter, avatarUrl = null, className = "avatar") {
-    if (avatarUrl) {
-      return `
-        <div
-          class="${className}"
-          style="background-image:url('${escapeHTML(avatarUrl)}'); background-size:cover; background-position:center;"
-        ></div>
-      `;
-    }
+    const DEFAULT_PROFILE = {
+      name: "Aurilumix",
+      handle: "@futurebillionaire"
+    };
 
-    return `<div class="${className}">${escapeHTML(letter)}</div>`;
-  }
-
-  function setAvatarElement(element, letter, avatarUrl = null) {
-    if (!element) return;
-
-    if (avatarUrl) {
-      element.textContent = "";
-      element.style.backgroundImage = `url("${avatarUrl}")`;
-      element.style.backgroundSize = "cover";
-      element.style.backgroundPosition = "center";
-    } else {
-      element.style.backgroundImage = "";
-      element.textContent = letter;
-    }
-  }
-
-  function createPostElement(post) {
-    const article = document.createElement("article");
-    article.className = "post";
-
-    const canDelete =
-      currentUser && String(post.userId) === String(currentUser.id);
-
-    article.innerHTML = `
-      <div class="post-head">
-        ${avatarHTML(post.avatar, post.avatarUrl)}
-
-        <div class="post-info">
-          <div class="post-name">${escapeHTML(post.author)}</div>
-          <div class="post-meta">${escapeHTML(post.username)} · ${timeAgo(post.createdAt)}</div>
-          <div class="post-text">${escapeHTML(post.text)}</div>
-        </div>
-      </div>
-
-      <div class="post-actions">
-        <button class="action-btn ${post.liked ? "liked" : ""}" data-like="${post.id}">
-          <i class="${post.liked ? "fa-solid" : "fa-regular"} fa-heart"></i>
-          ${post.likes}
-        </button>
-
-        <button class="action-btn">
-          <i class="fa-regular fa-comment"></i>
-          Reply
-        </button>
-
-        ${
-          canDelete
-            ? `
-              <button class="action-btn delete-btn" data-delete="${post.id}">
-                <i class="fa-regular fa-trash-can"></i>
-                Delete
-              </button>
-            `
-            : ""
-        }
-      </div>
-    `;
-
-    return article;
-  }
-
-  function renderPosts() {
-    feed.innerHTML = "";
-    profileFeed.innerHTML = "";
-
-    const myPosts = currentUser
-      ? posts.filter(post => String(post.userId) === String(currentUser.id))
-      : [];
-
-    if (posts.length === 0) {
-      feed.innerHTML = `
-        <div class="empty">
-          No posts yet. Tap the plus button and start the wave 🌊
-        </div>
-      `;
-    }
-
-    if (myPosts.length === 0) {
-      profileFeed.innerHTML = `
-        <div class="empty">
-          Your posts will appear here.
-        </div>
-      `;
-    }
-
-    posts.forEach(post => {
-      feed.appendChild(createPostElement(post));
-    });
-
-    myPosts.forEach(post => {
-      profileFeed.appendChild(createPostElement(post));
-    });
-
-    const myTotalLikes = myPosts.reduce((sum, post) => sum + post.likes, 0);
-
-    profilePosts.textContent = myPosts.length;
-    profileLikes.textContent = myTotalLikes;
-  }
-
-  async function loadPosts() {
-    feed.innerHTML = `
-      <div class="empty">
-        Loading threads...
-      </div>
-    `;
-
-    const { data, error } = await supabaseClient
-      .from("posts")
-      .select(`
-        id,
-        user_id,
-        content,
-        created_at,
-        profiles (
-          full_name,
-          username,
-          avatar_url
-        )
-      `)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Load posts error:", error.message);
-
-      feed.innerHTML = `
-        <div class="empty">
-          Could not load posts. Check console/Supabase policies.
-        </div>
-      `;
-
-      return;
-    }
-
-    posts = data.map(row => {
-      const profile = row.profiles || {};
-      const author = profile.full_name || "ThreadWave User";
-      const username = profile.username || "@user";
-      const avatarUrl = profile.avatar_url || null;
-
-      return {
-        id: row.id,
-        userId: row.user_id,
-        author,
-        username,
-        avatar: author.charAt(0).toUpperCase(),
-        avatarUrl,
-        text: row.content,
-        likes: 0,
+    const DEFAULT_THREADS = [
+      {
+        id: crypto.randomUUID(),
+        user: {
+          name: "ThreadWave",
+          handle: "@threadwave"
+        },
+        text: "Welcome to ThreadWave 🌊 Build the MVP first. Ship fast. Improve daily. Monetize when users care.",
+        createdAt: Date.now() - 1000 * 60 * 34,
+        likes: 12,
+        reposts: 3,
         liked: false,
-        createdAt: new Date(row.created_at).getTime()
+        reposted: false,
+        mine: false,
+        comments: [
+          {
+            id: crypto.randomUUID(),
+            user: "Builder",
+            text: "Clean MVP energy.",
+            createdAt: Date.now() - 1000 * 60 * 20
+          }
+        ]
+      },
+      {
+        id: crypto.randomUUID(),
+        user: {
+          name: "Aurilumix",
+          handle: "@futurebillionaire"
+        },
+        text: "Building apps from scratch. One feature at a time. One money move at a time.",
+        createdAt: Date.now() - 1000 * 60 * 7,
+        likes: 21,
+        reposts: 6,
+        liked: true,
+        reposted: false,
+        mine: true,
+        comments: []
+      }
+    ];
+
+    let profile = loadProfile();
+    let threads = loadThreads();
+    let activeFilter = "all";
+
+    const body = document.body;
+    const themeBtn = document.getElementById("themeBtn");
+    const profileBtn = document.getElementById("profileBtn");
+
+    const profileAvatar = document.getElementById("profileAvatar");
+    const composerAvatar = document.getElementById("composerAvatar");
+    const profileName = document.getElementById("profileName");
+    const profileHandle = document.getElementById("profileHandle");
+
+    const postCount = document.getElementById("postCount");
+    const likeCount = document.getElementById("likeCount");
+    const commentCount = document.getElementById("commentCount");
+
+    const postInput = document.getElementById("postInput");
+    const postBtn = document.getElementById("postBtn");
+    const charCount = document.getElementById("charCount");
+    const feed = document.getElementById("feed");
+
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const navButtons = document.querySelectorAll(".nav-btn[data-filter]");
+    const focusComposerBtn = document.getElementById("focusComposerBtn");
+
+    const toast = document.getElementById("toast");
+
+    const profileModal = document.getElementById("profileModal");
+    const nameInput = document.getElementById("nameInput");
+    const handleInput = document.getElementById("handleInput");
+    const cancelProfileBtn = document.getElementById("cancelProfileBtn");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+
+    init();
+
+    function init() {
+      applySavedTheme();
+      renderProfile();
+      renderThreads();
+      bindEvents();
+    }
+
+    function bindEvents() {
+      themeBtn.addEventListener("click", toggleTheme);
+
+      profileBtn.addEventListener("click", openProfileModal);
+      cancelProfileBtn.addEventListener("click", closeProfileModal);
+      saveProfileBtn.addEventListener("click", saveProfile);
+
+      profileModal.addEventListener("click", (event) => {
+        if (event.target === profileModal) {
+          closeProfileModal();
+        }
+      });
+
+      postInput.addEventListener("input", () => {
+        const length = postInput.value.trim().length;
+        charCount.textContent = postInput.value.length;
+        postBtn.disabled = length === 0;
+      });
+
+      postBtn.addEventListener("click", createThread);
+
+      tabButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          setFilter(button.dataset.filter);
+        });
+      });
+
+      navButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          setFilter(button.dataset.filter);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+
+      focusComposerBtn.addEventListener("click", () => {
+        postInput.focus();
+        postInput.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+
+    function loadProfile() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEYS.profile);
+        return saved ? JSON.parse(saved) : DEFAULT_PROFILE;
+      } catch {
+        return DEFAULT_PROFILE;
+      }
+    }
+
+    function saveProfileToStorage() {
+      localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(profile));
+    }
+
+    function loadThreads() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEYS.threads);
+        return saved ? JSON.parse(saved) : DEFAULT_THREADS;
+      } catch {
+        return DEFAULT_THREADS;
+      }
+    }
+
+    function saveThreads() {
+      localStorage.setItem(STORAGE_KEYS.threads, JSON.stringify(threads));
+    }
+
+    function applySavedTheme() {
+      const savedTheme = localStorage.getItem(STORAGE_KEYS.theme);
+
+      if (savedTheme === "dark") {
+        body.classList.add("dark");
+        themeBtn.innerHTML = '<i class="fa-regular fa-sun"></i>';
+      } else {
+        body.classList.remove("dark");
+        themeBtn.innerHTML = '<i class="fa-regular fa-moon"></i>';
+      }
+    }
+
+    function toggleTheme() {
+      body.classList.toggle("dark");
+
+      const isDark = body.classList.contains("dark");
+      localStorage.setItem(STORAGE_KEYS.theme, isDark ? "dark" : "light");
+
+      themeBtn.innerHTML = isDark
+        ? '<i class="fa-regular fa-sun"></i>'
+        : '<i class="fa-regular fa-moon"></i>';
+    }
+
+    function renderProfile() {
+      const initial = profile.name.trim().charAt(0).toUpperCase() || "A";
+
+      profileAvatar.textContent = initial;
+      composerAvatar.textContent = initial;
+      profileName.textContent = profile.name;
+      profileHandle.textContent = normalizeHandle(profile.handle);
+
+      const mine = threads.filter((thread) => thread.mine);
+      const totalLikes = threads.reduce((sum, thread) => sum + thread.likes, 0);
+      const totalComments = threads.reduce((sum, thread) => {
+        return sum + thread.comments.length;
+      }, 0);
+
+      postCount.textContent = mine.length;
+      likeCount.textContent = totalLikes;
+      commentCount.textContent = totalComments;
+    }
+
+    function openProfileModal() {
+      nameInput.value = profile.name;
+      handleInput.value = normalizeHandle(profile.handle).replace("@", "");
+      profileModal.classList.add("open");
+      nameInput.focus();
+    }
+
+    function closeProfileModal() {
+      profileModal.classList.remove("open");
+    }
+
+    function saveProfile() {
+      const name = nameInput.value.trim() || DEFAULT_PROFILE.name;
+      const handle = normalizeHandle(handleInput.value.trim() || DEFAULT_PROFILE.handle);
+
+      profile = { name, handle };
+
+      threads = threads.map((thread) => {
+        if (!thread.mine) return thread;
+
+        return {
+          ...thread,
+          user: {
+            name: profile.name,
+            handle: profile.handle
+          }
+        };
+      });
+
+      saveProfileToStorage();
+      saveThreads();
+      renderProfile();
+      renderThreads();
+      closeProfileModal();
+      showToast("Profile updated");
+    }
+
+    function normalizeHandle(handle) {
+      const clean = handle.replace(/\s+/g, "").replace(/^@+/, "");
+      return "@" + clean.toLowerCase();
+    }
+
+    function createThread() {
+      const text = postInput.value.trim();
+
+      if (!text) return;
+
+      const newThread = {
+        id: crypto.randomUUID(),
+        user: {
+          name: profile.name,
+          handle: normalizeHandle(profile.handle)
+        },
+        text,
+        createdAt: Date.now(),
+        likes: 0,
+        reposts: 0,
+        liked: false,
+        reposted: false,
+        mine: true,
+        comments: []
       };
-    });
 
-    renderPosts();
-  }
+      threads.unshift(newThread);
+      saveThreads();
 
-  async function createNewPost(text) {
-    const cleanText = text.trim();
+      postInput.value = "";
+      charCount.textContent = "0";
+      postBtn.disabled = true;
 
-    if (!cleanText) return;
-
-    if (!currentUser) {
-      alert("Login with Google first to post.");
-      return;
+      setFilter("all");
+      renderProfile();
+      renderThreads();
+      showToast("Wave posted 🌊");
     }
 
-    await createOrUpdateProfile(currentUser);
+    function setFilter(filter) {
+      activeFilter = filter;
 
-    const { error } = await supabaseClient
-      .from("posts")
-      .insert({
-        user_id: currentUser.id,
-        content: cleanText
+      tabButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.filter === filter);
       });
 
-    if (error) {
-      console.error("Create post error:", error);
-      alert("Post failed: " + error.message);
-      return;
+      navButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.filter === filter);
+      });
+
+      renderThreads();
     }
 
-    await loadPosts();
-    showPage("homePage");
-  }
+    function getFilteredThreads() {
+      if (activeFilter === "mine") {
+        return threads.filter((thread) => thread.mine);
+      }
 
-  async function publishPost() {
-    await createNewPost(postInput.value);
+      if (activeFilter === "hot") {
+        return [...threads]
+          .filter((thread) => thread.likes + thread.reposts + thread.comments.length > 0)
+          .sort((a, b) => {
+            const scoreA = a.likes + a.reposts * 2 + a.comments.length * 3;
+            const scoreB = b.likes + b.reposts * 2 + b.comments.length * 3;
+            return scoreB - scoreA;
+          });
+      }
 
-    postInput.value = "";
-    charCount.textContent = "0";
-    publishBtn.disabled = true;
-  }
+      return threads;
+    }
 
-  async function publishModalPost() {
-    await createNewPost(modalPostInput.value);
+    function renderThreads() {
+      const visibleThreads = getFilteredThreads();
 
-    modalPostInput.value = "";
-    modalCharCount.textContent = "0";
-    modalPublishBtn.disabled = true;
+      if (visibleThreads.length === 0) {
+        feed.innerHTML = `
+          <div class="empty-card">
+            <i class="fa-solid fa-water"></i>
+            <h3>No waves yet</h3>
+            <p>Post something and start the feed.</p>
+          </div>
+        `;
+        renderProfile();
+        return;
+      }
 
-    closeModal();
-  }
+      feed.innerHTML = visibleThreads.map(createThreadHTML).join("");
 
-  async function handlePostAction(event) {
-    const likeButton = event.target.closest("[data-like]");
-    const deleteButton = event.target.closest("[data-delete]");
+      visibleThreads.forEach((thread) => {
+        const card = document.querySelector(`[data-thread-id="${thread.id}"]`);
+        if (!card) return;
 
-    if (likeButton) {
-      const likeId = Number(likeButton.dataset.like);
+        const likeButton = card.querySelector(".like-btn");
+        const repostButton = card.querySelector(".repost-btn");
+        const commentToggle = card.querySelector(".comment-toggle");
+        const deleteButton = card.querySelector(".delete-btn");
+        const commentForm = card.querySelector(".comment-form");
+        const commentInput = card.querySelector(".comment-input");
 
-      posts = posts.map(post => {
-        if (post.id === likeId) {
-          return {
-            ...post,
-            liked: !post.liked,
-            likes: post.liked ? post.likes - 1 : post.likes + 1
-          };
+        likeButton.addEventListener("click", () => toggleLike(thread.id));
+        repostButton.addEventListener("click", () => toggleRepost(thread.id));
+        commentToggle.addEventListener("click", () => toggleComments(thread.id));
+
+        if (deleteButton) {
+          deleteButton.addEventListener("click", () => deleteThread(thread.id));
         }
 
-        return post;
+        commentForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          addComment(thread.id, commentInput.value);
+        });
       });
 
-      renderPosts();
+      renderProfile();
     }
 
-    if (deleteButton) {
-      const deleteId = Number(deleteButton.dataset.delete);
+    function createThreadHTML(thread) {
+      const initial = thread.user.name.charAt(0).toUpperCase();
+      const commentsOpen = thread.commentsOpen ? "open" : "";
+      const commentsHTML = thread.comments.length
+        ? thread.comments.map(createCommentHTML).join("")
+        : `<div class="comment"><small>ThreadWave</small>No comments yet. Be first.</div>`;
 
-      if (!currentUser) {
-        alert("Login first.");
-        return;
-      }
+      return `
+        <article class="thread-card" data-thread-id="${thread.id}">
+          <div class="thread-top">
+            <div class="avatar">${escapeHTML(initial)}</div>
 
-      const { error } = await supabaseClient
-        .from("posts")
-        .delete()
-        .eq("id", deleteId)
-        .eq("user_id", currentUser.id);
+            <div class="thread-main">
+              <div class="thread-author">
+                <div>
+                  <h3>${escapeHTML(thread.user.name)}</h3>
+                  <span>${escapeHTML(thread.user.handle)} · ${formatTime(thread.createdAt)}</span>
+                </div>
+              </div>
 
-      if (error) {
-        console.error("Delete post error:", error.message);
-        alert("Delete failed.");
-        return;
-      }
+              <p class="thread-text">${escapeHTML(thread.text)}</p>
 
-      await loadPosts();
-    }
-  }
+              <div class="thread-actions">
+                <button class="action-btn like-btn ${thread.liked ? "active like" : ""}">
+                  <i class="fa-${thread.liked ? "solid" : "regular"} fa-heart"></i>
+                  <span>${thread.likes}</span>
+                </button>
 
-  function showPage(pageId) {
-    pages.forEach(page => {
-      page.classList.toggle("active", page.id === pageId);
-    });
+                <button class="action-btn comment-toggle">
+                  <i class="fa-regular fa-comment"></i>
+                  <span>${thread.comments.length}</span>
+                </button>
 
-    navButtons.forEach(button => {
-      button.classList.toggle("active", button.dataset.page === pageId);
-    });
+                <button class="action-btn repost-btn ${thread.reposted ? "active repost" : ""}">
+                  <i class="fa-solid fa-retweet"></i>
+                  <span>${thread.reposts}</span>
+                </button>
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  }
+                ${thread.mine ? `
+                  <button class="action-btn delete-btn">
+                    <i class="fa-regular fa-trash-can"></i>
+                  </button>
+                ` : ""}
+              </div>
 
-  function openModal() {
-    if (!currentUser) {
-      alert("Login with Google first to start a thread.");
-      return;
-    }
+              <div class="comments ${commentsOpen}" id="comments-${thread.id}">
+                <div class="comment-list">
+                  ${commentsHTML}
+                </div>
 
-    modalBackdrop.classList.add("active");
-    body.classList.add("modal-open");
-
-    setTimeout(() => {
-      modalPostInput.focus();
-    }, 180);
-  }
-
-  function closeModal() {
-    modalBackdrop.classList.remove("active");
-    body.classList.remove("modal-open");
-  }
-
-  async function loginWithGoogle() {
-    authNote.textContent = "Opening Google login...";
-
-    const { error } = await supabaseClient.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: getAppUrl(),
-        queryParams: {
-          prompt: "select_account"
-        }
-      }
-    });
-
-    if (error) {
-      console.error("Google login error:", error.message);
-      authNote.textContent = error.message;
-    }
-  }
-
-  async function logout() {
-    const { error } = await supabaseClient.auth.signOut();
-
-    if (error) {
-      console.error("Logout error:", error.message);
-      alert("Logout failed.");
-      return;
+                <form class="comment-form">
+                  <input
+                    class="comment-input"
+                    type="text"
+                    maxlength="120"
+                    placeholder="Reply..."
+                  />
+                  <button type="submit">
+                    <i class="fa-solid fa-arrow-up"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
     }
 
-    currentUser = null;
-    currentProfile = null;
-
-    updateAuthUI(null);
-    await loadPosts();
-  }
-
-  async function createOrUpdateProfile(user) {
-    if (!user) return null;
-
-    const fullName = getGoogleName(user);
-    const username = getCleanUsername(user);
-    const avatarUrl = getGoogleAvatar(user);
-
-    const profileData = {
-      id: user.id,
-      full_name: fullName,
-      username,
-      avatar_url: avatarUrl
-    };
-
-    const { data, error } = await supabaseClient
-      .from("profiles")
-      .upsert(profileData, {
-        onConflict: "id"
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Profile upsert error:", error.message);
-
-      if (authNote) {
-        authNote.textContent = "Profile error: " + error.message;
-      }
-
-      return null;
+    function createCommentHTML(comment) {
+      return `
+        <div class="comment">
+          <small>${escapeHTML(comment.user)} · ${formatTime(comment.createdAt)}</small>
+          ${escapeHTML(comment.text)}
+        </div>
+      `;
     }
 
-    return data;
-  }
+    function toggleLike(id) {
+      threads = threads.map((thread) => {
+        if (thread.id !== id) return thread;
 
-  async function checkUserSession() {
-    try {
-      if (authNote && window.location.search.includes("code=")) {
-        authNote.textContent = "Google returned. Checking session...";
-      }
+        const liked = !thread.liked;
 
-      console.log("URL:", window.location.href);
-
-      await new Promise(resolve => setTimeout(resolve, 1200));
-
-      const { data, error } = await supabaseClient.auth.getSession();
-
-      console.log("getSession data:", data);
-      console.log("getSession error:", error);
-
-      if (error) {
-        authNote.textContent = "Session error: " + error.message;
-        console.error("Session error:", error);
-        return;
-      }
-
-      if (!data.session || !data.session.user) {
-        authNote.textContent = "No session created. Supabase did not convert Google login.";
-        console.error("No session:", data);
-        await loadPosts();
-        return;
-      }
-
-      authNote.textContent = "Session found. Loading profile...";
-
-      currentUser = data.session.user;
-      console.log("Current user:", currentUser);
-
-      currentProfile = await createOrUpdateProfile(currentUser);
-      console.log("Current profile:", currentProfile);
-
-      updateAuthUI(currentUser);
-      await loadPosts();
-
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } catch (error) {
-      console.error("checkUserSession fatal error:", error);
-
-      if (authNote) {
-        authNote.textContent = "Fatal error: " + error.message;
-      }
-    }
-  }
-
-  function updateAuthUI(user) {
-    const isLoggedIn = !!user;
-
-    if (authCard) {
-      authCard.classList.toggle("hidden", isLoggedIn);
-    }
-
-    if (logoutBtn) {
-      logoutBtn.classList.toggle("hidden", !isLoggedIn);
-    }
-
-    postInput.disabled = !isLoggedIn;
-    publishBtn.disabled = true;
-    addThreadBtn.disabled = !isLoggedIn;
-
-    if (!isLoggedIn) {
-      if (authTitle) {
-        authTitle.textContent = "Welcome to ThreadWave";
-      }
-
-      if (authSubtitle) {
-        authSubtitle.textContent =
-          "Continue with Google to post threads and build your profile.";
-      }
-
-      postInput.placeholder = "Login with Google to post...";
-      modalPostInput.placeholder = "Login with Google to start a thread...";
-
-      document.querySelectorAll(".avatar").forEach(avatar => {
-        setAvatarElement(avatar, "G", null);
+        return {
+          ...thread,
+          liked,
+          likes: liked ? thread.likes + 1 : Math.max(0, thread.likes - 1)
+        };
       });
 
-      setAvatarElement(document.querySelector(".profile-avatar"), "G", null);
-
-      document.querySelector(".profile-hero h2").textContent = "Guest";
-      document.querySelector(".profile-hero p").textContent =
-        "Login to build your profile.";
-
-      return;
+      saveThreads();
+      renderThreads();
     }
 
-    const userData = getUserDisplayData();
+    function toggleRepost(id) {
+      threads = threads.map((thread) => {
+        if (thread.id !== id) return thread;
 
-    document.querySelectorAll(".avatar").forEach(avatar => {
-      setAvatarElement(avatar, userData.avatar, userData.avatarUrl);
-    });
+        const reposted = !thread.reposted;
 
-    setAvatarElement(
-      document.querySelector(".profile-avatar"),
-      userData.avatar,
-      userData.avatarUrl
-    );
+        return {
+          ...thread,
+          reposted,
+          reposts: reposted ? thread.reposts + 1 : Math.max(0, thread.reposts - 1)
+        };
+      });
 
-    document.querySelector(".profile-hero h2").textContent = userData.author;
-    document.querySelector(".profile-hero p").textContent = userData.username;
-
-    postInput.placeholder = "What's moving today?";
-    modalPostInput.placeholder = "Start a thread...";
-  }
-
-  postInput.addEventListener("input", () => {
-    const length = postInput.value.length;
-
-    charCount.textContent = length;
-    publishBtn.disabled = postInput.value.trim().length === 0 || !currentUser;
-  });
-
-  modalPostInput.addEventListener("input", () => {
-    const length = modalPostInput.value.length;
-
-    modalCharCount.textContent = length;
-    modalPublishBtn.disabled =
-      modalPostInput.value.trim().length === 0 || !currentUser;
-  });
-
-  googleLoginBtn.addEventListener("click", loginWithGoogle);
-
-  publishBtn.addEventListener("click", publishPost);
-  modalPublishBtn.addEventListener("click", publishModalPost);
-
-  postInput.addEventListener("keydown", event => {
-    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
-      publishPost();
-    }
-  });
-
-  modalPostInput.addEventListener("keydown", event => {
-    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
-      publishModalPost();
+      saveThreads();
+      renderThreads();
     }
 
-    if (event.key === "Escape") {
-      closeModal();
+    function toggleComments(id) {
+      threads = threads.map((thread) => {
+        if (thread.id !== id) return thread;
+
+        return {
+          ...thread,
+          commentsOpen: !thread.commentsOpen
+        };
+      });
+
+      renderThreads();
+
+      const input = document
+        .querySelector(`[data-thread-id="${id}"]`)
+        ?.querySelector(".comment-input");
+
+      if (input) {
+        setTimeout(() => input.focus(), 100);
+      }
     }
-  });
 
-  feed.addEventListener("click", handlePostAction);
-  profileFeed.addEventListener("click", handlePostAction);
+    function addComment(id, value) {
+      const text = value.trim();
 
-  navButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      showPage(button.dataset.page);
-    });
-  });
+      if (!text) return;
 
-  addThreadBtn.addEventListener("click", openModal);
-  closeModalBtn.addEventListener("click", closeModal);
+      threads = threads.map((thread) => {
+        if (thread.id !== id) return thread;
 
-  modalBackdrop.addEventListener("click", event => {
-    if (event.target === modalBackdrop) {
-      closeModal();
+        return {
+          ...thread,
+          commentsOpen: true,
+          comments: [
+            ...thread.comments,
+            {
+              id: crypto.randomUUID(),
+              user: profile.name,
+              text,
+              createdAt: Date.now()
+            }
+          ]
+        };
+      });
+
+      saveThreads();
+      renderThreads();
+      showToast("Reply added");
     }
-  });
 
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && modalBackdrop.classList.contains("active")) {
-      closeModal();
+    function deleteThread(id) {
+      threads = threads.filter((thread) => thread.id !== id);
+      saveThreads();
+      renderThreads();
+      showToast("Wave deleted");
     }
-  });
 
-  logoutBtn.addEventListener("click", logout);
+    function formatTime(timestamp) {
+      const seconds = Math.floor((Date.now() - timestamp) / 1000);
 
-  supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    console.log("Auth event:", event, session);
+      if (seconds < 60) return "now";
 
-    if (session?.user) {
-      currentUser = session.user;
-      currentProfile = await createOrUpdateProfile(currentUser);
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}m`;
 
-      updateAuthUI(currentUser);
-      await loadPosts();
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h`;
 
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else {
-      currentUser = null;
-      currentProfile = null;
+      const days = Math.floor(hours / 24);
+      if (days < 7) return `${days}d`;
 
-      updateAuthUI(null);
-      await loadPosts();
+      return new Date(timestamp).toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric"
+      });
     }
-  });
 
-  themeBtn.addEventListener("click", () => {
-    body.classList.toggle("dark");
-
-    const isDark = body.classList.contains("dark");
-
-    themeBtn.innerHTML = isDark
-      ? `<i class="fa-regular fa-sun"></i>`
-      : `<i class="fa-regular fa-moon"></i>`;
-
-    localStorage.setItem("threadwave_theme", isDark ? "dark" : "light");
-  });
-
-  function loadTheme() {
-    const savedTheme = localStorage.getItem("threadwave_theme");
-
-    if (savedTheme === "dark") {
-      body.classList.add("dark");
-      themeBtn.innerHTML = `<i class="fa-regular fa-sun"></i>`;
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
-  }
 
-  loadTheme();
-  checkUserSession();
-</script>
+    let toastTimeout;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      clearTimeout(toastTimeout);
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1800);
+    }
+  </script>
 </body>
 </html>
