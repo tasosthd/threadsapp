@@ -839,7 +839,7 @@
     </div>
   </div>
 
-  <script>
+<script>
   const SUPABASE_URL = "https://rbmjbwvojakxvxeodkmp.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_QlCicVqJiBiMxyJxCriFTQ_31t2tVYq";
 
@@ -878,12 +878,7 @@
 
   let currentUser = null;
   let currentProfile = null;
-
-  let posts = JSON.parse(localStorage.getItem("threadwave_posts")) || [];
-
-  function savePosts() {
-    localStorage.setItem("threadwave_posts", JSON.stringify(posts));
-  }
+  let posts = [];
 
   function timeAgo(timestamp) {
     const seconds = Math.floor((Date.now() - timestamp) / 1000);
@@ -901,7 +896,7 @@
   }
 
   function escapeHTML(text) {
-    return text
+    return String(text || "")
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
@@ -921,6 +916,7 @@
     const metadata = currentUser.user_metadata || {};
 
     const name =
+      currentProfile?.full_name ||
       metadata.full_name ||
       metadata.name ||
       currentUser.email?.split("@")[0] ||
@@ -944,9 +940,11 @@
 
     article.className = "post";
 
+    const canDelete = currentUser && post.userId === currentUser.id;
+
     article.innerHTML = `
       <div class="post-head">
-        <div class="avatar">${post.avatar}</div>
+        <div class="avatar">${escapeHTML(post.avatar)}</div>
 
         <div class="post-info">
           <div class="post-name">${escapeHTML(post.author)}</div>
@@ -966,10 +964,16 @@
           Reply
         </button>
 
-        <button class="action-btn delete-btn" data-delete="${post.id}">
-          <i class="fa-regular fa-trash-can"></i>
-          Delete
-        </button>
+        ${
+          canDelete
+            ? `
+              <button class="action-btn delete-btn" data-delete="${post.id}">
+                <i class="fa-regular fa-trash-can"></i>
+                Delete
+              </button>
+            `
+            : ""
+        }
       </div>
     `;
 
@@ -980,13 +984,19 @@
     feed.innerHTML = "";
     profileFeed.innerHTML = "";
 
+    const myPosts = currentUser
+      ? posts.filter(post => post.userId === currentUser.id)
+      : [];
+
     if (posts.length === 0) {
       feed.innerHTML = `
         <div class="empty">
           No posts yet. Tap the plus button and start the wave 🌊
         </div>
       `;
+    }
 
+    if (myPosts.length === 0) {
       profileFeed.innerHTML = `
         <div class="empty">
           Your posts will appear here.
@@ -996,18 +1006,74 @@
 
     posts.forEach(post => {
       feed.appendChild(createPostElement(post));
+    });
+
+    myPosts.forEach(post => {
       profileFeed.appendChild(createPostElement(post));
     });
 
-    const totalLikes = posts.reduce((sum, post) => sum + post.likes, 0);
+    const myTotalLikes = myPosts.reduce((sum, post) => sum + post.likes, 0);
 
-    profilePosts.textContent = posts.length;
-    profileLikes.textContent = totalLikes;
-
-    savePosts();
+    profilePosts.textContent = myPosts.length;
+    profileLikes.textContent = myTotalLikes;
   }
 
-  function createNewPost(text) {
+  async function loadPosts() {
+    feed.innerHTML = `
+      <div class="empty">
+        Loading threads...
+      </div>
+    `;
+
+    const { data, error } = await supabaseClient
+      .from("posts")
+      .select(`
+        id,
+        user_id,
+        content,
+        created_at,
+        profiles (
+          full_name,
+          username,
+          avatar_url
+        )
+      `)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Load posts error:", error.message);
+
+      feed.innerHTML = `
+        <div class="empty">
+          Could not load posts. Check console/Supabase policies.
+        </div>
+      `;
+
+      return;
+    }
+
+    posts = data.map(row => {
+      const profile = row.profiles || {};
+      const author = profile.full_name || "ThreadWave User";
+      const username = profile.username || "@user";
+
+      return {
+        id: row.id,
+        userId: row.user_id,
+        author,
+        username,
+        avatar: author.charAt(0).toUpperCase(),
+        text: row.content,
+        likes: 0,
+        liked: false,
+        createdAt: new Date(row.created_at).getTime()
+      };
+    });
+
+    renderPosts();
+  }
+
+  async function createNewPost(text) {
     const cleanText = text.trim();
 
     if (!cleanText) return;
@@ -1017,35 +1083,33 @@
       return;
     }
 
-    const userData = getUserDisplayData();
+    const { error } = await supabaseClient
+      .from("posts")
+      .insert({
+        user_id: currentUser.id,
+        content: cleanText
+      });
 
-    const newPost = {
-      id: Date.now(),
-      author: userData.author,
-      username: userData.username,
-      avatar: userData.avatar,
-      text: cleanText,
-      likes: 0,
-      liked: false,
-      createdAt: Date.now()
-    };
+    if (error) {
+      console.error("Create post error:", error.message);
+      alert("Post failed. Check Supabase RLS policies.");
+      return;
+    }
 
-    posts.unshift(newPost);
-
-    renderPosts();
+    await loadPosts();
     showPage("homePage");
   }
 
-  function publishPost() {
-    createNewPost(postInput.value);
+  async function publishPost() {
+    await createNewPost(postInput.value);
 
     postInput.value = "";
     charCount.textContent = "0";
     publishBtn.disabled = true;
   }
 
-  function publishModalPost() {
-    createNewPost(modalPostInput.value);
+  async function publishModalPost() {
+    await createNewPost(modalPostInput.value);
 
     modalPostInput.value = "";
     modalCharCount.textContent = "0";
@@ -1054,7 +1118,7 @@
     closeModal();
   }
 
-  function handlePostAction(event) {
+  async function handlePostAction(event) {
     const likeButton = event.target.closest("[data-like]");
     const deleteButton = event.target.closest("[data-delete]");
 
@@ -1079,9 +1143,19 @@
     if (deleteButton) {
       const deleteId = Number(deleteButton.dataset.delete);
 
-      posts = posts.filter(post => post.id !== deleteId);
+      const { error } = await supabaseClient
+        .from("posts")
+        .delete()
+        .eq("id", deleteId)
+        .eq("user_id", currentUser.id);
 
-      renderPosts();
+      if (error) {
+        console.error("Delete post error:", error.message);
+        alert("Delete failed.");
+        return;
+      }
+
+      await loadPosts();
     }
   }
 
@@ -1159,6 +1233,7 @@
     currentProfile = null;
 
     updateAuthUI(null);
+    await loadPosts();
   }
 
   async function createOrUpdateProfile(user) {
@@ -1208,6 +1283,7 @@
       currentUser = null;
       currentProfile = null;
       updateAuthUI(null);
+      await loadPosts();
       return;
     }
 
@@ -1215,6 +1291,7 @@
     currentProfile = await createOrUpdateProfile(currentUser);
 
     updateAuthUI(currentUser);
+    await loadPosts();
   }
 
   function updateAuthUI(user) {
@@ -1247,27 +1324,15 @@
       return;
     }
 
-    const metadata = user.user_metadata || {};
-
-    const name =
-      metadata.full_name ||
-      metadata.name ||
-      user.email?.split("@")[0] ||
-      "ThreadWave User";
-
-    const username =
-      currentProfile?.username ||
-      (user.email ? "@" + user.email.split("@")[0] : "@user");
-
-    const firstLetter = name.charAt(0).toUpperCase();
+    const userData = getUserDisplayData();
 
     document.querySelectorAll(".avatar").forEach(avatar => {
-      avatar.textContent = firstLetter;
+      avatar.textContent = userData.avatar;
     });
 
-    document.querySelector(".profile-avatar").textContent = firstLetter;
-    document.querySelector(".profile-hero h2").textContent = name;
-    document.querySelector(".profile-hero p").textContent = username;
+    document.querySelector(".profile-avatar").textContent = userData.avatar;
+    document.querySelector(".profile-hero h2").textContent = userData.author;
+    document.querySelector(".profile-hero p").textContent = userData.username;
 
     postInput.placeholder = "What's moving today?";
     modalPostInput.placeholder = "Start a thread...";
@@ -1344,10 +1409,12 @@
       currentUser = session.user;
       currentProfile = await createOrUpdateProfile(currentUser);
       updateAuthUI(currentUser);
+      await loadPosts();
     } else {
       currentUser = null;
       currentProfile = null;
       updateAuthUI(null);
+      await loadPosts();
     }
   });
 
@@ -1373,7 +1440,6 @@
   }
 
   loadTheme();
-  renderPosts();
   checkUserSession();
 </script>
 </body>
