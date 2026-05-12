@@ -884,7 +884,8 @@
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: true
+      detectSessionInUrl: true,
+      flowType: "pkce"
     }
   });
 
@@ -971,6 +972,7 @@
 
   function getCleanUsername(user) {
     const metadata = user?.user_metadata || {};
+
     const base =
       metadata.preferred_username ||
       metadata.name ||
@@ -1017,8 +1019,10 @@
   function avatarHTML(letter, avatarUrl = null, className = "avatar") {
     if (avatarUrl) {
       return `
-        <div class="${className}" style="background-image:url('${escapeHTML(avatarUrl)}'); background-size:cover; background-position:center;">
-        </div>
+        <div
+          class="${className}"
+          style="background-image:url('${escapeHTML(avatarUrl)}'); background-size:cover; background-position:center;"
+        ></div>
       `;
     }
 
@@ -1311,7 +1315,10 @@
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: getAppUrl()
+        redirectTo: getAppUrl(),
+        queryParams: {
+          prompt: "select_account"
+        }
       }
     });
 
@@ -1367,7 +1374,28 @@
     return data;
   }
 
+  async function handleOAuthRedirect() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+
+    if (!code) return;
+
+    authNote.textContent = "Finishing Google login...";
+
+    const { error } = await supabaseClient.auth.exchangeCodeForSession(code);
+
+    if (error) {
+      console.error("OAuth exchange error:", error.message);
+      authNote.textContent = "Login exchange failed: " + error.message;
+      return;
+    }
+
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
   async function checkUserSession() {
+    await handleOAuthRedirect();
+
     const { data, error } = await supabaseClient.auth.getSession();
 
     if (error) {
@@ -1394,8 +1422,6 @@
 
     updateAuthUI(currentUser);
     await loadPosts();
-
-    window.history.replaceState({}, document.title, window.location.pathname);
   }
 
   function updateAuthUI(user) {
@@ -1518,8 +1544,6 @@
       currentProfile = await createOrUpdateProfile(currentUser);
       updateAuthUI(currentUser);
       await loadPosts();
-
-      window.history.replaceState({}, document.title, window.location.pathname);
     } else {
       currentUser = null;
       currentProfile = null;
