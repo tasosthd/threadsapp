@@ -884,7 +884,7 @@
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: false,
+      detectSessionInUrl: true,
       flowType: "pkce"
     }
   });
@@ -1047,7 +1047,8 @@
     const article = document.createElement("article");
     article.className = "post";
 
-    const canDelete = currentUser && String(post.userId) === String(currentUser.id);
+    const canDelete =
+      currentUser && String(post.userId) === String(currentUser.id);
 
     article.innerHTML = `
       <div class="post-head">
@@ -1374,68 +1375,12 @@
     return data;
   }
 
-  async function handleOAuthRedirect() {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-
-    if (!code) return;
-
-    if (authNote) {
+  async function checkUserSession() {
+    if (authNote && window.location.search.includes("code=")) {
       authNote.textContent = "Finishing Google login...";
     }
 
-    try {
-      const exchangePromise = supabaseClient.auth.exchangeCodeForSession(code);
-
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => {
-          reject(new Error("Login took too long. Refresh and try again."));
-        }, 10000);
-      });
-
-      const { data, error } = await Promise.race([
-        exchangePromise,
-        timeoutPromise
-      ]);
-
-      if (error) {
-        console.error("OAuth exchange error:", error);
-
-        if (authNote) {
-          authNote.textContent = "Login failed: " + error.message;
-        }
-
-        return;
-      }
-
-      if (!data || !data.session) {
-        console.error("No session returned after Google login.");
-
-        if (authNote) {
-          authNote.textContent = "No login session found. Try again.";
-        }
-
-        return;
-      }
-
-      currentUser = data.session.user;
-      currentProfile = await createOrUpdateProfile(currentUser);
-
-      updateAuthUI(currentUser);
-      await loadPosts();
-
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } catch (error) {
-      console.error("OAuth redirect catch error:", error);
-
-      if (authNote) {
-        authNote.textContent = error.message || "Google login failed.";
-      }
-    }
-  }
-
-  async function checkUserSession() {
-    await handleOAuthRedirect();
+    await new Promise(resolve => setTimeout(resolve, 1200));
 
     const { data, error } = await supabaseClient.auth.getSession();
 
@@ -1447,6 +1392,10 @@
 
       updateAuthUI(null);
       await loadPosts();
+
+      if (authNote) {
+        authNote.textContent = "Session error: " + error.message;
+      }
 
       return;
     }
@@ -1460,6 +1409,11 @@
       updateAuthUI(null);
       await loadPosts();
 
+      if (window.location.search.includes("code=") && authNote) {
+        authNote.textContent =
+          "Login returned but no session was created. Check Supabase URL settings.";
+      }
+
       return;
     }
 
@@ -1468,6 +1422,8 @@
 
     updateAuthUI(currentUser);
     await loadPosts();
+
+    window.history.replaceState({}, document.title, window.location.pathname);
   }
 
   function updateAuthUI(user) {
@@ -1491,7 +1447,8 @@
       }
 
       if (authSubtitle) {
-        authSubtitle.textContent = "Continue with Google to post threads and build your profile.";
+        authSubtitle.textContent =
+          "Continue with Google to post threads and build your profile.";
       }
 
       postInput.placeholder = "Login with Google to post...";
@@ -1504,7 +1461,8 @@
       setAvatarElement(document.querySelector(".profile-avatar"), "G", null);
 
       document.querySelector(".profile-hero h2").textContent = "Guest";
-      document.querySelector(".profile-hero p").textContent = "Login to build your profile.";
+      document.querySelector(".profile-hero p").textContent =
+        "Login to build your profile.";
 
       return;
     }
@@ -1539,7 +1497,8 @@
     const length = modalPostInput.value.length;
 
     modalCharCount.textContent = length;
-    modalPublishBtn.disabled = modalPostInput.value.trim().length === 0 || !currentUser;
+    modalPublishBtn.disabled =
+      modalPostInput.value.trim().length === 0 || !currentUser;
   });
 
   googleLoginBtn.addEventListener("click", loginWithGoogle);
@@ -1596,6 +1555,8 @@
 
       updateAuthUI(currentUser);
       await loadPosts();
+
+      window.history.replaceState({}, document.title, window.location.pathname);
     } else {
       currentUser = null;
       currentProfile = null;
