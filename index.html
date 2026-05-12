@@ -985,8 +985,8 @@
     profileFeed.innerHTML = "";
 
     const myPosts = currentUser
-      ? posts.filter(post => post.userId === currentUser.id)
-      : [];
+    ? posts.filter(post => String(post.userId) === String(currentUser.id))
+    : [];
 
     if (posts.length === 0) {
       feed.innerHTML = `
