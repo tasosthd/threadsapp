@@ -2,17 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <title>ThreadWave</title>
 
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-  />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="icon" type="image/png" href="index.png" />
 
   <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet"
   />
 
@@ -21,52 +20,38 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
     :root {
-      --bg: #eefbff;
-      --bg-2: #d7f4ff;
+      --bg: #edfaff;
+      --bg-2: #d7f3fb;
+      --text: #071f2a;
+      --muted: #6f8790;
       --card: rgba(255, 255, 255, 0.72);
       --card-strong: rgba(255, 255, 255, 0.92);
-      --text: #071923;
-      --muted: #6a7f89;
-      --line: rgba(8, 45, 62, 0.1);
-      --cyan: #00c8ff;
-      --cyan-dark: #0099cc;
-      --blue: #3b82f6;
-      --danger: #ff4b6e;
-      --shadow: 0 22px 60px rgba(8, 70, 95, 0.16);
-      --radius: 28px;
-    }
-
-    body.dark {
-      --bg: #061016;
-      --bg-2: #0b1d26;
-      --card: rgba(13, 31, 42, 0.72);
-      --card-strong: rgba(17, 42, 56, 0.96);
-      --text: #effaff;
-      --muted: #9db1bb;
-      --line: rgba(255, 255, 255, 0.1);
-      --shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+      --line: rgba(8, 56, 74, 0.12);
+      --cyan: #00bce7;
+      --cyan-dark: #0287a8;
+      --blue: #1d7fff;
+      --danger: #ec4b4b;
+      --success: #14a86b;
+      --shadow: 0 24px 80px rgba(0, 70, 90, 0.14);
     }
 
     body {
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(0, 200, 255, 0.28), transparent 34%),
-        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.16), transparent 30%),
-        linear-gradient(135deg, var(--bg), var(--bg-2));
-      color: var(--text);
       overflow-x: hidden;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(0, 188, 231, 0.24), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(29, 127, 255, 0.18), transparent 36%),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
     }
 
     button,
-    input,
     textarea {
-      border: none;
-      outline: none;
       font: inherit;
     }
 
@@ -74,1228 +59,725 @@
       cursor: pointer;
     }
 
-    .app {
-      width: min(100%, 560px);
+    .hidden {
+      display: none !important;
+    }
+
+    .bg-orb {
+      position: fixed;
+      z-index: -1;
+      width: 360px;
+      height: 360px;
+      border-radius: 999px;
+      filter: blur(30px);
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    .orb-one {
+      top: 80px;
+      left: -120px;
+      background: rgba(0, 188, 231, 0.3);
+    }
+
+    .orb-two {
+      right: -120px;
+      bottom: 70px;
+      background: rgba(29, 127, 255, 0.24);
+    }
+
+    .app-shell {
+      width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
-      min-height: 100vh;
-      padding: 18px 14px 96px;
+      padding: 24px 0 70px;
     }
 
     .topbar {
       position: sticky;
-      top: 0;
-      z-index: 20;
+      top: 16px;
+      z-index: 100;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
-      padding: 14px 4px 18px;
-      backdrop-filter: blur(18px);
+      gap: 22px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: var(--shadow);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
+      min-width: 0;
     }
 
-    .logo {
-      width: 46px;
-      height: 46px;
-      border-radius: 16px;
+    .brand-logo {
+      width: 56px;
+      height: 56px;
+      flex: 0 0 auto;
       display: grid;
       place-items: center;
+      border-radius: 20px;
+      color: #fff;
+      font-size: 30px;
+      font-weight: 900;
       background: linear-gradient(135deg, var(--cyan), var(--blue));
-      box-shadow: 0 14px 32px rgba(0, 200, 255, 0.28);
-      color: white;
-      font-size: 20px;
+      box-shadow: 0 16px 34px rgba(0, 188, 231, 0.32);
     }
 
     .brand h1 {
-      font-size: 1.22rem;
+      font-size: 24px;
       line-height: 1;
       letter-spacing: -0.04em;
     }
 
     .brand p {
+      margin-top: 6px;
       color: var(--muted);
-      font-size: 0.75rem;
-      margin-top: 5px;
+      font-size: 13px;
+      font-weight: 600;
     }
 
-    .top-actions {
+    .auth-area {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 15px;
-      display: grid;
-      place-items: center;
-      background: var(--card);
-      color: var(--text);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
-      border: 1px solid var(--line);
-      backdrop-filter: blur(16px);
-      transition: 0.2s ease;
-    }
-
-    .icon-btn:active {
-      transform: scale(0.94);
-    }
-
-    .profile-card,
-    .composer,
-    .thread-card,
-    .empty-card,
-    .modal-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(22px);
-    }
-
-    .profile-card {
-      padding: 18px;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .avatar {
-      width: 48px;
-      height: 48px;
+      justify-content: flex-end;
       flex: 0 0 auto;
-      border-radius: 18px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #00c8ff, #4f46e5);
-      color: white;
-      font-weight: 800;
-      box-shadow: 0 12px 28px rgba(0, 200, 255, 0.25);
     }
 
-    .profile-info {
-      flex: 1;
+    .user-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.74);
+    }
+
+    .user-box img {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      object-fit: cover;
+      background: rgba(0, 188, 231, 0.12);
+    }
+
+    .user-meta {
       min-width: 0;
     }
 
-    .profile-info h2 {
-      font-size: 0.98rem;
+    .user-meta strong,
+    .user-meta span {
+      display: block;
+    }
+
+    .user-meta strong {
+      max-width: 160px;
+      overflow: hidden;
+      font-size: 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .user-meta span {
+      max-width: 190px;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 11px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .btn {
+      border: 0;
+      outline: 0;
+      border-radius: 999px;
+      padding: 11px 17px;
+      font-size: 13px;
+      font-weight: 800;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      transform: none;
+    }
+
+    .primary-btn {
+      color: #fff;
+      background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+      box-shadow: 0 14px 30px rgba(0, 188, 231, 0.28);
+    }
+
+    .ghost-btn {
+      color: var(--text);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .danger-btn {
+      color: var(--danger);
+      border: 1px solid rgba(236, 75, 75, 0.2);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    .left-panel,
+    .feed-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .glass-card,
+    .composer,
+    .thread-card {
+      border: 1px solid var(--line);
+      background: var(--card);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      box-shadow: var(--shadow);
+    }
+
+    .glass-card {
+      padding: 22px;
+      border-radius: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 9px;
+      color: var(--cyan-dark);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .intro-card h2 {
+      font-size: 28px;
+      line-height: 1.08;
+      letter-spacing: -0.05em;
+    }
+
+    .intro-card p,
+    .roadmap-card li {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .intro-card p {
+      margin-top: 12px;
+    }
+
+    .stats-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stats-card div {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.65);
+    }
+
+    .stats-card strong {
+      display: block;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .stats-card span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .roadmap-card h3 {
+      margin-bottom: 12px;
+      font-size: 17px;
       letter-spacing: -0.03em;
     }
 
-    .profile-info p {
-      color: var(--muted);
-      font-size: 0.78rem;
-      margin-top: 3px;
-    }
-
-    .profile-stats {
-      display: flex;
+    .roadmap-card ul {
+      list-style: none;
+      display: grid;
       gap: 10px;
-      margin-top: 9px;
-      color: var(--muted);
-      font-size: 0.75rem;
     }
 
-    .profile-stats strong {
-      color: var(--text);
+    .roadmap-card li {
+      position: relative;
+      padding-left: 22px;
+    }
+
+    .roadmap-card li::before {
+      content: "↗";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--cyan-dark);
+      font-weight: 900;
     }
 
     .composer {
-      padding: 16px;
-      margin-bottom: 16px;
+      padding: 18px;
+      border-radius: 32px;
+      background: var(--card-strong);
     }
 
-    .composer-head {
-      display: flex;
-      gap: 12px;
+    .composer.locked {
+      opacity: 0.76;
     }
 
-    .composer textarea {
-      flex: 1;
-      min-height: 88px;
+    textarea {
+      width: 100%;
+      min-height: 136px;
       resize: none;
+      border: 0;
+      outline: 0;
       background: transparent;
       color: var(--text);
-      font-size: 0.95rem;
-      line-height: 1.55;
+      font-size: 17px;
+      line-height: 1.65;
     }
 
-    .composer textarea::placeholder {
-      color: var(--muted);
+    textarea::placeholder {
+      color: #8ba4ad;
     }
 
-    .composer-bottom {
-      margin-top: 14px;
+    .composer-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
     }
 
-    .char-count {
+    #charCount {
       color: var(--muted);
-      font-size: 0.76rem;
-    }
-
-    .post-btn {
-      padding: 12px 18px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--cyan), var(--blue));
-      color: white;
+      font-size: 13px;
       font-weight: 800;
-      box-shadow: 0 14px 30px rgba(0, 200, 255, 0.26);
-      transition: 0.2s ease;
     }
 
-    .post-btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-
-    .post-btn:active {
-      transform: scale(0.96);
-    }
-
-    .tabs {
+    .feed-top {
       display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-      padding: 6px;
-      border-radius: 999px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      backdrop-filter: blur(18px);
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 2px 2px 0;
     }
 
-    .tab-btn {
-      flex: 1;
-      padding: 11px 12px;
-      border-radius: 999px;
-      background: transparent;
+    .feed-top h2 {
+      font-size: 25px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .status-msg {
+      min-height: 22px;
       color: var(--muted);
+      font-size: 14px;
       font-weight: 700;
-      font-size: 0.82rem;
-      transition: 0.2s ease;
     }
 
-    .tab-btn.active {
-      background: var(--card-strong);
-      color: var(--text);
-      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.06);
+    .status-msg.success {
+      color: var(--success);
     }
 
-    .feed {
+    .status-msg.error {
+      color: var(--danger);
+    }
+
+    .threads-list {
       display: flex;
       flex-direction: column;
       gap: 14px;
     }
 
     .thread-card {
-      padding: 16px;
-      animation: rise 0.32s ease both;
-    }
-
-    @keyframes rise {
-      from {
-        transform: translateY(10px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
+      padding: 18px;
+      border-radius: 30px;
+      animation: popIn 0.25s ease both;
     }
 
     .thread-top {
       display: flex;
-      gap: 12px;
       align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
     }
 
-    .thread-main {
-      flex: 1;
+    .thread-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       min-width: 0;
     }
 
-    .thread-author {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+    .thread-user img {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      object-fit: cover;
+      background: rgba(0, 188, 231, 0.12);
     }
 
-    .thread-author h3 {
-      font-size: 0.92rem;
-      letter-spacing: -0.02em;
+    .thread-user strong,
+    .thread-user span {
+      display: block;
     }
 
-    .thread-author span {
-      color: var(--muted);
-      font-size: 0.74rem;
+    .thread-user strong {
+      max-width: 260px;
+      overflow: hidden;
+      font-size: 14px;
+      text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .thread-text {
-      margin-top: 8px;
-      font-size: 0.94rem;
-      line-height: 1.6;
+    .thread-user span {
+      max-width: 380px;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .thread-content {
+      color: #14333f;
+      font-size: 16px;
+      line-height: 1.75;
       white-space: pre-wrap;
-      word-break: break-word;
+      overflow-wrap: anywhere;
     }
 
     .thread-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin-top: 14px;
-      flex-wrap: wrap;
-    }
-
-    .action-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 9px 11px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.34);
-      color: var(--muted);
-      border: 1px solid var(--line);
-      font-size: 0.78rem;
-      font-weight: 700;
-      transition: 0.18s ease;
-    }
-
-    body.dark .action-btn {
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .action-btn.active.like {
-      color: var(--danger);
-      background: rgba(255, 75, 110, 0.12);
-    }
-
-    .action-btn.active.repost {
-      color: #00b894;
-      background: rgba(0, 184, 148, 0.12);
-    }
-
-    .action-btn:active {
-      transform: scale(0.94);
-    }
-
-    .delete-btn {
-      margin-left: auto;
-      color: var(--danger);
-    }
-
-    .comments {
-      margin-top: 13px;
-      padding-top: 13px;
-      border-top: 1px solid var(--line);
-      display: none;
-    }
-
-    .comments.open {
-      display: block;
-    }
-
-    .comment-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .comment {
-      padding: 10px 12px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.42);
-      color: var(--text);
-      font-size: 0.82rem;
-      line-height: 1.45;
-    }
-
-    body.dark .comment {
-      background: rgba(255, 255, 255, 0.07);
-    }
-
-    .comment small {
-      display: block;
-      color: var(--muted);
-      margin-bottom: 4px;
-      font-weight: 700;
-    }
-
-    .comment-form {
-      display: flex;
-      gap: 8px;
-    }
-
-    .comment-form input {
-      flex: 1;
-      padding: 12px 13px;
-      border-radius: 999px;
-      background: var(--card-strong);
-      color: var(--text);
-      border: 1px solid var(--line);
-      min-width: 0;
-    }
-
-    .comment-form button {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--cyan), var(--blue));
-      color: white;
-      box-shadow: 0 10px 22px rgba(0, 200, 255, 0.22);
-    }
-
-    .empty-card {
-      text-align: center;
-      padding: 34px 20px;
-      color: var(--muted);
-    }
-
-    .empty-card i {
-      font-size: 2rem;
-      color: var(--cyan);
-      margin-bottom: 12px;
-    }
-
-    .empty-card h3 {
-      color: var(--text);
-      font-size: 1rem;
-      margin-bottom: 5px;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      width: min(calc(100% - 28px), 520px);
-      padding: 8px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      border-radius: 26px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(24px);
-      z-index: 30;
-    }
-
-    .nav-btn {
-      height: 52px;
-      border-radius: 20px;
-      display: grid;
-      place-items: center;
-      background: transparent;
-      color: var(--muted);
-      font-size: 1.05rem;
-      transition: 0.2s ease;
-    }
-
-    .nav-btn.active {
-      background: linear-gradient(135deg, var(--cyan), var(--blue));
-      color: white;
-      box-shadow: 0 12px 26px rgba(0, 200, 255, 0.24);
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 92px;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--card-strong);
-      color: var(--text);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      border-radius: 999px;
-      padding: 12px 16px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      opacity: 0;
-      pointer-events: none;
-      transition: 0.25s ease;
-      z-index: 50;
-      backdrop-filter: blur(18px);
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.32);
-      backdrop-filter: blur(8px);
-      z-index: 60;
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      padding: 14px;
-    }
-
-    .modal-backdrop.open {
-      display: flex;
-    }
-
-    .modal-card {
-      width: min(100%, 520px);
-      padding: 18px;
-      animation: modalUp 0.25s ease both;
-    }
-
-    @keyframes modalUp {
-      from {
-        transform: translateY(20px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .modal-card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-    }
-
-    .modal-card label {
-      display: block;
-      color: var(--muted);
-      font-size: 0.78rem;
-      font-weight: 700;
-      margin: 12px 0 6px;
-    }
-
-    .modal-card input {
-      width: 100%;
-      padding: 13px 14px;
-      border-radius: 16px;
-      background: var(--card-strong);
-      color: var(--text);
-      border: 1px solid var(--line);
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
+      justify-content: space-between;
+      gap: 14px;
       margin-top: 16px;
     }
 
-    .modal-actions button {
-      flex: 1;
-      padding: 13px 14px;
-      border-radius: 18px;
-      font-weight: 800;
+    .action-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .save-btn {
-      background: linear-gradient(135deg, var(--cyan), var(--blue));
-      color: white;
-    }
-
-    .cancel-btn {
-      background: var(--card-strong);
-      color: var(--text);
+    .mini-action {
       border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 900;
+      transition: 0.2s ease;
     }
 
-    @media (max-width: 420px) {
-      .app {
-        padding-inline: 12px;
+    .mini-action:hover {
+      transform: translateY(-2px);
+    }
+
+    .delete-action {
+      color: var(--danger);
+    }
+
+    .empty-state {
+      padding: 36px 22px;
+      border: 1px dashed rgba(0, 120, 160, 0.34);
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.5);
+      color: var(--muted);
+      text-align: center;
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
       }
 
-      .profile-card,
-      .composer,
-      .thread-card {
-        border-radius: 24px;
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app-shell {
+        width: min(100% - 20px, 1180px);
+        padding-top: 10px;
+      }
+
+      .topbar {
+        top: 10px;
+        align-items: stretch;
+        flex-direction: column;
+        border-radius: 26px;
+      }
+
+      .auth-area,
+      .user-box,
+      #loginBtn {
+        width: 100%;
+      }
+
+      .user-box {
+        justify-content: space-between;
+      }
+
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .left-panel {
+        order: 2;
+      }
+
+      .feed-panel {
+        order: 1;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .brand-logo {
+        width: 50px;
+        height: 50px;
+        border-radius: 18px;
+        font-size: 25px;
       }
 
       .brand h1 {
-        font-size: 1.1rem;
+        font-size: 21px;
+      }
+
+      .brand p {
+        font-size: 12px;
+      }
+
+      .composer-footer {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .composer-footer .btn {
+        width: 100%;
+      }
+
+      .feed-top {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .feed-top .btn {
+        width: 100%;
+      }
+
+      .thread-top {
+        align-items: flex-start;
+      }
+
+      .thread-user strong {
+        max-width: 180px;
+      }
+
+      .thread-user span {
+        max-width: 220px;
       }
 
       .thread-actions {
-        gap: 5px;
+        align-items: stretch;
+        flex-direction: column;
       }
 
-      .action-btn {
-        padding: 8px 10px;
+      .action-left,
+      .mini-action {
+        width: 100%;
+      }
+
+      .mini-action {
+        text-align: center;
       }
     }
   </style>
 </head>
 
 <body>
-  <main class="app">
+  <div class="bg-orb orb-one"></div>
+  <div class="bg-orb orb-two"></div>
+
+  <div class="app-shell">
     <header class="topbar">
       <div class="brand">
-        <div class="logo">
-          <i class="fa-solid fa-water"></i>
-        </div>
+        <div class="brand-logo">〰</div>
         <div>
           <h1>ThreadWave</h1>
-          <p>micro-posts with ocean energy</p>
+          <p>Post ideas. Sync everywhere.</p>
         </div>
       </div>
 
-      <div class="top-actions">
-        <button class="icon-btn" id="profileBtn" aria-label="Edit profile">
-          <i class="fa-regular fa-user"></i>
+      <div class="auth-area">
+        <button id="loginBtn" class="btn primary-btn">
+          Continue with Google
         </button>
 
-        <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">
-          <i class="fa-regular fa-moon"></i>
-        </button>
+        <div id="userBox" class="user-box hidden">
+          <img id="userAvatar" src="" alt="User avatar" />
+          <div class="user-meta">
+            <strong id="userName">User</strong>
+            <span id="userEmail">email</span>
+          </div>
+          <button id="logoutBtn" class="btn ghost-btn">Logout</button>
+        </div>
       </div>
     </header>
 
-    <section class="profile-card">
-      <div class="avatar" id="profileAvatar">A</div>
+    <main class="main-grid">
+      <aside class="left-panel">
+        <section class="glass-card intro-card">
+          <span class="eyebrow">Founder feed</span>
+          <h2>Your private social engine.</h2>
+          <p>
+            A clean Threads-style app using Google login, Supabase Auth,
+            Postgres cloud sync, and realtime updates.
+          </p>
+        </section>
 
-      <div class="profile-info">
-        <h2 id="profileName">Aurilumix</h2>
-        <p id="profileHandle">@futurebillionaire</p>
+        <section class="glass-card stats-card">
+          <div>
+            <strong id="totalThreads">0</strong>
+            <span>Total threads</span>
+          </div>
 
-        <div class="profile-stats">
-          <span><strong id="postCount">0</strong> posts</span>
-          <span><strong id="likeCount">0</strong> likes</span>
-          <span><strong id="commentCount">0</strong> comments</span>
-        </div>
-      </div>
-    </section>
+          <div>
+            <strong id="myThreads">0</strong>
+            <span>Your posts</span>
+          </div>
+        </section>
 
-    <section class="composer">
-      <div class="composer-head">
-        <div class="avatar" id="composerAvatar">A</div>
+        <section class="glass-card roadmap-card">
+          <h3>Next money upgrades</h3>
+          <ul>
+            <li>Premium creator profiles</li>
+            <li>AI caption generator</li>
+            <li>Scheduled posts</li>
+            <li>Analytics dashboard</li>
+          </ul>
+        </section>
+      </aside>
 
-        <textarea
-          id="postInput"
-          maxlength="280"
-          placeholder="Drop a wave..."
-        ></textarea>
-      </div>
+      <section class="feed-panel">
+        <section id="composer" class="composer locked">
+          <textarea
+            id="threadInput"
+            maxlength="280"
+            placeholder="Sign in to post your first wave..."
+            disabled
+          ></textarea>
 
-      <div class="composer-bottom">
-        <span class="char-count">
-          <span id="charCount">0</span>/280
-        </span>
+          <div class="composer-footer">
+            <span id="charCount">0 / 280</span>
+            <button id="postBtn" class="btn primary-btn" disabled>
+              Post thread
+            </button>
+          </div>
+        </section>
 
-        <button class="post-btn" id="postBtn" disabled>
-          Post Wave
-        </button>
-      </div>
-    </section>
+        <section class="feed-top">
+          <div>
+            <span class="eyebrow">Live cloud feed</span>
+            <h2>Latest Threads</h2>
+          </div>
 
-    <nav class="tabs">
-      <button class="tab-btn active" data-filter="all">All</button>
-      <button class="tab-btn" data-filter="hot">Hot</button>
-      <button class="tab-btn" data-filter="mine">Mine</button>
-    </nav>
+          <button id="refreshBtn" class="btn ghost-btn">Refresh</button>
+        </section>
 
-    <section class="feed" id="feed"></section>
-  </main>
+        <p id="statusMsg" class="status-msg"></p>
 
-  <nav class="bottom-nav">
-    <button class="nav-btn active" data-filter="all" aria-label="Home">
-      <i class="fa-solid fa-house"></i>
-    </button>
-
-    <button class="nav-btn" data-filter="hot" aria-label="Hot">
-      <i class="fa-solid fa-fire"></i>
-    </button>
-
-    <button class="nav-btn" id="focusComposerBtn" aria-label="Create">
-      <i class="fa-solid fa-plus"></i>
-    </button>
-
-    <button class="nav-btn" data-filter="mine" aria-label="Profile">
-      <i class="fa-solid fa-user"></i>
-    </button>
-  </nav>
-
-  <div class="toast" id="toast">Saved</div>
-
-  <div class="modal-backdrop" id="profileModal">
-    <div class="modal-card">
-      <h2>Edit profile</h2>
-
-      <label for="nameInput">Display name</label>
-      <input id="nameInput" maxlength="24" placeholder="Your name" />
-
-      <label for="handleInput">Handle</label>
-      <input id="handleInput" maxlength="24" placeholder="@username" />
-
-      <div class="modal-actions">
-        <button class="cancel-btn" id="cancelProfileBtn">Cancel</button>
-        <button class="save-btn" id="saveProfileBtn">Save</button>
-      </div>
-    </div>
+        <section id="threadsList" class="threads-list"></section>
+      </section>
+    </main>
   </div>
 
   <script>
-    const STORAGE_KEYS = {
-      threads: "threadwave_threads_v1",
-      profile: "threadwave_profile_v1",
-      theme: "threadwave_theme_v1"
-    };
+    const SUPABASE_URL = "https://rbmjbwvojakxvxeodkmp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJibWpid3ZvamFreHZ4ZW9ka21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1Nzc3NzYsImV4cCI6MjA5NDE1Mzc3Nn0.f6Pl1FJIH9L4rf-asu2ARlLXUXpncXuyO3v_VZ5n5aQ";
 
-    const DEFAULT_PROFILE = {
-      name: "Aurilumix",
-      handle: "@futurebillionaire"
-    };
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const DEFAULT_THREADS = [
-      {
-        id: crypto.randomUUID(),
-        user: {
-          name: "ThreadWave",
-          handle: "@threadwave"
-        },
-        text: "Welcome to ThreadWave 🌊 Build the MVP first. Ship fast. Improve daily. Monetize when users care.",
-        createdAt: Date.now() - 1000 * 60 * 34,
-        likes: 12,
-        reposts: 3,
-        liked: false,
-        reposted: false,
-        mine: false,
-        comments: [
-          {
-            id: crypto.randomUUID(),
-            user: "Builder",
-            text: "Clean MVP energy.",
-            createdAt: Date.now() - 1000 * 60 * 20
-          }
-        ]
-      },
-      {
-        id: crypto.randomUUID(),
-        user: {
-          name: "Aurilumix",
-          handle: "@futurebillionaire"
-        },
-        text: "Building apps from scratch. One feature at a time. One money move at a time.",
-        createdAt: Date.now() - 1000 * 60 * 7,
-        likes: 21,
-        reposts: 6,
-        liked: true,
-        reposted: false,
-        mine: true,
-        comments: []
-      }
-    ];
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const userBox = document.getElementById("userBox");
+    const userAvatar = document.getElementById("userAvatar");
+    const userName = document.getElementById("userName");
+    const userEmail = document.getElementById("userEmail");
 
-    let profile = loadProfile();
-    let threads = loadThreads();
-    let activeFilter = "all";
-
-    const body = document.body;
-    const themeBtn = document.getElementById("themeBtn");
-    const profileBtn = document.getElementById("profileBtn");
-
-    const profileAvatar = document.getElementById("profileAvatar");
-    const composerAvatar = document.getElementById("composerAvatar");
-    const profileName = document.getElementById("profileName");
-    const profileHandle = document.getElementById("profileHandle");
-
-    const postCount = document.getElementById("postCount");
-    const likeCount = document.getElementById("likeCount");
-    const commentCount = document.getElementById("commentCount");
-
-    const postInput = document.getElementById("postInput");
+    const composer = document.getElementById("composer");
+    const threadInput = document.getElementById("threadInput");
     const postBtn = document.getElementById("postBtn");
     const charCount = document.getElementById("charCount");
-    const feed = document.getElementById("feed");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const threadsList = document.getElementById("threadsList");
+    const statusMsg = document.getElementById("statusMsg");
 
-    const tabButtons = document.querySelectorAll(".tab-btn");
-    const navButtons = document.querySelectorAll(".nav-btn[data-filter]");
-    const focusComposerBtn = document.getElementById("focusComposerBtn");
+    const totalThreads = document.getElementById("totalThreads");
+    const myThreads = document.getElementById("myThreads");
 
-    const toast = document.getElementById("toast");
+    let currentUser = null;
+    let threads = [];
 
-    const profileModal = document.getElementById("profileModal");
-    const nameInput = document.getElementById("nameInput");
-    const handleInput = document.getElementById("handleInput");
-    const cancelProfileBtn = document.getElementById("cancelProfileBtn");
-    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    function setStatus(message, type = "") {
+      statusMsg.textContent = message || "";
+      statusMsg.className = "status-msg";
 
-    init();
-
-    function init() {
-      applySavedTheme();
-      renderProfile();
-      renderThreads();
-      bindEvents();
-    }
-
-    function bindEvents() {
-      themeBtn.addEventListener("click", toggleTheme);
-
-      profileBtn.addEventListener("click", openProfileModal);
-      cancelProfileBtn.addEventListener("click", closeProfileModal);
-      saveProfileBtn.addEventListener("click", saveProfile);
-
-      profileModal.addEventListener("click", (event) => {
-        if (event.target === profileModal) {
-          closeProfileModal();
-        }
-      });
-
-      postInput.addEventListener("input", () => {
-        const length = postInput.value.trim().length;
-        charCount.textContent = postInput.value.length;
-        postBtn.disabled = length === 0;
-      });
-
-      postBtn.addEventListener("click", createThread);
-
-      tabButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          setFilter(button.dataset.filter);
-        });
-      });
-
-      navButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          setFilter(button.dataset.filter);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        });
-      });
-
-      focusComposerBtn.addEventListener("click", () => {
-        postInput.focus();
-        postInput.scrollIntoView({ behavior: "smooth", block: "center" });
-      });
-    }
-
-    function loadProfile() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEYS.profile);
-        return saved ? JSON.parse(saved) : DEFAULT_PROFILE;
-      } catch {
-        return DEFAULT_PROFILE;
+      if (type) {
+        statusMsg.classList.add(type);
       }
-    }
-
-    function saveProfileToStorage() {
-      localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(profile));
-    }
-
-    function loadThreads() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEYS.threads);
-        return saved ? JSON.parse(saved) : DEFAULT_THREADS;
-      } catch {
-        return DEFAULT_THREADS;
-      }
-    }
-
-    function saveThreads() {
-      localStorage.setItem(STORAGE_KEYS.threads, JSON.stringify(threads));
-    }
-
-    function applySavedTheme() {
-      const savedTheme = localStorage.getItem(STORAGE_KEYS.theme);
-
-      if (savedTheme === "dark") {
-        body.classList.add("dark");
-        themeBtn.innerHTML = '<i class="fa-regular fa-sun"></i>';
-      } else {
-        body.classList.remove("dark");
-        themeBtn.innerHTML = '<i class="fa-regular fa-moon"></i>';
-      }
-    }
-
-    function toggleTheme() {
-      body.classList.toggle("dark");
-
-      const isDark = body.classList.contains("dark");
-      localStorage.setItem(STORAGE_KEYS.theme, isDark ? "dark" : "light");
-
-      themeBtn.innerHTML = isDark
-        ? '<i class="fa-regular fa-sun"></i>'
-        : '<i class="fa-regular fa-moon"></i>';
-    }
-
-    function renderProfile() {
-      const initial = profile.name.trim().charAt(0).toUpperCase() || "A";
-
-      profileAvatar.textContent = initial;
-      composerAvatar.textContent = initial;
-      profileName.textContent = profile.name;
-      profileHandle.textContent = normalizeHandle(profile.handle);
-
-      const mine = threads.filter((thread) => thread.mine);
-      const totalLikes = threads.reduce((sum, thread) => sum + thread.likes, 0);
-      const totalComments = threads.reduce((sum, thread) => {
-        return sum + thread.comments.length;
-      }, 0);
-
-      postCount.textContent = mine.length;
-      likeCount.textContent = totalLikes;
-      commentCount.textContent = totalComments;
-    }
-
-    function openProfileModal() {
-      nameInput.value = profile.name;
-      handleInput.value = normalizeHandle(profile.handle).replace("@", "");
-      profileModal.classList.add("open");
-      nameInput.focus();
-    }
-
-    function closeProfileModal() {
-      profileModal.classList.remove("open");
-    }
-
-    function saveProfile() {
-      const name = nameInput.value.trim() || DEFAULT_PROFILE.name;
-      const handle = normalizeHandle(handleInput.value.trim() || DEFAULT_PROFILE.handle);
-
-      profile = { name, handle };
-
-      threads = threads.map((thread) => {
-        if (!thread.mine) return thread;
-
-        return {
-          ...thread,
-          user: {
-            name: profile.name,
-            handle: profile.handle
-          }
-        };
-      });
-
-      saveProfileToStorage();
-      saveThreads();
-      renderProfile();
-      renderThreads();
-      closeProfileModal();
-      showToast("Profile updated");
-    }
-
-    function normalizeHandle(handle) {
-      const clean = handle.replace(/\s+/g, "").replace(/^@+/, "");
-      return "@" + clean.toLowerCase();
-    }
-
-    function createThread() {
-      const text = postInput.value.trim();
-
-      if (!text) return;
-
-      const newThread = {
-        id: crypto.randomUUID(),
-        user: {
-          name: profile.name,
-          handle: normalizeHandle(profile.handle)
-        },
-        text,
-        createdAt: Date.now(),
-        likes: 0,
-        reposts: 0,
-        liked: false,
-        reposted: false,
-        mine: true,
-        comments: []
-      };
-
-      threads.unshift(newThread);
-      saveThreads();
-
-      postInput.value = "";
-      charCount.textContent = "0";
-      postBtn.disabled = true;
-
-      setFilter("all");
-      renderProfile();
-      renderThreads();
-      showToast("Wave posted 🌊");
-    }
-
-    function setFilter(filter) {
-      activeFilter = filter;
-
-      tabButtons.forEach((button) => {
-        button.classList.toggle("active", button.dataset.filter === filter);
-      });
-
-      navButtons.forEach((button) => {
-        button.classList.toggle("active", button.dataset.filter === filter);
-      });
-
-      renderThreads();
-    }
-
-    function getFilteredThreads() {
-      if (activeFilter === "mine") {
-        return threads.filter((thread) => thread.mine);
-      }
-
-      if (activeFilter === "hot") {
-        return [...threads]
-          .filter((thread) => thread.likes + thread.reposts + thread.comments.length > 0)
-          .sort((a, b) => {
-            const scoreA = a.likes + a.reposts * 2 + a.comments.length * 3;
-            const scoreB = b.likes + b.reposts * 2 + b.comments.length * 3;
-            return scoreB - scoreA;
-          });
-      }
-
-      return threads;
-    }
-
-    function renderThreads() {
-      const visibleThreads = getFilteredThreads();
-
-      if (visibleThreads.length === 0) {
-        feed.innerHTML = `
-          <div class="empty-card">
-            <i class="fa-solid fa-water"></i>
-            <h3>No waves yet</h3>
-            <p>Post something and start the feed.</p>
-          </div>
-        `;
-        renderProfile();
-        return;
-      }
-
-      feed.innerHTML = visibleThreads.map(createThreadHTML).join("");
-
-      visibleThreads.forEach((thread) => {
-        const card = document.querySelector(`[data-thread-id="${thread.id}"]`);
-        if (!card) return;
-
-        const likeButton = card.querySelector(".like-btn");
-        const repostButton = card.querySelector(".repost-btn");
-        const commentToggle = card.querySelector(".comment-toggle");
-        const deleteButton = card.querySelector(".delete-btn");
-        const commentForm = card.querySelector(".comment-form");
-        const commentInput = card.querySelector(".comment-input");
-
-        likeButton.addEventListener("click", () => toggleLike(thread.id));
-        repostButton.addEventListener("click", () => toggleRepost(thread.id));
-        commentToggle.addEventListener("click", () => toggleComments(thread.id));
-
-        if (deleteButton) {
-          deleteButton.addEventListener("click", () => deleteThread(thread.id));
-        }
-
-        commentForm.addEventListener("submit", (event) => {
-          event.preventDefault();
-          addComment(thread.id, commentInput.value);
-        });
-      });
-
-      renderProfile();
-    }
-
-    function createThreadHTML(thread) {
-      const initial = thread.user.name.charAt(0).toUpperCase();
-      const commentsOpen = thread.commentsOpen ? "open" : "";
-      const commentsHTML = thread.comments.length
-        ? thread.comments.map(createCommentHTML).join("")
-        : `<div class="comment"><small>ThreadWave</small>No comments yet. Be first.</div>`;
-
-      return `
-        <article class="thread-card" data-thread-id="${thread.id}">
-          <div class="thread-top">
-            <div class="avatar">${escapeHTML(initial)}</div>
-
-            <div class="thread-main">
-              <div class="thread-author">
-                <div>
-                  <h3>${escapeHTML(thread.user.name)}</h3>
-                  <span>${escapeHTML(thread.user.handle)} · ${formatTime(thread.createdAt)}</span>
-                </div>
-              </div>
-
-              <p class="thread-text">${escapeHTML(thread.text)}</p>
-
-              <div class="thread-actions">
-                <button class="action-btn like-btn ${thread.liked ? "active like" : ""}">
-                  <i class="fa-${thread.liked ? "solid" : "regular"} fa-heart"></i>
-                  <span>${thread.likes}</span>
-                </button>
-
-                <button class="action-btn comment-toggle">
-                  <i class="fa-regular fa-comment"></i>
-                  <span>${thread.comments.length}</span>
-                </button>
-
-                <button class="action-btn repost-btn ${thread.reposted ? "active repost" : ""}">
-                  <i class="fa-solid fa-retweet"></i>
-                  <span>${thread.reposts}</span>
-                </button>
-
-                ${thread.mine ? `
-                  <button class="action-btn delete-btn">
-                    <i class="fa-regular fa-trash-can"></i>
-                  </button>
-                ` : ""}
-              </div>
-
-              <div class="comments ${commentsOpen}" id="comments-${thread.id}">
-                <div class="comment-list">
-                  ${commentsHTML}
-                </div>
-
-                <form class="comment-form">
-                  <input
-                    class="comment-input"
-                    type="text"
-                    maxlength="120"
-                    placeholder="Reply..."
-                  />
-                  <button type="submit">
-                    <i class="fa-solid fa-arrow-up"></i>
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </article>
-      `;
-    }
-
-    function createCommentHTML(comment) {
-      return `
-        <div class="comment">
-          <small>${escapeHTML(comment.user)} · ${formatTime(comment.createdAt)}</small>
-          ${escapeHTML(comment.text)}
-        </div>
-      `;
-    }
-
-    function toggleLike(id) {
-      threads = threads.map((thread) => {
-        if (thread.id !== id) return thread;
-
-        const liked = !thread.liked;
-
-        return {
-          ...thread,
-          liked,
-          likes: liked ? thread.likes + 1 : Math.max(0, thread.likes - 1)
-        };
-      });
-
-      saveThreads();
-      renderThreads();
-    }
-
-    function toggleRepost(id) {
-      threads = threads.map((thread) => {
-        if (thread.id !== id) return thread;
-
-        const reposted = !thread.reposted;
-
-        return {
-          ...thread,
-          reposted,
-          reposts: reposted ? thread.reposts + 1 : Math.max(0, thread.reposts - 1)
-        };
-      });
-
-      saveThreads();
-      renderThreads();
-    }
-
-    function toggleComments(id) {
-      threads = threads.map((thread) => {
-        if (thread.id !== id) return thread;
-
-        return {
-          ...thread,
-          commentsOpen: !thread.commentsOpen
-        };
-      });
-
-      renderThreads();
-
-      const input = document
-        .querySelector(`[data-thread-id="${id}"]`)
-        ?.querySelector(".comment-input");
-
-      if (input) {
-        setTimeout(() => input.focus(), 100);
-      }
-    }
-
-    function addComment(id, value) {
-      const text = value.trim();
-
-      if (!text) return;
-
-      threads = threads.map((thread) => {
-        if (thread.id !== id) return thread;
-
-        return {
-          ...thread,
-          commentsOpen: true,
-          comments: [
-            ...thread.comments,
-            {
-              id: crypto.randomUUID(),
-              user: profile.name,
-              text,
-              createdAt: Date.now()
-            }
-          ]
-        };
-      });
-
-      saveThreads();
-      renderThreads();
-      showToast("Reply added");
-    }
-
-    function deleteThread(id) {
-      threads = threads.filter((thread) => thread.id !== id);
-      saveThreads();
-      renderThreads();
-      showToast("Wave deleted");
-    }
-
-    function formatTime(timestamp) {
-      const seconds = Math.floor((Date.now() - timestamp) / 1000);
-
-      if (seconds < 60) return "now";
-
-      const minutes = Math.floor(seconds / 60);
-      if (minutes < 60) return `${minutes}m`;
-
-      const hours = Math.floor(minutes / 60);
-      if (hours < 24) return `${hours}h`;
-
-      const days = Math.floor(hours / 24);
-      if (days < 7) return `${days}d`;
-
-      return new Date(timestamp).toLocaleDateString(undefined, {
-        month: "short",
-        day: "numeric"
-      });
     }
 
     function escapeHTML(value) {
-      return String(value)
+      return String(value || "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -1303,18 +785,333 @@
         .replaceAll("'", "&#039;");
     }
 
-    let toastTimeout;
+    function formatDate(dateValue) {
+      const date = new Date(dateValue);
 
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add("show");
-
-      clearTimeout(toastTimeout);
-
-      toastTimeout = setTimeout(() => {
-        toast.classList.remove("show");
-      }, 1800);
+      return date.toLocaleString([], {
+        dateStyle: "medium",
+        timeStyle: "short"
+      });
     }
+
+    function fallbackAvatar(seed) {
+      return `https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(seed || "User")}`;
+    }
+
+    function getUserMeta(user) {
+      const meta = user?.user_metadata || {};
+
+      return {
+        name: meta.full_name || meta.name || user?.email || "User",
+        email: user?.email || "",
+        avatar: meta.avatar_url || meta.picture || fallbackAvatar(user?.email || "User")
+      };
+    }
+
+    async function signInWithGoogle() {
+      setStatus("Opening Google login...");
+
+      const redirectTo = window.location.origin + window.location.pathname;
+
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo
+        }
+      });
+
+      if (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function signOut() {
+      setStatus("Logging out...");
+
+      const { error } = await supabaseClient.auth.signOut();
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      currentUser = null;
+      updateAuthUI();
+      await loadThreads();
+      setStatus("Logged out.");
+    }
+
+    function updateAuthUI() {
+      if (!currentUser) {
+        loginBtn.classList.remove("hidden");
+        userBox.classList.add("hidden");
+
+        composer.classList.add("locked");
+        threadInput.disabled = true;
+        postBtn.disabled = true;
+        threadInput.placeholder = "Sign in to post your first wave...";
+
+        return;
+      }
+
+      const meta = getUserMeta(currentUser);
+
+      loginBtn.classList.add("hidden");
+      userBox.classList.remove("hidden");
+
+      userAvatar.src = meta.avatar;
+      userName.textContent = meta.name;
+      userEmail.textContent = meta.email;
+
+      composer.classList.remove("locked");
+      threadInput.disabled = false;
+      postBtn.disabled = false;
+      threadInput.placeholder = "What's building in your mind today?";
+    }
+
+    async function getCurrentSession() {
+      const { data, error } = await supabaseClient.auth.getSession();
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      currentUser = data.session?.user || null;
+      updateAuthUI();
+    }
+
+    async function createThread() {
+      const content = threadInput.value.trim();
+
+      if (!currentUser) {
+        setStatus("Sign in first, CEO.", "error");
+        return;
+      }
+
+      if (!content) {
+        setStatus("Write something first.", "error");
+        return;
+      }
+
+      if (content.length > 280) {
+        setStatus("Keep it under 280 characters.", "error");
+        return;
+      }
+
+      postBtn.disabled = true;
+      postBtn.textContent = "Posting...";
+
+      const meta = getUserMeta(currentUser);
+
+      const { error } = await supabaseClient
+        .from("threads")
+        .insert({
+          user_id: currentUser.id,
+          user_email: meta.email,
+          user_name: meta.name,
+          user_avatar: meta.avatar,
+          content
+        });
+
+      postBtn.disabled = false;
+      postBtn.textContent = "Post thread";
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      threadInput.value = "";
+      updateCharCount();
+      setStatus("Thread posted 🚀", "success");
+
+      await loadThreads();
+    }
+
+    async function loadThreads() {
+      const { data, error } = await supabaseClient
+        .from("threads")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      threads = data || [];
+      renderThreads();
+
+      if (!statusMsg.textContent.includes("posted")) {
+        setStatus("");
+      }
+    }
+
+    function renderThreads() {
+      totalThreads.textContent = threads.length;
+
+      const ownCount = currentUser
+        ? threads.filter((thread) => thread.user_id === currentUser.id).length
+        : 0;
+
+      myThreads.textContent = ownCount;
+
+      if (!threads.length) {
+        threadsList.innerHTML = `
+          <div class="empty-state">
+            <strong>No threads yet.</strong>
+            Be the first founder to post something powerful.
+          </div>
+        `;
+        return;
+      }
+
+      threadsList.innerHTML = threads
+        .map((thread) => {
+          const isOwner = currentUser && thread.user_id === currentUser.id;
+
+          const avatar = thread.user_avatar || fallbackAvatar(thread.user_email || "User");
+          const name = thread.user_name || "User";
+          const email = thread.user_email || "";
+          const content = escapeHTML(thread.content);
+          const date = formatDate(thread.created_at);
+          const likes = Number(thread.likes || 0);
+
+          return `
+            <article class="thread-card">
+              <div class="thread-top">
+                <div class="thread-user">
+                  <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
+                  <div>
+                    <strong>${escapeHTML(name)}</strong>
+                    <span>${escapeHTML(email)} · ${escapeHTML(date)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <p class="thread-content">${content}</p>
+
+              <div class="thread-actions">
+                <div class="action-left">
+                  <button class="mini-action" data-like-id="${escapeHTML(thread.id)}" data-likes="${likes}">
+                    ♥ ${likes}
+                  </button>
+                </div>
+
+                ${
+                  isOwner
+                    ? `<button class="mini-action delete-action" data-delete-id="${escapeHTML(thread.id)}">Delete</button>`
+                    : ""
+                }
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+
+      bindThreadActions();
+    }
+
+    function bindThreadActions() {
+      document.querySelectorAll("[data-like-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const id = button.dataset.likeId;
+          const likes = Number(button.dataset.likes || 0);
+
+          await likeThread(id, likes);
+        });
+      });
+
+      document.querySelectorAll("[data-delete-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const id = button.dataset.deleteId;
+
+          await deleteThread(id);
+        });
+      });
+    }
+
+    async function likeThread(id, currentLikes) {
+      const { error } = await supabaseClient
+        .from("threads")
+        .update({
+          likes: currentLikes + 1
+        })
+        .eq("id", id);
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      await loadThreads();
+    }
+
+    async function deleteThread(id) {
+      if (!currentUser) {
+        setStatus("You need to be logged in.", "error");
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from("threads")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      setStatus("Thread deleted.", "success");
+      await loadThreads();
+    }
+
+    function updateCharCount() {
+      charCount.textContent = `${threadInput.value.length} / 280`;
+    }
+
+    function subscribeToRealtime() {
+      supabaseClient
+        .channel("threads-feed")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "threads"
+          },
+          async () => {
+            await loadThreads();
+          }
+        )
+        .subscribe();
+    }
+
+    loginBtn.addEventListener("click", signInWithGoogle);
+    logoutBtn.addEventListener("click", signOut);
+    postBtn.addEventListener("click", createThread);
+    refreshBtn.addEventListener("click", async () => {
+      setStatus("Refreshing...");
+      await loadThreads();
+    });
+    threadInput.addEventListener("input", updateCharCount);
+
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+      currentUser = session?.user || null;
+      updateAuthUI();
+      loadThreads();
+    });
+
+    async function init() {
+      updateCharCount();
+      await getCurrentSession();
+      await loadThreads();
+      subscribeToRealtime();
+    }
+
+    init();
   </script>
 </body>
 </html>
