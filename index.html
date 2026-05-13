@@ -243,7 +243,8 @@
 
     .glass-card,
     .composer,
-    .thread-card {
+    .thread-card,
+    .public-profile-card {
       border: 1px solid var(--line);
       background: var(--card);
       backdrop-filter: blur(22px);
@@ -276,7 +277,8 @@
 
     .intro-card p,
     .roadmap-card li,
-    .profile-hint {
+    .profile-hint,
+    .public-profile-bio {
       color: var(--muted);
       font-size: 14px;
       line-height: 1.7;
@@ -500,6 +502,73 @@
       color: var(--danger);
     }
 
+    .public-profile-card {
+      padding: 22px;
+      border-radius: 32px;
+      background: var(--card-strong);
+      animation: popIn 0.25s ease both;
+    }
+
+    .public-profile-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .public-profile-main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .public-profile-main img {
+      width: 76px;
+      height: 76px;
+      border-radius: 26px;
+      object-fit: cover;
+      background: rgba(0, 188, 231, 0.12);
+      box-shadow: 0 14px 30px rgba(0, 188, 231, 0.18);
+    }
+
+    .public-profile-main h3 {
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+
+    .public-profile-main p {
+      margin-top: 7px;
+      color: var(--cyan-dark);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .public-profile-bio {
+      margin-top: 12px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .public-profile-stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .public-profile-stat {
+      padding: 10px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
     .threads-list {
       display: flex;
       flex-direction: column;
@@ -525,6 +594,15 @@
       align-items: center;
       gap: 12px;
       min-width: 0;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      text-align: left;
+      color: inherit;
+    }
+
+    .thread-user:hover strong {
+      color: var(--cyan-dark);
     }
 
     .thread-user img {
@@ -547,6 +625,7 @@
       font-size: 14px;
       text-overflow: ellipsis;
       white-space: nowrap;
+      transition: 0.2s ease;
     }
 
     .thread-user span {
@@ -698,8 +777,9 @@
         width: 100%;
       }
 
-      .feed-top {
-        align-items: flex-start;
+      .feed-top,
+      .public-profile-head {
+        align-items: stretch;
         flex-direction: column;
       }
 
@@ -711,6 +791,11 @@
 
       .pill {
         text-align: center;
+      }
+
+      .public-profile-main {
+        align-items: flex-start;
+        flex-direction: column;
       }
 
       .thread-top {
@@ -757,9 +842,7 @@
       </div>
 
       <div class="auth-area">
-        <button id="loginBtn" class="btn primary-btn">
-          Continue with Google
-        </button>
+        <button id="loginBtn" class="btn primary-btn">Continue with Google</button>
 
         <div id="userBox" class="user-box hidden">
           <img id="userAvatar" src="" alt="User avatar" />
@@ -778,8 +861,8 @@
           <span class="eyebrow">Founder feed</span>
           <h2>Your private social engine.</h2>
           <p>
-            Google login, Supabase Auth, cloud posts, real likes, realtime updates,
-            persistent sessions, and creator profiles.
+            Google login, Supabase Auth, cloud posts, real likes, public profiles,
+            persistent sessions, and creator identity.
           </p>
         </section>
 
@@ -831,9 +914,9 @@
         <section class="glass-card roadmap-card">
           <h3>Next money upgrades</h3>
           <ul>
-            <li>Public profile pages</li>
+            <li>Follow system</li>
             <li>AI caption generator</li>
-            <li>Scheduled posts</li>
+            <li>Image uploads</li>
             <li>Analytics dashboard</li>
           </ul>
         </section>
@@ -850,9 +933,29 @@
 
           <div class="composer-footer">
             <span id="charCount">0 / 280</span>
-            <button id="postBtn" class="btn primary-btn" disabled>
-              Post thread
-            </button>
+            <button id="postBtn" class="btn primary-btn" disabled>Post thread</button>
+          </div>
+        </section>
+
+        <section id="publicProfileView" class="public-profile-card hidden">
+          <div class="public-profile-head">
+            <div class="public-profile-main">
+              <img id="publicProfileAvatar" src="" alt="Public profile avatar" />
+              <div>
+                <span class="eyebrow">Public profile</span>
+                <h3 id="publicProfileName">Profile Name</h3>
+                <p id="publicProfileUsername">@username</p>
+              </div>
+            </div>
+
+            <button id="backToFeedBtn" class="btn ghost-btn">Back to feed</button>
+          </div>
+
+          <p id="publicProfileBio" class="public-profile-bio">No bio yet.</p>
+
+          <div class="public-profile-stats">
+            <span id="publicProfilePosts" class="public-profile-stat">0 posts</span>
+            <span id="publicProfileLikes" class="public-profile-stat">0 total likes</span>
           </div>
         </section>
 
@@ -876,727 +979,823 @@
     </main>
   </div>
 
-<script>
-  const SUPABASE_URL = "https://rbmjbwvojakxvxeodkmp.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJibWpid3ZvamFreHZ4ZW9ka21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1Nzc3NzYsImV4cCI6MjA5NDE1Mzc3Nn0.f6Pl1FJIH9L4rf-asu2ARlLXUXpncXuyO3v_VZ5n5aQ";
+  <script>
+    const SUPABASE_URL = "https://rbmjbwvojakxvxeodkmp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJibWpid3ZvamFreHZ4ZW9ka21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1Nzc3NzYsImV4cCI6MjA5NDE1Mzc3Nn0.f6Pl1FJIH9L4rf-asu2ARlLXUXpncXuyO3v_VZ5n5aQ";
 
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  });
-
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const userBox = document.getElementById("userBox");
-  const userAvatar = document.getElementById("userAvatar");
-  const userName = document.getElementById("userName");
-  const userEmail = document.getElementById("userEmail");
-
-  const composer = document.getElementById("composer");
-  const threadInput = document.getElementById("threadInput");
-  const postBtn = document.getElementById("postBtn");
-  const charCount = document.getElementById("charCount");
-  const refreshBtn = document.getElementById("refreshBtn");
-  const threadsList = document.getElementById("threadsList");
-  const statusMsg = document.getElementById("statusMsg");
-
-  const totalThreads = document.getElementById("totalThreads");
-  const myThreads = document.getElementById("myThreads");
-
-  const profileCard = document.getElementById("profileCard");
-  const lockedProfileCard = document.getElementById("lockedProfileCard");
-  const profileAvatar = document.getElementById("profileAvatar");
-  const profileDisplayName = document.getElementById("profileDisplayName");
-  const profileUsername = document.getElementById("profileUsername");
-  const usernameInput = document.getElementById("usernameInput");
-  const bioInput = document.getElementById("bioInput");
-  const saveProfileBtn = document.getElementById("saveProfileBtn");
-
-  const allPostsBtn = document.getElementById("allPostsBtn");
-  const myPostsBtn = document.getElementById("myPostsBtn");
-  const feedTitle = document.getElementById("feedTitle");
-
-  let currentUser = null;
-  let currentProfile = null;
-  let threads = [];
-  let likes = [];
-  let profiles = [];
-  let activeFilter = "all";
-  let realtimeChannel = null;
-  let appStarted = false;
-
-  function setStatus(message, type = "") {
-    statusMsg.textContent = message || "";
-    statusMsg.className = "status-msg";
-
-    if (type) {
-      statusMsg.classList.add(type);
-    }
-  }
-
-  function escapeHTML(value) {
-    return String(value || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function formatDate(dateValue) {
-    const date = new Date(dateValue);
-
-    return date.toLocaleString([], {
-      dateStyle: "medium",
-      timeStyle: "short"
-    });
-  }
-
-  function fallbackAvatar(seed) {
-    return `https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(seed || "User")}`;
-  }
-
-  function cleanUsername(value) {
-    return String(value || "")
-      .toLowerCase()
-      .trim()
-      .replace(/^@+/, "")
-      .replace(/[^a-z0-9_]/g, "_")
-      .replace(/_+/g, "_")
-      .slice(0, 28);
-  }
-
-  function getUserMeta(user) {
-    const meta = user?.user_metadata || {};
-
-    return {
-      name: meta.full_name || meta.name || user?.email || "User",
-      email: user?.email || "",
-      avatar: meta.avatar_url || meta.picture || fallbackAvatar(user?.email || "User")
-    };
-  }
-
-  async function upsertProfile() {
-    if (!currentUser) return;
-
-    const meta = getUserMeta(currentUser);
-
-    const defaultUsername = meta.email
-      ? cleanUsername(meta.email.split("@")[0])
-      : `user_${currentUser.id.slice(0, 8)}`;
-
-    const { data: existingProfile, error: selectError } = await supabaseClient
-      .from("profiles")
-      .select("*")
-      .eq("id", currentUser.id)
-      .maybeSingle();
-
-    if (selectError) {
-      setStatus(selectError.message, "error");
-      return;
-    }
-
-    const profilePayload = {
-      id: currentUser.id,
-      email: meta.email,
-      full_name: meta.name,
-      username: existingProfile?.username || defaultUsername,
-      avatar_url: meta.avatar,
-      bio: existingProfile?.bio || "",
-      updated_at: new Date().toISOString()
-    };
-
-    const { data, error } = await supabaseClient
-      .from("profiles")
-      .upsert(profilePayload, { onConflict: "id" })
-      .select()
-      .single();
-
-    if (error) {
-      setStatus(error.message, "error");
-      return;
-    }
-
-    currentProfile = data;
-    updateProfileUI();
-  }
-
-  function getProfileByUserId(userId) {
-    return profiles.find((profile) => profile.id === userId) || null;
-  }
-
-  function getThreadLikes(threadId) {
-    return likes.filter((like) => like.thread_id === threadId);
-  }
-
-  function getThreadLikeCount(threadId) {
-    return getThreadLikes(threadId).length;
-  }
-
-  function userLikedThread(threadId) {
-    if (!currentUser) return false;
-
-    return likes.some((like) => {
-      return like.thread_id === threadId && like.user_id === currentUser.id;
-    });
-  }
-
-  async function signInWithGoogle() {
-    setStatus("Opening Google login...");
-
-    const redirectTo = window.location.origin + window.location.pathname;
-
-    const { error } = await supabaseClient.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
       }
     });
 
-    if (error) {
-      setStatus(error.message, "error");
-    }
-  }
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const userBox = document.getElementById("userBox");
+    const userAvatar = document.getElementById("userAvatar");
+    const userName = document.getElementById("userName");
+    const userEmail = document.getElementById("userEmail");
 
-  async function signOut() {
-    setStatus("Logging out...");
+    const composer = document.getElementById("composer");
+    const threadInput = document.getElementById("threadInput");
+    const postBtn = document.getElementById("postBtn");
+    const charCount = document.getElementById("charCount");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const threadsList = document.getElementById("threadsList");
+    const statusMsg = document.getElementById("statusMsg");
 
-    const { error } = await supabaseClient.auth.signOut();
+    const totalThreads = document.getElementById("totalThreads");
+    const myThreads = document.getElementById("myThreads");
 
-    if (error) {
-      setStatus(error.message, "error");
-      return;
-    }
+    const profileCard = document.getElementById("profileCard");
+    const lockedProfileCard = document.getElementById("lockedProfileCard");
+    const profileAvatar = document.getElementById("profileAvatar");
+    const profileDisplayName = document.getElementById("profileDisplayName");
+    const profileUsername = document.getElementById("profileUsername");
+    const usernameInput = document.getElementById("usernameInput");
+    const bioInput = document.getElementById("bioInput");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
 
-    currentUser = null;
-    currentProfile = null;
-    activeFilter = "all";
+    const allPostsBtn = document.getElementById("allPostsBtn");
+    const myPostsBtn = document.getElementById("myPostsBtn");
+    const feedTitle = document.getElementById("feedTitle");
 
-    updateAuthUI();
-    updateProfileUI();
-    updateFilterUI();
+    const publicProfileView = document.getElementById("publicProfileView");
+    const publicProfileAvatar = document.getElementById("publicProfileAvatar");
+    const publicProfileName = document.getElementById("publicProfileName");
+    const publicProfileUsername = document.getElementById("publicProfileUsername");
+    const publicProfileBio = document.getElementById("publicProfileBio");
+    const publicProfilePosts = document.getElementById("publicProfilePosts");
+    const publicProfileLikes = document.getElementById("publicProfileLikes");
+    const backToFeedBtn = document.getElementById("backToFeedBtn");
 
-    await loadFeed();
-    setStatus("Logged out.");
-  }
+    let currentUser = null;
+    let currentProfile = null;
+    let threads = [];
+    let likes = [];
+    let profiles = [];
+    let activeFilter = "all";
+    let viewedProfileId = null;
+    let realtimeChannel = null;
+    let appStarted = false;
 
-  function updateAuthUI() {
-    if (!currentUser) {
-      loginBtn.classList.remove("hidden");
-      userBox.classList.add("hidden");
+    function setStatus(message, type = "") {
+      statusMsg.textContent = message || "";
+      statusMsg.className = "status-msg";
 
-      composer.classList.add("locked");
-      threadInput.disabled = true;
-      postBtn.disabled = true;
-      threadInput.placeholder = "Sign in to post your first wave...";
-
-      return;
-    }
-
-    const meta = getUserMeta(currentUser);
-
-    loginBtn.classList.add("hidden");
-    userBox.classList.remove("hidden");
-
-    userAvatar.src = currentProfile?.avatar_url || meta.avatar;
-    userName.textContent = currentProfile?.full_name || meta.name;
-    userEmail.textContent = currentProfile?.email || meta.email;
-
-    composer.classList.remove("locked");
-    threadInput.disabled = false;
-    postBtn.disabled = false;
-    threadInput.placeholder = "What's building in your mind today?";
-  }
-
-  function updateProfileUI() {
-    if (!currentUser || !currentProfile) {
-      profileCard.classList.add("hidden");
-      lockedProfileCard.classList.remove("hidden");
-      return;
+      if (type) {
+        statusMsg.classList.add(type);
+      }
     }
 
-    profileCard.classList.remove("hidden");
-    lockedProfileCard.classList.add("hidden");
-
-    profileAvatar.src = currentProfile.avatar_url || fallbackAvatar(currentProfile.email);
-    profileDisplayName.textContent = currentProfile.full_name || "ThreadWave User";
-    profileUsername.textContent = currentProfile.username ? `@${currentProfile.username}` : "@username";
-
-    usernameInput.value = currentProfile.username || "";
-    bioInput.value = currentProfile.bio || "";
-  }
-
-  async function saveProfile() {
-    if (!currentUser) {
-      setStatus("Sign in first.", "error");
-      return;
+    function escapeHTML(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    const username = cleanUsername(usernameInput.value);
-    const bio = bioInput.value.trim().slice(0, 160);
+    function formatDate(dateValue) {
+      const date = new Date(dateValue);
 
-    if (!username || username.length < 3) {
-      setStatus("Username needs at least 3 characters.", "error");
-      return;
+      return date.toLocaleString([], {
+        dateStyle: "medium",
+        timeStyle: "short"
+      });
     }
 
-    saveProfileBtn.disabled = true;
-    saveProfileBtn.textContent = "Saving...";
+    function fallbackAvatar(seed) {
+      return `https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(seed || "User")}`;
+    }
 
-    const { data, error } = await supabaseClient
-      .from("profiles")
-      .update({
-        username,
-        bio,
+    function cleanUsername(value) {
+      return String(value || "")
+        .toLowerCase()
+        .trim()
+        .replace(/^@+/, "")
+        .replace(/[^a-z0-9_]/g, "_")
+        .replace(/_+/g, "_")
+        .slice(0, 28);
+    }
+
+    function getUserMeta(user) {
+      const meta = user?.user_metadata || {};
+
+      return {
+        name: meta.full_name || meta.name || user?.email || "User",
+        email: user?.email || "",
+        avatar: meta.avatar_url || meta.picture || fallbackAvatar(user?.email || "User")
+      };
+    }
+
+    async function upsertProfile() {
+      if (!currentUser) return;
+
+      const meta = getUserMeta(currentUser);
+
+      const defaultUsername = meta.email
+        ? cleanUsername(meta.email.split("@")[0])
+        : `user_${currentUser.id.slice(0, 8)}`;
+
+      const { data: existingProfile, error: selectError } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+      if (selectError) {
+        setStatus(selectError.message, "error");
+        return;
+      }
+
+      const profilePayload = {
+        id: currentUser.id,
+        email: meta.email,
+        full_name: meta.name,
+        username: existingProfile?.username || defaultUsername,
+        avatar_url: meta.avatar,
+        bio: existingProfile?.bio || "",
         updated_at: new Date().toISOString()
-      })
-      .eq("id", currentUser.id)
-      .select()
-      .single();
+      };
 
-    saveProfileBtn.disabled = false;
-    saveProfileBtn.textContent = "Save profile";
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .upsert(profilePayload, { onConflict: "id" })
+        .select()
+        .single();
 
-    if (error) {
-      if (error.message.toLowerCase().includes("duplicate")) {
-        setStatus("That username is already taken.", "error");
-      } else {
+      if (error) {
         setStatus(error.message, "error");
+        return;
       }
-      return;
-    }
 
-    currentProfile = data;
-    updateProfileUI();
-    updateAuthUI();
-
-    setStatus("Profile saved 🚀", "success");
-    await loadFeed();
-  }
-
-  async function createThread() {
-    const content = threadInput.value.trim();
-
-    if (!currentUser) {
-      setStatus("Sign in first, CEO.", "error");
-      return;
-    }
-
-    if (!content) {
-      setStatus("Write something first.", "error");
-      return;
-    }
-
-    if (content.length > 280) {
-      setStatus("Keep it under 280 characters.", "error");
-      return;
-    }
-
-    postBtn.disabled = true;
-    postBtn.textContent = "Posting...";
-
-    const meta = getUserMeta(currentUser);
-
-    const { error } = await supabaseClient
-      .from("threads")
-      .insert({
-        user_id: currentUser.id,
-        user_email: currentProfile?.email || meta.email,
-        user_name: currentProfile?.full_name || meta.name,
-        user_avatar: currentProfile?.avatar_url || meta.avatar,
-        content
-      });
-
-    postBtn.disabled = false;
-    postBtn.textContent = "Post thread";
-
-    if (error) {
-      setStatus(error.message, "error");
-      return;
-    }
-
-    threadInput.value = "";
-    updateCharCount();
-    setStatus("Thread posted 🚀", "success");
-
-    await loadFeed();
-  }
-
-  async function loadFeed() {
-    const threadsRequest = supabaseClient
-      .from("threads")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    const likesRequest = supabaseClient
-      .from("thread_likes")
-      .select("*");
-
-    const profilesRequest = supabaseClient
-      .from("profiles")
-      .select("*");
-
-    const [threadsResponse, likesResponse, profilesResponse] = await Promise.all([
-      threadsRequest,
-      likesRequest,
-      profilesRequest
-    ]);
-
-    if (threadsResponse.error) {
-      setStatus(threadsResponse.error.message, "error");
-      return;
-    }
-
-    if (likesResponse.error) {
-      setStatus(likesResponse.error.message, "error");
-      return;
-    }
-
-    if (profilesResponse.error) {
-      setStatus(profilesResponse.error.message, "error");
-      return;
-    }
-
-    threads = threadsResponse.data || [];
-    likes = likesResponse.data || [];
-    profiles = profilesResponse.data || [];
-
-    if (currentUser) {
-      currentProfile = getProfileByUserId(currentUser.id) || currentProfile;
+      currentProfile = data;
       updateProfileUI();
-      updateAuthUI();
     }
 
-    renderThreads();
-
-    if (
-      !statusMsg.textContent.includes("posted") &&
-      !statusMsg.textContent.includes("Liked") &&
-      !statusMsg.textContent.includes("removed") &&
-      !statusMsg.textContent.includes("deleted") &&
-      !statusMsg.textContent.includes("saved") &&
-      !statusMsg.textContent.includes("restored")
-    ) {
-      setStatus("");
-    }
-  }
-
-  function getVisibleThreads() {
-    if (activeFilter === "mine" && currentUser) {
-      return threads.filter((thread) => thread.user_id === currentUser.id);
+    function getProfileByUserId(userId) {
+      return profiles.find((profile) => profile.id === userId) || null;
     }
 
-    return threads;
-  }
-
-  function renderThreads() {
-    totalThreads.textContent = threads.length;
-
-    const ownCount = currentUser
-      ? threads.filter((thread) => thread.user_id === currentUser.id).length
-      : 0;
-
-    myThreads.textContent = ownCount;
-
-    const visibleThreads = getVisibleThreads();
-
-    if (!visibleThreads.length) {
-      const message = activeFilter === "mine"
-        ? "You have not posted yet. Drop your first founder thought."
-        : "Be the first founder to post something powerful.";
-
-      threadsList.innerHTML = `
-        <div class="empty-state">
-          <strong>No threads yet.</strong>
-          ${message}
-        </div>
-      `;
-      return;
+    function getThreadLikes(threadId) {
+      return likes.filter((like) => like.thread_id === threadId);
     }
 
-    threadsList.innerHTML = visibleThreads
-      .map((thread) => {
-        const isOwner = currentUser && thread.user_id === currentUser.id;
-        const likedByUser = userLikedThread(thread.id);
-        const likeCount = getThreadLikeCount(thread.id);
-        const profile = getProfileByUserId(thread.user_id);
+    function getThreadLikeCount(threadId) {
+      return getThreadLikes(threadId).length;
+    }
 
-        const avatar =
-          profile?.avatar_url ||
-          thread.user_avatar ||
-          fallbackAvatar(thread.user_email || "User");
+    function getUserTotalLikes(userId) {
+      const userThreads = threads.filter((thread) => thread.user_id === userId);
+      return userThreads.reduce((total, thread) => {
+        return total + getThreadLikeCount(thread.id);
+      }, 0);
+    }
 
-        const name =
-          profile?.full_name ||
-          thread.user_name ||
-          "User";
+    function userLikedThread(threadId) {
+      if (!currentUser) return false;
 
-        const username =
-          profile?.username
-            ? `@${profile.username}`
-            : thread.user_email || "";
-
-        const content = escapeHTML(thread.content);
-        const date = formatDate(thread.created_at);
-
-        return `
-          <article class="thread-card">
-            <div class="thread-top">
-              <div class="thread-user">
-                <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
-                <div>
-                  <strong>${escapeHTML(name)}</strong>
-                  <span>${escapeHTML(username)} · ${escapeHTML(date)}</span>
-                </div>
-              </div>
-            </div>
-
-            <p class="thread-content">${content}</p>
-
-            <div class="thread-actions">
-              <div class="action-left">
-                <button
-                  class="mini-action like-action ${likedByUser ? "liked" : ""}"
-                  data-like-id="${escapeHTML(thread.id)}"
-                >
-                  ${likedByUser ? "♥ Liked" : "♡ Like"} · ${likeCount}
-                </button>
-              </div>
-
-              ${
-                isOwner
-                  ? `<button class="mini-action delete-action" data-delete-id="${escapeHTML(thread.id)}">Delete</button>`
-                  : ""
-              }
-            </div>
-          </article>
-        `;
-      })
-      .join("");
-
-    bindThreadActions();
-  }
-
-  function bindThreadActions() {
-    document.querySelectorAll("[data-like-id]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        const id = button.dataset.likeId;
-        await likeThread(id);
+      return likes.some((like) => {
+        return like.thread_id === threadId && like.user_id === currentUser.id;
       });
-    });
-
-    document.querySelectorAll("[data-delete-id]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        const id = button.dataset.deleteId;
-        await deleteThread(id);
-      });
-    });
-  }
-
-  async function likeThread(id) {
-    if (!currentUser) {
-      setStatus("Sign in to like threads.", "error");
-      return;
     }
 
-    const alreadyLiked = userLikedThread(id);
+    async function signInWithGoogle() {
+      setStatus("Opening Google login...");
 
-    if (alreadyLiked) {
-      const { error } = await supabaseClient
-        .from("thread_likes")
-        .delete()
-        .eq("thread_id", id)
-        .eq("user_id", currentUser.id);
+      const redirectTo = window.location.origin + window.location.pathname;
+
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo
+        }
+      });
+
+      if (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function signOut() {
+      setStatus("Logging out...");
+
+      const { error } = await supabaseClient.auth.signOut();
 
       if (error) {
         setStatus(error.message, "error");
         return;
       }
 
-      setStatus("Like removed.");
-    } else {
-      const { error } = await supabaseClient
-        .from("thread_likes")
-        .insert({
-          thread_id: id,
-          user_id: currentUser.id
-        });
-
-      if (error) {
-        setStatus(error.message, "error");
-        return;
-      }
-
-      setStatus("Liked 🚀", "success");
-    }
-
-    await loadFeed();
-  }
-
-  async function deleteThread(id) {
-    if (!currentUser) {
-      setStatus("You need to be logged in.", "error");
-      return;
-    }
-
-    const { error } = await supabaseClient
-      .from("threads")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      setStatus(error.message, "error");
-      return;
-    }
-
-    setStatus("Thread deleted.", "success");
-    await loadFeed();
-  }
-
-  function updateCharCount() {
-    charCount.textContent = `${threadInput.value.length} / 280`;
-  }
-
-  function updateFilterUI() {
-    allPostsBtn.classList.toggle("active", activeFilter === "all");
-    myPostsBtn.classList.toggle("active", activeFilter === "mine");
-
-    feedTitle.textContent = activeFilter === "mine"
-      ? "My Threads"
-      : "Latest Threads";
-  }
-
-  function setFilter(filter) {
-    if (filter === "mine" && !currentUser) {
-      setStatus("Sign in to see your posts.", "error");
-      return;
-    }
-
-    activeFilter = filter;
-    updateFilterUI();
-    renderThreads();
-  }
-
-  function subscribeToRealtime() {
-    if (realtimeChannel) {
-      supabaseClient.removeChannel(realtimeChannel);
-    }
-
-    realtimeChannel = supabaseClient
-      .channel("threadwave-realtime")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "threads"
-        },
-        async () => {
-          await loadFeed();
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "thread_likes"
-        },
-        async () => {
-          await loadFeed();
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "profiles"
-        },
-        async () => {
-          await loadFeed();
-        }
-      )
-      .subscribe();
-  }
-
-  loginBtn.addEventListener("click", signInWithGoogle);
-  logoutBtn.addEventListener("click", signOut);
-  postBtn.addEventListener("click", createThread);
-  saveProfileBtn.addEventListener("click", saveProfile);
-
-  allPostsBtn.addEventListener("click", () => setFilter("all"));
-  myPostsBtn.addEventListener("click", () => setFilter("mine"));
-
-  refreshBtn.addEventListener("click", async () => {
-    setStatus("Refreshing...");
-    await loadFeed();
-  });
-
-  threadInput.addEventListener("input", updateCharCount);
-
-  supabaseClient.auth.onAuthStateChange((event, session) => {
-    currentUser = session?.user || null;
-
-    setTimeout(async () => {
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        if (currentUser) {
-          await upsertProfile();
-        }
-      }
-
-      if (event === "SIGNED_OUT") {
-        currentProfile = null;
-        activeFilter = "all";
-      }
+      currentUser = null;
+      currentProfile = null;
+      activeFilter = "all";
+      viewedProfileId = null;
 
       updateAuthUI();
       updateProfileUI();
       updateFilterUI();
+      updatePublicProfileUI();
 
-      if (appStarted) {
-        await loadFeed();
+      await loadFeed();
+      setStatus("Logged out.");
+    }
+
+    function updateAuthUI() {
+      if (!currentUser) {
+        loginBtn.classList.remove("hidden");
+        userBox.classList.add("hidden");
+
+        composer.classList.add("locked");
+        threadInput.disabled = true;
+        postBtn.disabled = true;
+        threadInput.placeholder = "Sign in to post your first wave...";
+
+        return;
       }
-    }, 0);
-  });
 
-  async function init() {
-    appStarted = false;
+      const meta = getUserMeta(currentUser);
 
-    updateCharCount();
-    updateFilterUI();
-    setStatus("Checking session...");
+      loginBtn.classList.add("hidden");
+      userBox.classList.remove("hidden");
 
-    const { data, error } = await supabaseClient.auth.getSession();
+      userAvatar.src = currentProfile?.avatar_url || meta.avatar;
+      userName.textContent = currentProfile?.full_name || meta.name;
+      userEmail.textContent = currentProfile?.email || meta.email;
 
-    if (error) {
-      setStatus(error.message, "error");
-      return;
+      composer.classList.remove("locked");
+      threadInput.disabled = false;
+      postBtn.disabled = false;
+      threadInput.placeholder = "What's building in your mind today?";
     }
 
-    currentUser = data.session?.user || null;
+    function updateProfileUI() {
+      if (!currentUser || !currentProfile) {
+        profileCard.classList.add("hidden");
+        lockedProfileCard.classList.remove("hidden");
+        return;
+      }
 
-    if (currentUser) {
-      await upsertProfile();
-      updateAuthUI();
-      updateProfileUI();
-      setStatus("Session restored 🚀", "success");
-    } else {
-      updateAuthUI();
-      updateProfileUI();
-      setStatus("");
+      profileCard.classList.remove("hidden");
+      lockedProfileCard.classList.add("hidden");
+
+      profileAvatar.src = currentProfile.avatar_url || fallbackAvatar(currentProfile.email);
+      profileDisplayName.textContent = currentProfile.full_name || "ThreadWave User";
+      profileUsername.textContent = currentProfile.username ? `@${currentProfile.username}` : "@username";
+
+      usernameInput.value = currentProfile.username || "";
+      bioInput.value = currentProfile.bio || "";
     }
 
-    await loadFeed();
-    subscribeToRealtime();
+    function updatePublicProfileUI() {
+      if (!viewedProfileId) {
+        publicProfileView.classList.add("hidden");
+        return;
+      }
 
-    appStarted = true;
-  }
+      const profile = getProfileByUserId(viewedProfileId);
+      const userThreads = threads.filter((thread) => thread.user_id === viewedProfileId);
 
-  init();
-</script>
+      if (!profile && !userThreads.length) {
+        publicProfileView.classList.add("hidden");
+        return;
+      }
+
+      const fallbackThread = userThreads[0] || {};
+      const avatar = profile?.avatar_url || fallbackThread.user_avatar || fallbackAvatar(fallbackThread.user_email || "User");
+      const name = profile?.full_name || fallbackThread.user_name || "ThreadWave User";
+      const username = profile?.username ? `@${profile.username}` : fallbackThread.user_email || "@user";
+      const bio = profile?.bio || "No bio yet. This founder is moving in silence.";
+
+      publicProfileAvatar.src = avatar;
+      publicProfileName.textContent = name;
+      publicProfileUsername.textContent = username;
+      publicProfileBio.textContent = bio;
+      publicProfilePosts.textContent = `${userThreads.length} ${userThreads.length === 1 ? "post" : "posts"}`;
+      publicProfileLikes.textContent = `${getUserTotalLikes(viewedProfileId)} total likes`;
+
+      publicProfileView.classList.remove("hidden");
+    }
+
+    async function saveProfile() {
+      if (!currentUser) {
+        setStatus("Sign in first.", "error");
+        return;
+      }
+
+      const username = cleanUsername(usernameInput.value);
+      const bio = bioInput.value.trim().slice(0, 160);
+
+      if (!username || username.length < 3) {
+        setStatus("Username needs at least 3 characters.", "error");
+        return;
+      }
+
+      saveProfileBtn.disabled = true;
+      saveProfileBtn.textContent = "Saving...";
+
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .update({
+          username,
+          bio,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", currentUser.id)
+        .select()
+        .single();
+
+      saveProfileBtn.disabled = false;
+      saveProfileBtn.textContent = "Save profile";
+
+      if (error) {
+        if (error.message.toLowerCase().includes("duplicate")) {
+          setStatus("That username is already taken.", "error");
+        } else {
+          setStatus(error.message, "error");
+        }
+        return;
+      }
+
+      currentProfile = data;
+      updateProfileUI();
+      updateAuthUI();
+      updatePublicProfileUI();
+
+      setStatus("Profile saved 🚀", "success");
+      await loadFeed();
+    }
+
+    async function createThread() {
+      const content = threadInput.value.trim();
+
+      if (!currentUser) {
+        setStatus("Sign in first, CEO.", "error");
+        return;
+      }
+
+      if (!content) {
+        setStatus("Write something first.", "error");
+        return;
+      }
+
+      if (content.length > 280) {
+        setStatus("Keep it under 280 characters.", "error");
+        return;
+      }
+
+      postBtn.disabled = true;
+      postBtn.textContent = "Posting...";
+
+      const meta = getUserMeta(currentUser);
+
+      const { error } = await supabaseClient
+        .from("threads")
+        .insert({
+          user_id: currentUser.id,
+          user_email: currentProfile?.email || meta.email,
+          user_name: currentProfile?.full_name || meta.name,
+          user_avatar: currentProfile?.avatar_url || meta.avatar,
+          content
+        });
+
+      postBtn.disabled = false;
+      postBtn.textContent = "Post thread";
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      threadInput.value = "";
+      updateCharCount();
+      setStatus("Thread posted 🚀", "success");
+
+      await loadFeed();
+    }
+
+    async function loadFeed() {
+      const threadsRequest = supabaseClient
+        .from("threads")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      const likesRequest = supabaseClient
+        .from("thread_likes")
+        .select("*");
+
+      const profilesRequest = supabaseClient
+        .from("profiles")
+        .select("*");
+
+      const [threadsResponse, likesResponse, profilesResponse] = await Promise.all([
+        threadsRequest,
+        likesRequest,
+        profilesRequest
+      ]);
+
+      if (threadsResponse.error) {
+        setStatus(threadsResponse.error.message, "error");
+        return;
+      }
+
+      if (likesResponse.error) {
+        setStatus(likesResponse.error.message, "error");
+        return;
+      }
+
+      if (profilesResponse.error) {
+        setStatus(profilesResponse.error.message, "error");
+        return;
+      }
+
+      threads = threadsResponse.data || [];
+      likes = likesResponse.data || [];
+      profiles = profilesResponse.data || [];
+
+      if (currentUser) {
+        currentProfile = getProfileByUserId(currentUser.id) || currentProfile;
+        updateProfileUI();
+        updateAuthUI();
+      }
+
+      updatePublicProfileUI();
+      renderThreads();
+
+      if (
+        !statusMsg.textContent.includes("posted") &&
+        !statusMsg.textContent.includes("Liked") &&
+        !statusMsg.textContent.includes("removed") &&
+        !statusMsg.textContent.includes("deleted") &&
+        !statusMsg.textContent.includes("saved") &&
+        !statusMsg.textContent.includes("restored")
+      ) {
+        setStatus("");
+      }
+    }
+
+    function getVisibleThreads() {
+      if (viewedProfileId) {
+        return threads.filter((thread) => thread.user_id === viewedProfileId);
+      }
+
+      if (activeFilter === "mine" && currentUser) {
+        return threads.filter((thread) => thread.user_id === currentUser.id);
+      }
+
+      return threads;
+    }
+
+    function renderThreads() {
+      totalThreads.textContent = threads.length;
+
+      const ownCount = currentUser
+        ? threads.filter((thread) => thread.user_id === currentUser.id).length
+        : 0;
+
+      myThreads.textContent = ownCount;
+
+      const visibleThreads = getVisibleThreads();
+
+      if (!visibleThreads.length) {
+        const message = viewedProfileId
+          ? "This profile has not posted yet."
+          : activeFilter === "mine"
+            ? "You have not posted yet. Drop your first founder thought."
+            : "Be the first founder to post something powerful.";
+
+        threadsList.innerHTML = `
+          <div class="empty-state">
+            <strong>No threads yet.</strong>
+            ${message}
+          </div>
+        `;
+        return;
+      }
+
+      threadsList.innerHTML = visibleThreads
+        .map((thread) => {
+          const isOwner = currentUser && thread.user_id === currentUser.id;
+          const likedByUser = userLikedThread(thread.id);
+          const likeCount = getThreadLikeCount(thread.id);
+          const profile = getProfileByUserId(thread.user_id);
+
+          const avatar =
+            profile?.avatar_url ||
+            thread.user_avatar ||
+            fallbackAvatar(thread.user_email || "User");
+
+          const name =
+            profile?.full_name ||
+            thread.user_name ||
+            "User";
+
+          const username =
+            profile?.username
+              ? `@${profile.username}`
+              : thread.user_email || "";
+
+          const content = escapeHTML(thread.content);
+          const date = formatDate(thread.created_at);
+
+          return `
+            <article class="thread-card">
+              <div class="thread-top">
+                <button class="thread-user" data-profile-id="${escapeHTML(thread.user_id)}">
+                  <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
+                  <div>
+                    <strong>${escapeHTML(name)}</strong>
+                    <span>${escapeHTML(username)} · ${escapeHTML(date)}</span>
+                  </div>
+                </button>
+              </div>
+
+              <p class="thread-content">${content}</p>
+
+              <div class="thread-actions">
+                <div class="action-left">
+                  <button
+                    class="mini-action like-action ${likedByUser ? "liked" : ""}"
+                    data-like-id="${escapeHTML(thread.id)}"
+                  >
+                    ${likedByUser ? "♥ Liked" : "♡ Like"} · ${likeCount}
+                  </button>
+                </div>
+
+                ${
+                  isOwner
+                    ? `<button class="mini-action delete-action" data-delete-id="${escapeHTML(thread.id)}">Delete</button>`
+                    : ""
+                }
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+
+      bindThreadActions();
+    }
+
+    function bindThreadActions() {
+      document.querySelectorAll("[data-profile-id]").forEach((button) => {
+        button.addEventListener("click", () => {
+          openPublicProfile(button.dataset.profileId);
+        });
+      });
+
+      document.querySelectorAll("[data-like-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const id = button.dataset.likeId;
+          await likeThread(id);
+        });
+      });
+
+      document.querySelectorAll("[data-delete-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const id = button.dataset.deleteId;
+          await deleteThread(id);
+        });
+      });
+    }
+
+    function openPublicProfile(userId) {
+      viewedProfileId = userId;
+      activeFilter = "profile";
+
+      updateFilterUI();
+      updatePublicProfileUI();
+      renderThreads();
+
+      publicProfileView.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    function closePublicProfile() {
+      viewedProfileId = null;
+      activeFilter = "all";
+
+      updatePublicProfileUI();
+      updateFilterUI();
+      renderThreads();
+    }
+
+    async function likeThread(id) {
+      if (!currentUser) {
+        setStatus("Sign in to like threads.", "error");
+        return;
+      }
+
+      const alreadyLiked = userLikedThread(id);
+
+      if (alreadyLiked) {
+        const { error } = await supabaseClient
+          .from("thread_likes")
+          .delete()
+          .eq("thread_id", id)
+          .eq("user_id", currentUser.id);
+
+        if (error) {
+          setStatus(error.message, "error");
+          return;
+        }
+
+        setStatus("Like removed.");
+      } else {
+        const { error } = await supabaseClient
+          .from("thread_likes")
+          .insert({
+            thread_id: id,
+            user_id: currentUser.id
+          });
+
+        if (error) {
+          setStatus(error.message, "error");
+          return;
+        }
+
+        setStatus("Liked 🚀", "success");
+      }
+
+      await loadFeed();
+    }
+
+    async function deleteThread(id) {
+      if (!currentUser) {
+        setStatus("You need to be logged in.", "error");
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from("threads")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      setStatus("Thread deleted.", "success");
+      await loadFeed();
+    }
+
+    function updateCharCount() {
+      charCount.textContent = `${threadInput.value.length} / 280`;
+    }
+
+    function updateFilterUI() {
+      allPostsBtn.classList.toggle("active", activeFilter === "all");
+      myPostsBtn.classList.toggle("active", activeFilter === "mine");
+
+      if (activeFilter === "mine") {
+        feedTitle.textContent = "My Threads";
+      } else if (activeFilter === "profile") {
+        feedTitle.textContent = "Profile Threads";
+      } else {
+        feedTitle.textContent = "Latest Threads";
+      }
+    }
+
+    function setFilter(filter) {
+      if (filter === "mine" && !currentUser) {
+        setStatus("Sign in to see your posts.", "error");
+        return;
+      }
+
+      viewedProfileId = null;
+      activeFilter = filter;
+
+      updatePublicProfileUI();
+      updateFilterUI();
+      renderThreads();
+    }
+
+    function subscribeToRealtime() {
+      if (realtimeChannel) {
+        supabaseClient.removeChannel(realtimeChannel);
+      }
+
+      realtimeChannel = supabaseClient
+        .channel("threadwave-realtime")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "threads"
+          },
+          async () => {
+            await loadFeed();
+          }
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "thread_likes"
+          },
+          async () => {
+            await loadFeed();
+          }
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "profiles"
+          },
+          async () => {
+            await loadFeed();
+          }
+        )
+        .subscribe();
+    }
+
+    loginBtn.addEventListener("click", signInWithGoogle);
+    logoutBtn.addEventListener("click", signOut);
+    postBtn.addEventListener("click", createThread);
+    saveProfileBtn.addEventListener("click", saveProfile);
+
+    allPostsBtn.addEventListener("click", () => setFilter("all"));
+    myPostsBtn.addEventListener("click", () => setFilter("mine"));
+    backToFeedBtn.addEventListener("click", closePublicProfile);
+
+    refreshBtn.addEventListener("click", async () => {
+      setStatus("Refreshing...");
+      await loadFeed();
+    });
+
+    threadInput.addEventListener("input", updateCharCount);
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      currentUser = session?.user || null;
+
+      setTimeout(async () => {
+        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+          if (currentUser) {
+            await upsertProfile();
+          }
+        }
+
+        if (event === "SIGNED_OUT") {
+          currentProfile = null;
+          activeFilter = "all";
+          viewedProfileId = null;
+        }
+
+        updateAuthUI();
+        updateProfileUI();
+        updateFilterUI();
+        updatePublicProfileUI();
+
+        if (appStarted) {
+          await loadFeed();
+        }
+      }, 0);
+    });
+
+    async function init() {
+      appStarted = false;
+
+      updateCharCount();
+      updateFilterUI();
+      setStatus("Checking session...");
+
+      const { data, error } = await supabaseClient.auth.getSession();
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      currentUser = data.session?.user || null;
+
+      if (currentUser) {
+        await upsertProfile();
+        updateAuthUI();
+        updateProfileUI();
+        setStatus("Session restored 🚀", "success");
+      } else {
+        updateAuthUI();
+        updateProfileUI();
+        setStatus("");
+      }
+
+      await loadFeed();
+      subscribeToRealtime();
+
+      appStarted = true;
+    }
+
+    init();
+  </script>
 </body>
 </html>
