@@ -1,3 +1,5 @@
+let selectedThreadImageFile = null;
+
 function getPageName() {
   const path = window.location.pathname.toLowerCase();
 
@@ -173,6 +175,79 @@ function closeThreadModal() {
   document.body.style.overflow = "";
 }
 
+function resetThreadImagePicker() {
+  selectedThreadImageFile = null;
+
+  const modalImageInput = document.getElementById("modalImageInput");
+  const modalImagePreviewWrap = document.getElementById("modalImagePreviewWrap");
+  const modalImagePreview = document.getElementById("modalImagePreview");
+  const modalImageName = document.getElementById("modalImageName");
+
+  if (modalImageInput) {
+    modalImageInput.value = "";
+  }
+
+  if (modalImagePreview) {
+    modalImagePreview.src = "";
+  }
+
+  if (modalImageName) {
+    modalImageName.textContent = "";
+  }
+
+  if (modalImagePreviewWrap) {
+    modalImagePreviewWrap.classList.add("hidden");
+  }
+}
+
+function handleThreadImageSelect(event) {
+  const file = event.target.files?.[0];
+
+  if (!file) {
+    resetThreadImagePicker();
+    return;
+  }
+
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
+  if (!allowedTypes.includes(file.type)) {
+    setStatus("Please upload a JPG, PNG, WEBP, or GIF image.", "error");
+    resetThreadImagePicker();
+    return;
+  }
+
+  const maxSizeInMB = 6;
+  const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
+  if (file.size > maxSizeInBytes) {
+    setStatus(`Image must be under ${maxSizeInMB}MB.`, "error");
+    resetThreadImagePicker();
+    return;
+  }
+
+  selectedThreadImageFile = file;
+
+  const modalImagePreviewWrap = document.getElementById("modalImagePreviewWrap");
+  const modalImagePreview = document.getElementById("modalImagePreview");
+  const modalImageName = document.getElementById("modalImageName");
+
+  const previewUrl = URL.createObjectURL(file);
+
+  if (modalImagePreview) {
+    modalImagePreview.src = previewUrl;
+  }
+
+  if (modalImageName) {
+    modalImageName.textContent = file.name;
+  }
+
+  if (modalImagePreviewWrap) {
+    modalImagePreviewWrap.classList.remove("hidden");
+  }
+
+  setStatus("Image ready to upload 🚀", "success");
+}
+
 function updateModalCharCount() {
   const modalThreadInput = document.getElementById("modalThreadInput");
   const modalCharCount = document.getElementById("modalCharCount");
@@ -187,6 +262,8 @@ function setupThreadModal() {
   const modalCloseBtn = document.getElementById("modalCloseBtn");
   const modalThreadInput = document.getElementById("modalThreadInput");
   const modalUploadBtn = document.getElementById("modalUploadBtn");
+  const modalImageInput = document.getElementById("modalImageInput");
+  const modalRemoveImageBtn = document.getElementById("modalRemoveImageBtn");
 
   if (!modalBackdrop) return;
 
@@ -208,6 +285,14 @@ function setupThreadModal() {
 
   if (modalThreadInput) {
     modalThreadInput.addEventListener("input", updateModalCharCount);
+  }
+
+  if (modalImageInput) {
+    modalImageInput.addEventListener("change", handleThreadImageSelect);
+  }
+
+  if (modalRemoveImageBtn) {
+    modalRemoveImageBtn.addEventListener("click", resetThreadImagePicker);
   }
 
   if (modalUploadBtn) {
@@ -254,7 +339,7 @@ function renderThreadModal() {
         <div class="modal-head">
           <div>
             <h2 id="threadModalTitle">Create thread</h2>
-            <p>Write your next move. Keep it sharp.</p>
+            <p>Write your next move. Add an image if it makes the post hit harder.</p>
           </div>
 
           <button id="modalCloseBtn" class="modal-close" type="button" aria-label="Close modal">
@@ -268,6 +353,39 @@ function renderThreadModal() {
           maxlength="280"
           placeholder="What's building in your mind today?"
         ></textarea>
+
+        <div class="image-upload-box">
+          <label class="image-upload-label" for="modalImageInput">
+            <span class="image-upload-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 20a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H5Zm0-2h14a1 1 0 0 0 1-1v-1.6l-3.7-3.7a1 1 0 0 0-1.4 0L12 14.6l-1.8-1.8a1 1 0 0 0-1.4 0L4 17.6A1 1 0 0 0 5 18Zm13-9.5A1.5 1.5 0 1 0 18 5a1.5 1.5 0 0 0 0 3.5Z"></path>
+              </svg>
+            </span>
+
+            <span>
+              <strong>Add image</strong>
+              <small>JPG, PNG, WEBP or GIF · max 6MB</small>
+            </span>
+          </label>
+
+          <input
+            id="modalImageInput"
+            class="image-upload-input"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+          />
+
+          <div id="modalImagePreviewWrap" class="image-preview-wrap hidden">
+            <img id="modalImagePreview" src="" alt="Selected image preview" />
+
+            <div class="image-preview-meta">
+              <strong id="modalImageName"></strong>
+              <button id="modalRemoveImageBtn" class="mini-action delete-action" type="button">
+                Remove image
+              </button>
+            </div>
+          </div>
+        </div>
 
         <div class="modal-footer">
           <span id="modalCharCount">0 / 280</span>
