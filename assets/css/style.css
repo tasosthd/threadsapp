@@ -216,6 +216,13 @@ button {
   background: rgba(255, 255, 255, 0.72);
 }
 
+.desktop-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
 .main-grid {
   display: grid;
   grid-template-columns: 340px 1fr;
@@ -965,6 +972,10 @@ input::placeholder {
 
   .user-box {
     justify-content: space-between;
+  }
+
+  .desktop-profile-btn {
+    display: none;
   }
 
   .main-grid {
