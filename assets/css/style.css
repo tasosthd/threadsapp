@@ -622,7 +622,7 @@ input::placeholder {
 
 .thread-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 14px;
@@ -633,6 +633,7 @@ input::placeholder {
   align-items: center;
   gap: 12px;
   min-width: 0;
+  flex: 1 1 auto;
   border: 0;
   background: transparent;
   padding: 0;
@@ -738,7 +739,12 @@ input::placeholder {
 }
 
 .feed-follow-btn {
+  width: auto;
+  min-width: 92px;
   flex: 0 0 auto;
+  padding: 9px 14px;
+  text-align: center;
+  white-space: nowrap;
   color: #fff;
   border-color: rgba(0, 188, 231, 0.2);
   background: linear-gradient(135deg, var(--cyan), var(--blue));
@@ -1108,7 +1114,7 @@ input::placeholder {
   }
 }
 
-/* Desktop keeps the same navigation bar as phone */
+/* Desktop keeps bottom navigation visible */
 
 @media (min-width: 901px) {
   body {
@@ -1221,16 +1227,27 @@ input::placeholder {
   }
 
   .thread-top {
-    align-items: flex-start;
-    gap: 12px;
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .thread-user {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .thread-user img {
+    width: 42px;
+    height: 42px;
   }
 
   .thread-user strong {
-    max-width: 180px;
+    max-width: 150px;
   }
 
   .thread-user span {
-    max-width: 220px;
+    max-width: 160px;
   }
 
   .thread-actions {
@@ -1238,18 +1255,22 @@ input::placeholder {
     flex-direction: column;
   }
 
-  .action-left,
-  .mini-action {
+  .action-left {
     width: 100%;
   }
 
-  .mini-action {
+  .thread-actions .mini-action:not(.feed-follow-btn) {
+    width: 100%;
     text-align: center;
   }
 
   .feed-follow-btn {
+    width: auto !important;
+    min-width: 86px;
+    flex: 0 0 auto;
     padding: 8px 12px;
     font-size: 12px;
+    border-radius: 999px;
   }
 
   .comments-list {
@@ -1264,50 +1285,5 @@ input::placeholder {
 
   .comment-textarea {
     min-height: 96px;
-  }
-}
-/* Fix feed Follow button layout on mobile */
-
-.thread-top {
-  align-items: center;
-}
-
-.thread-top .thread-user {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.feed-follow-btn {
-  width: auto;
-  min-width: 92px;
-  padding: 9px 14px;
-  text-align: center;
-  white-space: nowrap;
-}
-
-@media (max-width: 560px) {
-  .thread-top {
-    align-items: center;
-    flex-direction: row;
-    gap: 10px;
-  }
-
-  .thread-top .thread-user {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-
-  .thread-top .thread-user img {
-    width: 42px;
-    height: 42px;
-  }
-
-  .feed-follow-btn {
-    width: auto !important;
-    min-width: 86px;
-    flex: 0 0 auto;
-    padding: 8px 12px;
-    font-size: 12px;
-    border-radius: 999px;
   }
 }
