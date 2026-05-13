@@ -77,6 +77,10 @@ async function loadFeed() {
     await loadComments();
   }
 
+  if (typeof loadFollows === "function") {
+    await loadFollows();
+  }
+
   if (currentUser) {
     currentProfile = getProfileByUserId(currentUser.id) || currentProfile;
     updateSharedAuthUI();
@@ -95,7 +99,9 @@ async function loadFeed() {
     !statusText.includes("removed") &&
     !statusText.includes("deleted") &&
     !statusText.includes("saved") &&
-    !statusText.includes("restored")
+    !statusText.includes("restored") &&
+    !statusText.includes("Followed") &&
+    !statusText.includes("Unfollowed")
   ) {
     setStatus("");
   }
@@ -127,6 +133,16 @@ function getVisibleThreads() {
     return threads.filter((thread) => thread.user_id === currentUser.id);
   }
 
+  if (activeFilter === "following" && currentUser) {
+    if (typeof getFollowingIdsForCurrentUser !== "function") {
+      return [];
+    }
+
+    const followingIds = getFollowingIdsForCurrentUser();
+
+    return threads.filter((thread) => followingIds.includes(thread.user_id));
+  }
+
   return threads;
 }
 
@@ -141,7 +157,9 @@ function renderThreads() {
       ? "This profile has not posted yet."
       : activeFilter === "mine"
         ? "You have not posted yet. Drop your first founder thought."
-        : "Be the first founder to post something powerful.";
+        : activeFilter === "following"
+          ? "No posts from people you follow yet. Follow some creators first."
+          : "Be the first founder to post something powerful.";
 
     threadsList.innerHTML = `
       <div class="empty-state">
@@ -262,6 +280,7 @@ function bindThreadActions() {
 function updateFilterUI() {
   const allPostsBtn = document.getElementById("allPostsBtn");
   const myPostsBtn = document.getElementById("myPostsBtn");
+  const followingPostsBtn = document.getElementById("followingPostsBtn");
   const feedTitle = document.getElementById("feedTitle");
 
   if (allPostsBtn) {
@@ -272,10 +291,16 @@ function updateFilterUI() {
     myPostsBtn.classList.toggle("active", activeFilter === "mine");
   }
 
+  if (followingPostsBtn) {
+    followingPostsBtn.classList.toggle("active", activeFilter === "following");
+  }
+
   if (!feedTitle) return;
 
   if (activeFilter === "mine") {
     feedTitle.textContent = "My Threads";
+  } else if (activeFilter === "following") {
+    feedTitle.textContent = "Following";
   } else if (activeFilter === "profile") {
     feedTitle.textContent = "Profile Threads";
   } else {
@@ -286,6 +311,11 @@ function updateFilterUI() {
 function setFilter(filter) {
   if (filter === "mine" && !currentUser) {
     setStatus("Sign in to see your posts.", "error");
+    return;
+  }
+
+  if (filter === "following" && !currentUser) {
+    setStatus("Sign in to see your following feed.", "error");
     return;
   }
 
@@ -337,6 +367,9 @@ function updatePublicProfileUI() {
   const publicProfileBio = document.getElementById("publicProfileBio");
   const publicProfilePosts = document.getElementById("publicProfilePosts");
   const publicProfileLikes = document.getElementById("publicProfileLikes");
+  const publicProfileFollowers = document.getElementById("publicProfileFollowers");
+  const publicProfileFollowing = document.getElementById("publicProfileFollowing");
+  const publicProfileFollowWrap = document.getElementById("publicProfileFollowWrap");
 
   if (!viewedProfileId) {
     publicProfileView.classList.add("hidden");
@@ -383,7 +416,42 @@ function updatePublicProfileUI() {
     publicProfileLikes.textContent = `${getUserTotalLikes(viewedProfileId)} total likes`;
   }
 
+  if (publicProfileFollowers && typeof getFollowerCount === "function") {
+    const followerCount = getFollowerCount(viewedProfileId);
+    publicProfileFollowers.textContent = `${followerCount} ${followerCount === 1 ? "follower" : "followers"}`;
+  }
+
+  if (publicProfileFollowing && typeof getFollowingCount === "function") {
+    const followingCount = getFollowingCount(viewedProfileId);
+    publicProfileFollowing.textContent = `${followingCount} following`;
+  }
+
+  if (publicProfileFollowWrap) {
+    if (!currentUser || viewedProfileId === currentUser.id) {
+      publicProfileFollowWrap.innerHTML = "";
+    } else {
+      const alreadyFollowing =
+        typeof isFollowingUser === "function"
+          ? isFollowingUser(viewedProfileId)
+          : false;
+
+      publicProfileFollowWrap.innerHTML = `
+        <button
+          class="btn ${alreadyFollowing ? "ghost-btn" : "primary-btn"} follow-btn"
+          type="button"
+          data-follow-user-id="${escapeHTML(viewedProfileId)}"
+        >
+          ${alreadyFollowing ? "Following" : "Follow"}
+        </button>
+      `;
+    }
+  }
+
   publicProfileView.classList.remove("hidden");
+
+  if (typeof bindFollowButtons === "function") {
+    bindFollowButtons();
+  }
 }
 
 async function uploadThreadFromModal() {
@@ -563,12 +631,24 @@ function subscribeToRealtime() {
         await loadFeed();
       }
     )
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "thread_follows"
+      },
+      async () => {
+        await loadFeed();
+      }
+    )
     .subscribe();
 }
 
 function setupFeedButtons() {
   const allPostsBtn = document.getElementById("allPostsBtn");
   const myPostsBtn = document.getElementById("myPostsBtn");
+  const followingPostsBtn = document.getElementById("followingPostsBtn");
   const refreshBtn = document.getElementById("refreshBtn");
   const backToFeedBtn = document.getElementById("backToFeedBtn");
 
@@ -578,6 +658,10 @@ function setupFeedButtons() {
 
   if (myPostsBtn) {
     myPostsBtn.addEventListener("click", () => setFilter("mine"));
+  }
+
+  if (followingPostsBtn) {
+    followingPostsBtn.addEventListener("click", () => setFilter("following"));
   }
 
   if (refreshBtn) {
