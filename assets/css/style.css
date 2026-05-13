@@ -1194,3 +1194,61 @@ input::placeholder {
     min-height: 96px;
   }
 }
+/* Follow system */
+
+.public-profile-follow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.follow-btn {
+  min-width: 132px;
+}
+
+.follow-btn.primary-btn {
+  color: #fff;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 14px 30px rgba(0, 188, 231, 0.28);
+}
+
+.follow-btn.ghost-btn {
+  color: var(--cyan-dark);
+  border: 1px solid rgba(0, 188, 231, 0.24);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.follow-btn.ghost-btn:hover {
+  color: #fff;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 14px 30px rgba(0, 188, 231, 0.22);
+}
+
+#followingPostsBtn.active {
+  color: #fff;
+  border-color: rgba(0, 188, 231, 0.2);
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 12px 24px rgba(0, 188, 231, 0.2);
+}
+
+.public-profile-stat {
+  transition: 0.2s ease;
+}
+
+.public-profile-stat:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 188, 231, 0.24);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+@media (max-width: 560px) {
+  .public-profile-follow,
+  .follow-btn {
+    width: 100%;
+  }
+
+  .follow-btn {
+    justify-content: center;
+  }
+}
