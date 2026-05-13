@@ -200,6 +200,25 @@ function renderThreads() {
       const content = escapeHTML(thread.content);
       const date = formatDate(thread.created_at);
 
+      const canFollowUser = currentUser && thread.user_id !== currentUser.id;
+
+      const alreadyFollowing =
+        typeof isFollowingUser === "function"
+          ? isFollowingUser(thread.user_id)
+          : false;
+
+      const feedFollowButton = canFollowUser
+        ? `
+          <button
+            class="mini-action feed-follow-btn ${alreadyFollowing ? "following" : ""}"
+            type="button"
+            data-follow-user-id="${escapeHTML(thread.user_id)}"
+          >
+            ${alreadyFollowing ? "Following" : "Follow"}
+          </button>
+        `
+        : "";
+
       return `
         <article class="thread-card">
           <div class="thread-top">
@@ -210,6 +229,8 @@ function renderThreads() {
                 <span>${escapeHTML(username)} · ${escapeHTML(date)}</span>
               </div>
             </button>
+
+            ${feedFollowButton}
           </div>
 
           <p class="thread-content">${content}</p>
@@ -275,6 +296,10 @@ function bindThreadActions() {
       await deleteThread(id);
     });
   });
+
+  if (typeof bindFollowButtons === "function") {
+    bindFollowButtons();
+  }
 }
 
 function updateFilterUI() {
