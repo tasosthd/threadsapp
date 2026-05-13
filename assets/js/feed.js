@@ -34,6 +34,51 @@ function userLikedThread(threadId) {
   });
 }
 
+function getFileExtension(file) {
+  const nameParts = file.name.split(".");
+  const extensionFromName = nameParts.length > 1 ? nameParts.pop().toLowerCase() : "";
+
+  if (extensionFromName) {
+    return extensionFromName;
+  }
+
+  const mimeMap = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif"
+  };
+
+  return mimeMap[file.type] || "jpg";
+}
+
+async function uploadThreadImage(file) {
+  if (!currentUser || !file) return null;
+
+  const extension = getFileExtension(file);
+  const safeTimestamp = Date.now();
+  const randomId = Math.random().toString(36).slice(2, 10);
+  const filePath = `${currentUser.id}/${safeTimestamp}-${randomId}.${extension}`;
+
+  const { error: uploadError } = await supabaseClient.storage
+    .from("thread-images")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false
+    });
+
+  if (uploadError) {
+    setStatus(uploadError.message, "error");
+    return null;
+  }
+
+  const { data } = supabaseClient.storage
+    .from("thread-images")
+    .getPublicUrl(filePath);
+
+  return data?.publicUrl || null;
+}
+
 async function loadFeed() {
   const threadsRequest = supabaseClient
     .from("threads")
@@ -95,6 +140,8 @@ async function loadFeed() {
   if (
     !statusText.includes("posted") &&
     !statusText.includes("uploaded") &&
+    !statusText.includes("Uploading") &&
+    !statusText.includes("Image") &&
     !statusText.includes("Liked") &&
     !statusText.includes("removed") &&
     !statusText.includes("deleted") &&
@@ -197,7 +244,7 @@ function renderThreads() {
           ? `@${profile.username}`
           : thread.user_email || "";
 
-      const content = escapeHTML(thread.content);
+      const content = escapeHTML(thread.content || "");
       const date = formatDate(thread.created_at);
 
       const canFollowUser = currentUser && thread.user_id !== currentUser.id;
@@ -219,6 +266,23 @@ function renderThreads() {
         `
         : "";
 
+      const threadImage = thread.image_url
+        ? `
+          <div class="thread-image-wrap">
+            <img
+              class="thread-image"
+              src="${escapeHTML(thread.image_url)}"
+              alt="Thread image"
+              loading="lazy"
+            />
+          </div>
+        `
+        : "";
+
+      const threadText = content
+        ? `<p class="thread-content">${content}</p>`
+        : "";
+
       return `
         <article class="thread-card">
           <div class="thread-top">
@@ -233,7 +297,8 @@ function renderThreads() {
             ${feedFollowButton}
           </div>
 
-          <p class="thread-content">${content}</p>
+          ${threadText}
+          ${threadImage}
 
           <div class="thread-actions">
             <div class="action-left">
@@ -486,6 +551,10 @@ async function uploadThreadFromModal() {
   if (!modalThreadInput) return;
 
   const content = modalThreadInput.value.trim();
+  const imageFile =
+    typeof selectedThreadImageFile !== "undefined"
+      ? selectedThreadImageFile
+      : null;
 
   if (!currentUser) {
     setStatus("Sign in first to create a thread.", "error");
@@ -493,8 +562,8 @@ async function uploadThreadFromModal() {
     return;
   }
 
-  if (!content) {
-    setStatus("Write something first.", "error");
+  if (!content && !imageFile) {
+    setStatus("Write something or add an image first.", "error");
     return;
   }
 
@@ -505,7 +574,27 @@ async function uploadThreadFromModal() {
 
   if (modalUploadBtn) {
     modalUploadBtn.disabled = true;
-    modalUploadBtn.textContent = "Uploading...";
+    modalUploadBtn.textContent = imageFile ? "Uploading image..." : "Uploading...";
+  }
+
+  let imageUrl = null;
+
+  if (imageFile) {
+    setStatus("Uploading image...", "success");
+    imageUrl = await uploadThreadImage(imageFile);
+
+    if (!imageUrl) {
+      if (modalUploadBtn) {
+        modalUploadBtn.disabled = false;
+        modalUploadBtn.textContent = "Upload";
+      }
+
+      return;
+    }
+  }
+
+  if (modalUploadBtn) {
+    modalUploadBtn.textContent = "Publishing...";
   }
 
   const meta = getUserMeta(currentUser);
@@ -517,7 +606,8 @@ async function uploadThreadFromModal() {
       user_email: currentProfile?.email || meta.email,
       user_name: currentProfile?.full_name || meta.name,
       user_avatar: currentProfile?.avatar_url || meta.avatar,
-      content
+      content,
+      image_url: imageUrl
     });
 
   if (modalUploadBtn) {
@@ -532,6 +622,11 @@ async function uploadThreadFromModal() {
 
   modalThreadInput.value = "";
   updateModalCharCount();
+
+  if (typeof resetThreadImagePicker === "function") {
+    resetThreadImagePicker();
+  }
+
   closeThreadModal();
 
   viewedProfileId = null;
