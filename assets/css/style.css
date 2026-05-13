@@ -1252,3 +1252,36 @@ input::placeholder {
     justify-content: center;
   }
 }
+/* Feed follow buttons */
+
+.feed-follow-btn {
+  flex: 0 0 auto;
+  color: #fff;
+  border-color: rgba(0, 188, 231, 0.2);
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 12px 24px rgba(0, 188, 231, 0.18);
+}
+
+.feed-follow-btn.following {
+  color: var(--cyan-dark);
+  border: 1px solid rgba(0, 188, 231, 0.24);
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: none;
+}
+
+.feed-follow-btn.following:hover {
+  color: #fff;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 12px 24px rgba(0, 188, 231, 0.18);
+}
+
+@media (max-width: 560px) {
+  .thread-top {
+    gap: 12px;
+  }
+
+  .feed-follow-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
