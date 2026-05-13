@@ -1178,29 +1178,6 @@
       await loadFeed();
     }
 
-    async function restoreSession() {
-      setStatus("Checking session...");
-
-      const { data, error } = await supabaseClient.auth.getSession();
-
-      if (error) {
-        setStatus(error.message, "error");
-        return;
-      }
-
-      currentUser = data.session?.user || null;
-
-      if (currentUser) {
-        await upsertProfile();
-        setStatus("Session restored 🚀", "success");
-      } else {
-        setStatus("");
-      }
-
-      updateAuthUI();
-      updateProfileUI();
-    }
-
     async function createThread() {
       const content = threadInput.value.trim();
 
@@ -1562,6 +1539,7 @@
 
     threadInput.addEventListener("input", updateCharCount);
 
+    // Fixed initialization: set up auth listener first, then initialize
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
       currentUser = session?.user || null;
 
@@ -1586,12 +1564,25 @@
       updateCharCount();
       updateFilterUI();
 
-      await restoreSession();
+      // Get the session immediately before loading anything
+      const { data } = await supabaseClient.auth.getSession();
+      currentUser = data.session?.user || null;
+
+      if (currentUser) {
+        await upsertProfile();
+      }
+
+      updateAuthUI();
+      updateProfileUI();
+
+      // Load initial feed
       await loadFeed();
 
+      // Subscribe to realtime updates only after initial load
       subscribeToRealtime();
     }
 
+    // Start initialization
     init();
   </script>
 </body>
