@@ -1266,3 +1266,48 @@ input::placeholder {
     min-height: 96px;
   }
 }
+/* Fix feed Follow button layout on mobile */
+
+.thread-top {
+  align-items: center;
+}
+
+.thread-top .thread-user {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.feed-follow-btn {
+  width: auto;
+  min-width: 92px;
+  padding: 9px 14px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .thread-top {
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .thread-top .thread-user {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .thread-top .thread-user img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .feed-follow-btn {
+    width: auto !important;
+    min-width: 86px;
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 999px;
+  }
+}
