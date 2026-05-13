@@ -226,12 +226,6 @@
       background: rgba(255, 255, 255, 0.72);
     }
 
-    .danger-btn {
-      color: var(--danger);
-      border: 1px solid rgba(236, 75, 75, 0.2);
-      background: rgba(255, 255, 255, 0.72);
-    }
-
     .main-grid {
       display: grid;
       grid-template-columns: 320px 1fr;
@@ -510,6 +504,13 @@
       transform: translateY(-2px);
     }
 
+    .like-action.liked {
+      color: #fff;
+      border-color: rgba(0, 188, 231, 0.2);
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      box-shadow: 0 12px 24px rgba(0, 188, 231, 0.22);
+    }
+
     .delete-action {
       color: var(--danger);
     }
@@ -680,7 +681,7 @@
           <h2>Your private social engine.</h2>
           <p>
             A clean Threads-style app using Google login, Supabase Auth,
-            Postgres cloud sync, and realtime updates.
+            Postgres cloud sync, real likes, and realtime updates.
           </p>
         </section>
 
@@ -766,6 +767,7 @@
 
     let currentUser = null;
     let threads = [];
+    let likes = [];
 
     function setStatus(message, type = "") {
       statusMsg.textContent = message || "";
@@ -808,6 +810,22 @@
       };
     }
 
+    function getThreadLikes(threadId) {
+      return likes.filter((like) => like.thread_id === threadId);
+    }
+
+    function getThreadLikeCount(threadId) {
+      return getThreadLikes(threadId).length;
+    }
+
+    function userLikedThread(threadId) {
+      if (!currentUser) return false;
+
+      return likes.some((like) => {
+        return like.thread_id === threadId && like.user_id === currentUser.id;
+      });
+    }
+
     async function signInWithGoogle() {
       setStatus("Opening Google login...");
 
@@ -837,7 +855,7 @@
 
       currentUser = null;
       updateAuthUI();
-      await loadThreads();
+      await loadFeed();
       setStatus("Logged out.");
     }
 
@@ -926,24 +944,45 @@
       updateCharCount();
       setStatus("Thread posted 🚀", "success");
 
-      await loadThreads();
+      await loadFeed();
     }
 
-    async function loadThreads() {
-      const { data, error } = await supabaseClient
+    async function loadFeed() {
+      const threadsRequest = supabaseClient
         .from("threads")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) {
-        setStatus(error.message, "error");
+      const likesRequest = supabaseClient
+        .from("thread_likes")
+        .select("*");
+
+      const [threadsResponse, likesResponse] = await Promise.all([
+        threadsRequest,
+        likesRequest
+      ]);
+
+      if (threadsResponse.error) {
+        setStatus(threadsResponse.error.message, "error");
         return;
       }
 
-      threads = data || [];
+      if (likesResponse.error) {
+        setStatus(likesResponse.error.message, "error");
+        return;
+      }
+
+      threads = threadsResponse.data || [];
+      likes = likesResponse.data || [];
+
       renderThreads();
 
-      if (!statusMsg.textContent.includes("posted")) {
+      if (
+        !statusMsg.textContent.includes("posted") &&
+        !statusMsg.textContent.includes("Liked") &&
+        !statusMsg.textContent.includes("removed") &&
+        !statusMsg.textContent.includes("deleted")
+      ) {
         setStatus("");
       }
     }
@@ -970,13 +1009,14 @@
       threadsList.innerHTML = threads
         .map((thread) => {
           const isOwner = currentUser && thread.user_id === currentUser.id;
+          const likedByUser = userLikedThread(thread.id);
+          const likeCount = getThreadLikeCount(thread.id);
 
           const avatar = thread.user_avatar || fallbackAvatar(thread.user_email || "User");
           const name = thread.user_name || "User";
           const email = thread.user_email || "";
           const content = escapeHTML(thread.content);
           const date = formatDate(thread.created_at);
-          const likes = Number(thread.likes || 0);
 
           return `
             <article class="thread-card">
@@ -994,8 +1034,11 @@
 
               <div class="thread-actions">
                 <div class="action-left">
-                  <button class="mini-action" data-like-id="${escapeHTML(thread.id)}" data-likes="${likes}">
-                    ♥ ${likes}
+                  <button
+                    class="mini-action like-action ${likedByUser ? "liked" : ""}"
+                    data-like-id="${escapeHTML(thread.id)}"
+                  >
+                    ${likedByUser ? "♥ Liked" : "♡ Like"} · ${likeCount}
                   </button>
                 </div>
 
@@ -1017,35 +1060,56 @@
       document.querySelectorAll("[data-like-id]").forEach((button) => {
         button.addEventListener("click", async () => {
           const id = button.dataset.likeId;
-          const likes = Number(button.dataset.likes || 0);
-
-          await likeThread(id, likes);
+          await likeThread(id);
         });
       });
 
       document.querySelectorAll("[data-delete-id]").forEach((button) => {
         button.addEventListener("click", async () => {
           const id = button.dataset.deleteId;
-
           await deleteThread(id);
         });
       });
     }
 
-    async function likeThread(id, currentLikes) {
-      const { error } = await supabaseClient
-        .from("threads")
-        .update({
-          likes: currentLikes + 1
-        })
-        .eq("id", id);
-
-      if (error) {
-        setStatus(error.message, "error");
+    async function likeThread(id) {
+      if (!currentUser) {
+        setStatus("Sign in to like threads.", "error");
         return;
       }
 
-      await loadThreads();
+      const alreadyLiked = userLikedThread(id);
+
+      if (alreadyLiked) {
+        const { error } = await supabaseClient
+          .from("thread_likes")
+          .delete()
+          .eq("thread_id", id)
+          .eq("user_id", currentUser.id);
+
+        if (error) {
+          setStatus(error.message, "error");
+          return;
+        }
+
+        setStatus("Like removed.");
+      } else {
+        const { error } = await supabaseClient
+          .from("thread_likes")
+          .insert({
+            thread_id: id,
+            user_id: currentUser.id
+          });
+
+        if (error) {
+          setStatus(error.message, "error");
+          return;
+        }
+
+        setStatus("Liked 🚀", "success");
+      }
+
+      await loadFeed();
     }
 
     async function deleteThread(id) {
@@ -1065,7 +1129,7 @@
       }
 
       setStatus("Thread deleted.", "success");
-      await loadThreads();
+      await loadFeed();
     }
 
     function updateCharCount() {
@@ -1083,7 +1147,18 @@
             table: "threads"
           },
           async () => {
-            await loadThreads();
+            await loadFeed();
+          }
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "thread_likes"
+          },
+          async () => {
+            await loadFeed();
           }
         )
         .subscribe();
@@ -1092,22 +1167,24 @@
     loginBtn.addEventListener("click", signInWithGoogle);
     logoutBtn.addEventListener("click", signOut);
     postBtn.addEventListener("click", createThread);
+
     refreshBtn.addEventListener("click", async () => {
       setStatus("Refreshing...");
-      await loadThreads();
+      await loadFeed();
     });
+
     threadInput.addEventListener("input", updateCharCount);
 
     supabaseClient.auth.onAuthStateChange((_event, session) => {
       currentUser = session?.user || null;
       updateAuthUI();
-      loadThreads();
+      loadFeed();
     });
 
     async function init() {
       updateCharCount();
       await getCurrentSession();
-      await loadThreads();
+      await loadFeed();
       subscribeToRealtime();
     }
 
