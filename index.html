@@ -51,7 +51,8 @@
     }
 
     button,
-    textarea {
+    textarea,
+    input {
       font: inherit;
     }
 
@@ -228,7 +229,7 @@
 
     .main-grid {
       display: grid;
-      grid-template-columns: 320px 1fr;
+      grid-template-columns: 340px 1fr;
       gap: 22px;
       margin-top: 24px;
     }
@@ -274,7 +275,8 @@
     }
 
     .intro-card p,
-    .roadmap-card li {
+    .roadmap-card li,
+    .profile-hint {
       color: var(--muted);
       font-size: 14px;
       line-height: 1.7;
@@ -282,6 +284,71 @@
 
     .intro-card p {
       margin-top: 12px;
+    }
+
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .profile-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .profile-top img {
+      width: 58px;
+      height: 58px;
+      border-radius: 20px;
+      object-fit: cover;
+      background: rgba(0, 188, 231, 0.12);
+    }
+
+    .profile-top h3 {
+      font-size: 18px;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+    }
+
+    .profile-top p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .profile-form {
+      display: grid;
+      gap: 10px;
+    }
+
+    .field-label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .input-field,
+    .bio-field {
+      width: 100%;
+      border: 1px solid var(--line);
+      outline: 0;
+      border-radius: 18px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .bio-field {
+      min-height: 92px;
+      resize: vertical;
+      line-height: 1.5;
     }
 
     .stats-card {
@@ -360,7 +427,8 @@
       line-height: 1.65;
     }
 
-    textarea::placeholder {
+    textarea::placeholder,
+    input::placeholder {
       color: #8ba4ad;
     }
 
@@ -391,6 +459,30 @@
       font-size: 25px;
       line-height: 1;
       letter-spacing: -0.04em;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 900;
+      transition: 0.2s ease;
+    }
+
+    .pill.active {
+      color: #fff;
+      border-color: rgba(0, 188, 231, 0.2);
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      box-shadow: 0 12px 24px rgba(0, 188, 231, 0.2);
     }
 
     .status-msg {
@@ -611,8 +703,14 @@
         flex-direction: column;
       }
 
-      .feed-top .btn {
+      .feed-top .btn,
+      .filter-pills,
+      .pill {
         width: 100%;
+      }
+
+      .pill {
+        text-align: center;
       }
 
       .thread-top {
@@ -680,8 +778,41 @@
           <span class="eyebrow">Founder feed</span>
           <h2>Your private social engine.</h2>
           <p>
-            A clean Threads-style app using Google login, Supabase Auth,
-            Postgres cloud sync, real likes, and realtime updates.
+            Google login, Supabase Auth, cloud posts, real likes, realtime updates,
+            and now creator profiles.
+          </p>
+        </section>
+
+        <section id="profileCard" class="glass-card profile-card hidden">
+          <span class="eyebrow">Your profile</span>
+
+          <div class="profile-top">
+            <img id="profileAvatar" src="" alt="Profile avatar" />
+            <div>
+              <h3 id="profileDisplayName">Your Name</h3>
+              <p id="profileUsername">@username</p>
+            </div>
+          </div>
+
+          <div class="profile-form">
+            <label class="field-label">
+              Username
+              <input id="usernameInput" class="input-field" maxlength="28" placeholder="your_username" />
+            </label>
+
+            <label class="field-label">
+              Bio
+              <textarea id="bioInput" class="bio-field" maxlength="160" placeholder="Write your founder bio..."></textarea>
+            </label>
+
+            <button id="saveProfileBtn" class="btn primary-btn">Save profile</button>
+          </div>
+        </section>
+
+        <section id="lockedProfileCard" class="glass-card profile-card">
+          <span class="eyebrow">Profile locked</span>
+          <p class="profile-hint">
+            Sign in with Google to create your ThreadWave profile, username, and bio.
           </p>
         </section>
 
@@ -700,7 +831,7 @@
         <section class="glass-card roadmap-card">
           <h3>Next money upgrades</h3>
           <ul>
-            <li>Premium creator profiles</li>
+            <li>Public profile pages</li>
             <li>AI caption generator</li>
             <li>Scheduled posts</li>
             <li>Analytics dashboard</li>
@@ -728,10 +859,14 @@
         <section class="feed-top">
           <div>
             <span class="eyebrow">Live cloud feed</span>
-            <h2>Latest Threads</h2>
+            <h2 id="feedTitle">Latest Threads</h2>
           </div>
 
-          <button id="refreshBtn" class="btn ghost-btn">Refresh</button>
+          <div class="filter-pills">
+            <button id="allPostsBtn" class="pill active">All Posts</button>
+            <button id="myPostsBtn" class="pill">My Posts</button>
+            <button id="refreshBtn" class="pill">Refresh</button>
+          </div>
         </section>
 
         <p id="statusMsg" class="status-msg"></p>
@@ -765,9 +900,25 @@
     const totalThreads = document.getElementById("totalThreads");
     const myThreads = document.getElementById("myThreads");
 
+    const profileCard = document.getElementById("profileCard");
+    const lockedProfileCard = document.getElementById("lockedProfileCard");
+    const profileAvatar = document.getElementById("profileAvatar");
+    const profileDisplayName = document.getElementById("profileDisplayName");
+    const profileUsername = document.getElementById("profileUsername");
+    const usernameInput = document.getElementById("usernameInput");
+    const bioInput = document.getElementById("bioInput");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+
+    const allPostsBtn = document.getElementById("allPostsBtn");
+    const myPostsBtn = document.getElementById("myPostsBtn");
+    const feedTitle = document.getElementById("feedTitle");
+
     let currentUser = null;
+    let currentProfile = null;
     let threads = [];
     let likes = [];
+    let profiles = [];
+    let activeFilter = "all";
 
     function setStatus(message, type = "") {
       statusMsg.textContent = message || "";
@@ -800,6 +951,16 @@
       return `https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(seed || "User")}`;
     }
 
+    function cleanUsername(value) {
+      return String(value || "")
+        .toLowerCase()
+        .trim()
+        .replace(/^@+/, "")
+        .replace(/[^a-z0-9_]/g, "_")
+        .replace(/_+/g, "_")
+        .slice(0, 28);
+    }
+
     function getUserMeta(user) {
       const meta = user?.user_metadata || {};
 
@@ -808,6 +969,55 @@
         email: user?.email || "",
         avatar: meta.avatar_url || meta.picture || fallbackAvatar(user?.email || "User")
       };
+    }
+
+    async function upsertProfile() {
+      if (!currentUser) return;
+
+      const meta = getUserMeta(currentUser);
+
+      const defaultUsername = meta.email
+        ? cleanUsername(meta.email.split("@")[0])
+        : `user_${currentUser.id.slice(0, 8)}`;
+
+      const { data: existingProfile, error: selectError } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+      if (selectError) {
+        setStatus(selectError.message, "error");
+        return;
+      }
+
+      const profilePayload = {
+        id: currentUser.id,
+        email: meta.email,
+        full_name: meta.name,
+        username: existingProfile?.username || defaultUsername,
+        avatar_url: meta.avatar,
+        bio: existingProfile?.bio || "",
+        updated_at: new Date().toISOString()
+      };
+
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .upsert(profilePayload, { onConflict: "id" })
+        .select()
+        .single();
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      currentProfile = data;
+      updateProfileUI();
+    }
+
+    function getProfileByUserId(userId) {
+      return profiles.find((profile) => profile.id === userId) || null;
     }
 
     function getThreadLikes(threadId) {
@@ -854,7 +1064,13 @@
       }
 
       currentUser = null;
+      currentProfile = null;
+      activeFilter = "all";
+
       updateAuthUI();
+      updateProfileUI();
+      updateFilterUI();
+
       await loadFeed();
       setStatus("Logged out.");
     }
@@ -877,14 +1093,80 @@
       loginBtn.classList.add("hidden");
       userBox.classList.remove("hidden");
 
-      userAvatar.src = meta.avatar;
-      userName.textContent = meta.name;
-      userEmail.textContent = meta.email;
+      userAvatar.src = currentProfile?.avatar_url || meta.avatar;
+      userName.textContent = currentProfile?.full_name || meta.name;
+      userEmail.textContent = currentProfile?.email || meta.email;
 
       composer.classList.remove("locked");
       threadInput.disabled = false;
       postBtn.disabled = false;
       threadInput.placeholder = "What's building in your mind today?";
+    }
+
+    function updateProfileUI() {
+      if (!currentUser || !currentProfile) {
+        profileCard.classList.add("hidden");
+        lockedProfileCard.classList.remove("hidden");
+        return;
+      }
+
+      profileCard.classList.remove("hidden");
+      lockedProfileCard.classList.add("hidden");
+
+      profileAvatar.src = currentProfile.avatar_url || fallbackAvatar(currentProfile.email);
+      profileDisplayName.textContent = currentProfile.full_name || "ThreadWave User";
+      profileUsername.textContent = currentProfile.username ? `@${currentProfile.username}` : "@username";
+
+      usernameInput.value = currentProfile.username || "";
+      bioInput.value = currentProfile.bio || "";
+    }
+
+    async function saveProfile() {
+      if (!currentUser) {
+        setStatus("Sign in first.", "error");
+        return;
+      }
+
+      const username = cleanUsername(usernameInput.value);
+      const bio = bioInput.value.trim().slice(0, 160);
+
+      if (!username || username.length < 3) {
+        setStatus("Username needs at least 3 characters.", "error");
+        return;
+      }
+
+      saveProfileBtn.disabled = true;
+      saveProfileBtn.textContent = "Saving...";
+
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .update({
+          username,
+          bio,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", currentUser.id)
+        .select()
+        .single();
+
+      saveProfileBtn.disabled = false;
+      saveProfileBtn.textContent = "Save profile";
+
+      if (error) {
+        if (error.message.toLowerCase().includes("duplicate")) {
+          setStatus("That username is already taken.", "error");
+        } else {
+          setStatus(error.message, "error");
+        }
+        return;
+      }
+
+      currentProfile = data;
+      updateProfileUI();
+      updateAuthUI();
+
+      setStatus("Profile saved 🚀", "success");
+      await loadFeed();
     }
 
     async function getCurrentSession() {
@@ -896,7 +1178,13 @@
       }
 
       currentUser = data.session?.user || null;
+
+      if (currentUser) {
+        await upsertProfile();
+      }
+
       updateAuthUI();
+      updateProfileUI();
     }
 
     async function createThread() {
@@ -926,9 +1214,9 @@
         .from("threads")
         .insert({
           user_id: currentUser.id,
-          user_email: meta.email,
-          user_name: meta.name,
-          user_avatar: meta.avatar,
+          user_email: currentProfile?.email || meta.email,
+          user_name: currentProfile?.full_name || meta.name,
+          user_avatar: currentProfile?.avatar_url || meta.avatar,
           content
         });
 
@@ -957,9 +1245,14 @@
         .from("thread_likes")
         .select("*");
 
-      const [threadsResponse, likesResponse] = await Promise.all([
+      const profilesRequest = supabaseClient
+        .from("profiles")
+        .select("*");
+
+      const [threadsResponse, likesResponse, profilesResponse] = await Promise.all([
         threadsRequest,
-        likesRequest
+        likesRequest,
+        profilesRequest
       ]);
 
       if (threadsResponse.error) {
@@ -972,8 +1265,20 @@
         return;
       }
 
+      if (profilesResponse.error) {
+        setStatus(profilesResponse.error.message, "error");
+        return;
+      }
+
       threads = threadsResponse.data || [];
       likes = likesResponse.data || [];
+      profiles = profilesResponse.data || [];
+
+      if (currentUser) {
+        currentProfile = getProfileByUserId(currentUser.id) || currentProfile;
+        updateProfileUI();
+        updateAuthUI();
+      }
 
       renderThreads();
 
@@ -981,10 +1286,19 @@
         !statusMsg.textContent.includes("posted") &&
         !statusMsg.textContent.includes("Liked") &&
         !statusMsg.textContent.includes("removed") &&
-        !statusMsg.textContent.includes("deleted")
+        !statusMsg.textContent.includes("deleted") &&
+        !statusMsg.textContent.includes("saved")
       ) {
         setStatus("");
       }
+    }
+
+    function getVisibleThreads() {
+      if (activeFilter === "mine" && currentUser) {
+        return threads.filter((thread) => thread.user_id === currentUser.id);
+      }
+
+      return threads;
     }
 
     function renderThreads() {
@@ -996,25 +1310,44 @@
 
       myThreads.textContent = ownCount;
 
-      if (!threads.length) {
+      const visibleThreads = getVisibleThreads();
+
+      if (!visibleThreads.length) {
+        const message = activeFilter === "mine"
+          ? "You have not posted yet. Drop your first founder thought."
+          : "Be the first founder to post something powerful.";
+
         threadsList.innerHTML = `
           <div class="empty-state">
             <strong>No threads yet.</strong>
-            Be the first founder to post something powerful.
+            ${message}
           </div>
         `;
         return;
       }
 
-      threadsList.innerHTML = threads
+      threadsList.innerHTML = visibleThreads
         .map((thread) => {
           const isOwner = currentUser && thread.user_id === currentUser.id;
           const likedByUser = userLikedThread(thread.id);
           const likeCount = getThreadLikeCount(thread.id);
+          const profile = getProfileByUserId(thread.user_id);
 
-          const avatar = thread.user_avatar || fallbackAvatar(thread.user_email || "User");
-          const name = thread.user_name || "User";
-          const email = thread.user_email || "";
+          const avatar =
+            profile?.avatar_url ||
+            thread.user_avatar ||
+            fallbackAvatar(thread.user_email || "User");
+
+          const name =
+            profile?.full_name ||
+            thread.user_name ||
+            "User";
+
+          const username =
+            profile?.username
+              ? `@${profile.username}`
+              : thread.user_email || "";
+
           const content = escapeHTML(thread.content);
           const date = formatDate(thread.created_at);
 
@@ -1025,7 +1358,7 @@
                   <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
                   <div>
                     <strong>${escapeHTML(name)}</strong>
-                    <span>${escapeHTML(email)} · ${escapeHTML(date)}</span>
+                    <span>${escapeHTML(username)} · ${escapeHTML(date)}</span>
                   </div>
                 </div>
               </div>
@@ -1136,9 +1469,29 @@
       charCount.textContent = `${threadInput.value.length} / 280`;
     }
 
+    function updateFilterUI() {
+      allPostsBtn.classList.toggle("active", activeFilter === "all");
+      myPostsBtn.classList.toggle("active", activeFilter === "mine");
+
+      feedTitle.textContent = activeFilter === "mine"
+        ? "My Threads"
+        : "Latest Threads";
+    }
+
+    function setFilter(filter) {
+      if (filter === "mine" && !currentUser) {
+        setStatus("Sign in to see your posts.", "error");
+        return;
+      }
+
+      activeFilter = filter;
+      updateFilterUI();
+      renderThreads();
+    }
+
     function subscribeToRealtime() {
       supabaseClient
-        .channel("threads-feed")
+        .channel("threadwave-realtime")
         .on(
           "postgres_changes",
           {
@@ -1161,12 +1514,27 @@
             await loadFeed();
           }
         )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "profiles"
+          },
+          async () => {
+            await loadFeed();
+          }
+        )
         .subscribe();
     }
 
     loginBtn.addEventListener("click", signInWithGoogle);
     logoutBtn.addEventListener("click", signOut);
     postBtn.addEventListener("click", createThread);
+    saveProfileBtn.addEventListener("click", saveProfile);
+
+    allPostsBtn.addEventListener("click", () => setFilter("all"));
+    myPostsBtn.addEventListener("click", () => setFilter("mine"));
 
     refreshBtn.addEventListener("click", async () => {
       setStatus("Refreshing...");
@@ -1175,14 +1543,23 @@
 
     threadInput.addEventListener("input", updateCharCount);
 
-    supabaseClient.auth.onAuthStateChange((_event, session) => {
+    supabaseClient.auth.onAuthStateChange(async (_event, session) => {
       currentUser = session?.user || null;
+
+      if (currentUser) {
+        await upsertProfile();
+      } else {
+        currentProfile = null;
+      }
+
       updateAuthUI();
-      loadFeed();
+      updateProfileUI();
+      await loadFeed();
     });
 
     async function init() {
       updateCharCount();
+      updateFilterUI();
       await getCurrentSession();
       await loadFeed();
       subscribeToRealtime();
