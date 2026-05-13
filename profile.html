@@ -1,1 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
+  <title>ThreadWave | Profile</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="icon" type="image/png" href="assets/img/index.png" />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+
+<body>
+  <div class="bg-orb orb-one"></div>
+  <div class="bg-orb orb-two"></div>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="ThreadWave home">
+        <div class="brand-logo">〰</div>
+        <div>
+          <h1>ThreadWave</h1>
+          <p>Edit your creator identity.</p>
+        </div>
+      </a>
+
+      <div class="auth-area">
+        <button id="loginBtn" class="btn primary-btn" type="button">
+          Continue with Google
+        </button>
+
+        <div id="userBox" class="user-box hidden">
+          <img id="userAvatar" src="" alt="User avatar" />
+
+          <div class="user-meta">
+            <strong id="userName">User</strong>
+            <span id="userEmail">email</span>
+          </div>
+
+          <button id="logoutBtn" class="btn ghost-btn" type="button">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="profile-page-grid">
+      <section class="glass-card page-hero">
+        <span class="eyebrow">Profile command center</span>
+
+        <h2>Build a profile people remember.</h2>
+
+        <p>
+          Update your username and bio. This identity appears across your posts,
+          public profile card, and creator stats.
+        </p>
+      </section>
+
+      <section class="profile-editor-card">
+        <div class="profile-editor-head">
+          <img id="profileEditorAvatar" src="" alt="Profile avatar" />
+
+          <div>
+            <span class="eyebrow">Edit profile</span>
+            <h2 id="profileEditorName">ThreadWave User</h2>
+            <p id="profileEditorEmail">email</p>
+          </div>
+        </div>
+
+        <div class="profile-editor-form">
+          <label class="field-label">
+            Username
+            <input
+              id="profileUsernameInput"
+              class="input-field"
+              maxlength="28"
+              placeholder="your_username"
+            />
+          </label>
+
+          <label class="field-label">
+            Bio
+            <textarea
+              id="profileBioInput"
+              class="bio-field"
+              maxlength="160"
+              placeholder="Write your founder bio..."
+            ></textarea>
+          </label>
+
+          <div class="profile-actions">
+            <button id="saveProfilePageBtn" class="btn primary-btn" type="button">
+              Save profile
+            </button>
+
+            <button id="goHomeBtn" class="btn ghost-btn" type="button">
+              Back to home
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass-card stats-card">
+        <div>
+          <strong id="profilePostCount">0</strong>
+          <span>Your posts</span>
+        </div>
+
+        <div>
+          <strong id="profileLikeCount">0</strong>
+          <span>Total likes</span>
+        </div>
+      </section>
+
+      <section class="feed-panel">
+        <section class="feed-top">
+          <div>
+            <span class="eyebrow">Your recent posts</span>
+            <h2>Profile Threads</h2>
+          </div>
+        </section>
+
+        <p id="statusMsg" class="status-msg">Checking session...</p>
+
+        <section id="profilePostsList" class="threads-list"></section>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/profile.js"></script>
+
+  <script>
+    initProfilePage();
+  </script>
+</body>
+</html>
