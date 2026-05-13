@@ -686,6 +686,30 @@ input::placeholder {
   overflow-wrap: anywhere;
 }
 
+.thread-image-wrap {
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 188, 231, 0.18);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top left, rgba(0, 188, 231, 0.1), transparent 42%),
+    rgba(255, 255, 255, 0.62);
+  box-shadow: 0 18px 48px rgba(0, 70, 90, 0.1);
+}
+
+.thread-image {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  object-fit: cover;
+  object-position: center;
+  transition: 0.25s ease;
+}
+
+.thread-image:hover {
+  transform: scale(1.015);
+}
+
 .thread-actions {
   display: flex;
   align-items: center;
@@ -855,7 +879,7 @@ input::placeholder {
 }
 
 .modal-textarea {
-  min-height: 170px;
+  min-height: 150px;
   resize: vertical;
   line-height: 1.65;
   font-size: 16px;
@@ -872,6 +896,111 @@ input::placeholder {
 
 .modal-footer .btn {
   min-width: 118px;
+}
+
+/* Image upload */
+
+.image-upload-box {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.image-upload-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px dashed rgba(0, 188, 231, 0.4);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top left, rgba(0, 188, 231, 0.1), transparent 42%),
+    rgba(237, 250, 255, 0.68);
+  color: var(--text);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.image-upload-label:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 188, 231, 0.68);
+  background:
+    radial-gradient(circle at top left, rgba(0, 188, 231, 0.16), transparent 42%),
+    rgba(255, 255, 255, 0.88);
+}
+
+.image-upload-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 18px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 14px 28px rgba(0, 188, 231, 0.24);
+}
+
+.image-upload-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.image-upload-label strong,
+.image-upload-label small {
+  display: block;
+}
+
+.image-upload-label strong {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.image-upload-label small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.image-upload-input {
+  display: none;
+}
+
+.image-preview-wrap {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.72);
+  animation: popIn 0.22s ease both;
+}
+
+.image-preview-wrap img {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 18px;
+  background: rgba(0, 188, 231, 0.1);
+}
+
+.image-preview-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.image-preview-meta strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Comments / replies modal */
@@ -1185,13 +1314,15 @@ input::placeholder {
   }
 
   .composer-footer,
-  .modal-footer {
+  .modal-footer,
+  .image-preview-meta {
     align-items: stretch;
     flex-direction: column;
   }
 
   .composer-footer .btn,
-  .modal-footer .btn {
+  .modal-footer .btn,
+  .image-preview-meta .mini-action {
     width: 100%;
   }
 
@@ -1250,6 +1381,14 @@ input::placeholder {
     max-width: 160px;
   }
 
+  .thread-image-wrap {
+    border-radius: 22px;
+  }
+
+  .thread-image {
+    max-height: 420px;
+  }
+
   .thread-actions {
     align-items: stretch;
     flex-direction: column;
@@ -1271,6 +1410,14 @@ input::placeholder {
     padding: 8px 12px;
     font-size: 12px;
     border-radius: 999px;
+  }
+
+  .image-upload-label {
+    align-items: flex-start;
+  }
+
+  .image-preview-wrap img {
+    max-height: 210px;
   }
 
   .comments-list {
