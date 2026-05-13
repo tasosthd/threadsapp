@@ -941,13 +941,17 @@ input::placeholder {
   }
 }
 
+/* Desktop keeps the same navigation bar as phone */
+
 @media (min-width: 901px) {
-  .bottom-nav {
-    display: none;
+  body {
+    padding-bottom: 112px;
   }
 
-  body {
-    padding-bottom: 0;
+  .bottom-nav {
+    display: grid;
+    width: min(460px, calc(100% - 40px));
+    bottom: 22px;
   }
 }
 
