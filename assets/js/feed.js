@@ -73,6 +73,10 @@ async function loadFeed() {
   likes = likesResponse.data || [];
   profiles = profilesResponse.data || [];
 
+  if (typeof loadComments === "function") {
+    await loadComments();
+  }
+
   if (currentUser) {
     currentProfile = getProfileByUserId(currentUser.id) || currentProfile;
     updateSharedAuthUI();
@@ -82,13 +86,16 @@ async function loadFeed() {
   renderFeedStats();
   renderThreads();
 
+  const statusText = document.getElementById("statusMsg")?.textContent || "";
+
   if (
-    !document.getElementById("statusMsg")?.textContent.includes("posted") &&
-    !document.getElementById("statusMsg")?.textContent.includes("Liked") &&
-    !document.getElementById("statusMsg")?.textContent.includes("removed") &&
-    !document.getElementById("statusMsg")?.textContent.includes("deleted") &&
-    !document.getElementById("statusMsg")?.textContent.includes("saved") &&
-    !document.getElementById("statusMsg")?.textContent.includes("restored")
+    !statusText.includes("posted") &&
+    !statusText.includes("uploaded") &&
+    !statusText.includes("Liked") &&
+    !statusText.includes("removed") &&
+    !statusText.includes("deleted") &&
+    !statusText.includes("saved") &&
+    !statusText.includes("restored")
   ) {
     setStatus("");
   }
@@ -150,6 +157,11 @@ function renderThreads() {
       const isOwner = currentUser && thread.user_id === currentUser.id;
       const likedByUser = userLikedThread(thread.id);
       const likeCount = getThreadLikeCount(thread.id);
+      const commentCount =
+        typeof getThreadCommentCount === "function"
+          ? getThreadCommentCount(thread.id)
+          : 0;
+
       const profile = getProfileByUserId(thread.user_id);
 
       const avatar =
@@ -192,6 +204,13 @@ function renderThreads() {
               >
                 ${likedByUser ? "♥ Liked" : "♡ Like"} · ${likeCount}
               </button>
+
+              <button
+                class="mini-action reply-action"
+                data-comments-id="${escapeHTML(thread.id)}"
+              >
+                Reply · ${commentCount}
+              </button>
             </div>
 
             ${
@@ -219,6 +238,16 @@ function bindThreadActions() {
     button.addEventListener("click", async () => {
       const id = button.dataset.likeId;
       await likeThread(id);
+    });
+  });
+
+  document.querySelectorAll("[data-comments-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.commentsId;
+
+      if (typeof openCommentsModal === "function") {
+        openCommentsModal(id);
+      }
     });
   });
 
@@ -323,6 +352,7 @@ function updatePublicProfileUI() {
   }
 
   const fallbackThread = userThreads[0] || {};
+
   const avatar =
     profile?.avatar_url ||
     fallbackThread.user_avatar ||
@@ -344,9 +374,11 @@ function updatePublicProfileUI() {
   if (publicProfileName) publicProfileName.textContent = name;
   if (publicProfileUsername) publicProfileUsername.textContent = username;
   if (publicProfileBio) publicProfileBio.textContent = bio;
+
   if (publicProfilePosts) {
     publicProfilePosts.textContent = `${userThreads.length} ${userThreads.length === 1 ? "post" : "posts"}`;
   }
+
   if (publicProfileLikes) {
     publicProfileLikes.textContent = `${getUserTotalLikes(viewedProfileId)} total likes`;
   }
@@ -520,6 +552,17 @@ function subscribeToRealtime() {
         await loadFeed();
       }
     )
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "thread_comments"
+      },
+      async () => {
+        await loadFeed();
+      }
+    )
     .subscribe();
 }
 
@@ -557,7 +600,12 @@ async function initFeedPage() {
 
   setupAuthButtons();
   setupFeedButtons();
+
   mountSharedUI({ includeModal: true });
+
+  if (typeof setupCommentsModal === "function") {
+    setupCommentsModal();
+  }
 
   await restoreSession();
   await loadFeed();
