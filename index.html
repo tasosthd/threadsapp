@@ -43,6 +43,7 @@
     body {
       min-height: 100vh;
       overflow-x: hidden;
+      padding-bottom: 110px;
       color: var(--text);
       background:
         radial-gradient(circle at top left, rgba(0, 188, 231, 0.24), transparent 34%),
@@ -704,6 +705,78 @@
       font-size: 18px;
     }
 
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 200;
+      display: grid;
+      grid-template-columns: 1fr 74px 1fr;
+      align-items: center;
+      gap: 12px;
+      width: min(430px, calc(100% - 28px));
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+      box-shadow: 0 24px 70px rgba(0, 70, 90, 0.22);
+      transform: translateX(-50%);
+    }
+
+    .bottom-nav-btn,
+    .bottom-nav-main {
+      border: 0;
+      outline: 0;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      transition: 0.2s ease;
+    }
+
+    .bottom-nav-btn {
+      gap: 4px;
+      height: 52px;
+      border-radius: 999px;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .bottom-nav-btn svg {
+      width: 21px;
+      height: 21px;
+      fill: currentColor;
+    }
+
+    .bottom-nav-btn.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      box-shadow: 0 12px 26px rgba(0, 188, 231, 0.24);
+    }
+
+    .bottom-nav-main {
+      width: 66px;
+      height: 66px;
+      justify-self: center;
+      border-radius: 24px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      box-shadow: 0 18px 34px rgba(0, 188, 231, 0.34);
+    }
+
+    .bottom-nav-main svg {
+      width: 31px;
+      height: 31px;
+      fill: currentColor;
+    }
+
+    .bottom-nav-btn:hover,
+    .bottom-nav-main:hover {
+      transform: translateY(-3px);
+    }
+
     @keyframes popIn {
       from {
         opacity: 0;
@@ -713,6 +786,16 @@
       to {
         opacity: 1;
         transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (min-width: 901px) {
+      .bottom-nav {
+        display: none;
+      }
+
+      body {
+        padding-bottom: 0;
       }
     }
 
@@ -979,6 +1062,28 @@
     </main>
   </div>
 
+  <nav class="bottom-nav" aria-label="Bottom navigation">
+    <button id="bottomHomeBtn" class="bottom-nav-btn active" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 11.5 12 4l9 7.5V21a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-9.5Z"></path>
+      </svg>
+      <span>Home</span>
+    </button>
+
+    <button id="bottomComposeBtn" class="bottom-nav-main" type="button" aria-label="Create thread">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 5a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H6a1 1 0 1 1 0-2h5V6a1 1 0 0 1 1-1Z"></path>
+      </svg>
+    </button>
+
+    <button id="bottomProfileBtn" class="bottom-nav-btn" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.42 0-8 2.24-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.76-3.58-5-8-5Z"></path>
+      </svg>
+      <span>Profile</span>
+    </button>
+  </nav>
+
   <script>
     const SUPABASE_URL = "https://rbmjbwvojakxvxeodkmp.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJibWpid3ZvamFreHZ4ZW9ka21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1Nzc3NzYsImV4cCI6MjA5NDE1Mzc3Nn0.f6Pl1FJIH9L4rf-asu2ARlLXUXpncXuyO3v_VZ5n5aQ";
@@ -1030,6 +1135,10 @@
     const publicProfilePosts = document.getElementById("publicProfilePosts");
     const publicProfileLikes = document.getElementById("publicProfileLikes");
     const backToFeedBtn = document.getElementById("backToFeedBtn");
+
+    const bottomHomeBtn = document.getElementById("bottomHomeBtn");
+    const bottomComposeBtn = document.getElementById("bottomComposeBtn");
+    const bottomProfileBtn = document.getElementById("bottomProfileBtn");
 
     let currentUser = null;
     let currentProfile = null;
@@ -1151,6 +1260,7 @@
 
     function getUserTotalLikes(userId) {
       const userThreads = threads.filter((thread) => thread.user_id === userId);
+
       return userThreads.reduce((total, thread) => {
         return total + getThreadLikeCount(thread.id);
       }, 0);
@@ -1200,6 +1310,7 @@
       updateProfileUI();
       updateFilterUI();
       updatePublicProfileUI();
+      setBottomNavActive("home");
 
       await loadFeed();
       setStatus("Logged out.");
@@ -1334,7 +1445,7 @@
       const content = threadInput.value.trim();
 
       if (!currentUser) {
-        setStatus("Sign in first, CEO.", "error");
+        setStatus("Sign in first to create a thread.", "error");
         return;
       }
 
@@ -1566,6 +1677,7 @@
       viewedProfileId = userId;
       activeFilter = "profile";
 
+      setBottomNavActive("home");
       updateFilterUI();
       updatePublicProfileUI();
       renderThreads();
@@ -1583,6 +1695,7 @@
       updatePublicProfileUI();
       updateFilterUI();
       renderThreads();
+      setBottomNavActive("home");
     }
 
     async function likeThread(id) {
@@ -1674,6 +1787,77 @@
       updatePublicProfileUI();
       updateFilterUI();
       renderThreads();
+      setBottomNavActive("home");
+    }
+
+    function setBottomNavActive(section) {
+      bottomHomeBtn.classList.toggle("active", section === "home");
+      bottomProfileBtn.classList.toggle("active", section === "profile");
+    }
+
+    function goHomeSection() {
+      viewedProfileId = null;
+      activeFilter = "all";
+
+      updatePublicProfileUI();
+      updateFilterUI();
+      renderThreads();
+      setBottomNavActive("home");
+
+      document.querySelector(".feed-panel").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    function goComposeSection() {
+      if (!currentUser) {
+        setStatus("Sign in first to create a thread.", "error");
+        signInWithGoogle();
+        return;
+      }
+
+      viewedProfileId = null;
+      activeFilter = "all";
+
+      updatePublicProfileUI();
+      updateFilterUI();
+      renderThreads();
+      setBottomNavActive("home");
+
+      composer.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+      setTimeout(() => {
+        threadInput.focus();
+      }, 450);
+    }
+
+    function goProfileSection() {
+      if (!currentUser) {
+        setStatus("Sign in first to edit your profile.", "error");
+        signInWithGoogle();
+        return;
+      }
+
+      viewedProfileId = null;
+      activeFilter = "all";
+
+      updatePublicProfileUI();
+      updateFilterUI();
+      renderThreads();
+      setBottomNavActive("profile");
+
+      profileCard.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+      setTimeout(() => {
+        usernameInput.focus();
+      }, 450);
     }
 
     function subscribeToRealtime() {
@@ -1728,6 +1912,10 @@
     myPostsBtn.addEventListener("click", () => setFilter("mine"));
     backToFeedBtn.addEventListener("click", closePublicProfile);
 
+    bottomHomeBtn.addEventListener("click", goHomeSection);
+    bottomComposeBtn.addEventListener("click", goComposeSection);
+    bottomProfileBtn.addEventListener("click", goProfileSection);
+
     refreshBtn.addEventListener("click", async () => {
       setStatus("Refreshing...");
       await loadFeed();
@@ -1749,6 +1937,7 @@
           currentProfile = null;
           activeFilter = "all";
           viewedProfileId = null;
+          setBottomNavActive("home");
         }
 
         updateAuthUI();
@@ -1767,6 +1956,7 @@
 
       updateCharCount();
       updateFilterUI();
+      setBottomNavActive("home");
       setStatus("Checking session...");
 
       const { data, error } = await supabaseClient.auth.getSession();
