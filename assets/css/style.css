@@ -2057,3 +2057,7 @@ input::placeholder {
     min-height: 96px;
   }
 }
+
+.status-msg {
+  display: block !important;
+}
