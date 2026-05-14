@@ -1979,3 +1979,7 @@ input::placeholder {
     min-height: 96px;
   }
 }
+
+.status-msg {
+  display: none !important;
+}
