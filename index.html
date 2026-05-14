@@ -9,15 +9,27 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <link rel="icon" type="image/png" href="/assets/img/index.png" />
+  <link rel="shortcut icon" type="image/png" href="/assets/img/index.png" />
+  <link rel="apple-touch-icon" href="/assets/img/index.png" />
 
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet"
   />
-  <link rel="icon" type="image/png" href="/assets/img/index.png" />
-<link rel="shortcut icon" type="image/png" href="/assets/img/index.png" />
-<link rel="apple-touch-icon" href="/assets/img/index.png" />
+
   <link rel="stylesheet" href="/assets/css/style.css" />
+
+  <style>
+    img.brand-logo {
+      background: transparent !important;
+      background-color: transparent !important;
+      box-shadow: none;
+      border: none;
+      padding: 0;
+      object-fit: cover;
+      display: block;
+    }
+  </style>
 </head>
 
 <body>
@@ -34,8 +46,13 @@
         </button>
 
         <a class="brand compact-brand" href="/" aria-label="Loomyva home">
+          <img
+            src="/assets/img/index.png"
+            alt="Loomyva logo"
+            class="brand-logo"
+          />
 
-          <img src="/assets/img/index.png" alt="Loomyva logo" class="brand-logo" />
+          <div>
             <h1>Loomyva</h1>
             <p>Post ideas. Sync everywhere.</p>
           </div>
@@ -46,8 +63,11 @@
     <aside id="appSidebar" class="app-sidebar" aria-hidden="true">
       <div class="sidebar-head">
         <div class="brand sidebar-brand">
-
-          <img src="/assets/img/index.png" alt="Loomyva logo" class="brand-logo" />
+          <img
+            src="/assets/img/index.png"
+            alt="Loomyva logo"
+            class="brand-logo"
+          />
 
           <div>
             <h1>Loomyva</h1>
@@ -166,21 +186,10 @@
           </div>
 
           <div class="filter-pills">
-            <button id="allPostsBtn" class="pill active" type="button">
-              All Posts
-            </button>
-
-            <button id="myPostsBtn" class="pill" type="button">
-              My Posts
-            </button>
-
-            <button id="followingPostsBtn" class="pill" type="button">
-              Following
-            </button>
-
-            <button id="refreshBtn" class="pill" type="button">
-              Refresh
-            </button>
+            <button id="allPostsBtn" class="pill active" type="button">All Posts</button>
+            <button id="myPostsBtn" class="pill" type="button">My Posts</button>
+            <button id="followingPostsBtn" class="pill" type="button">Following</button>
+            <button id="refreshBtn" class="pill" type="button">Refresh</button>
           </div>
         </section>
 
@@ -192,9 +201,8 @@
   </div>
 
   <script src="/assets/js/config.js"></script>
-  <script src="/assets/js/ui.js?v=profile-folder-1"></script>
-  <script src="/assets/js/auth.js?v=profile-folder-1"></script>
   <script src="/assets/js/ui.js?v=profile-folder-3"></script>
+  <script src="/assets/js/auth.js?v=profile-folder-1"></script>
   <script src="/assets/js/comments.js"></script>
   <script src="/assets/js/follows.js"></script>
   <script src="/assets/js/feed.js?v=profile-folder-1"></script>
