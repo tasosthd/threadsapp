@@ -135,10 +135,59 @@ function renderProfileRecentPosts() {
 
           ${threadText}
           ${threadImage}
+
+          <div class="thread-actions profile-thread-actions">
+            <button
+              class="mini-action delete-action profile-delete-btn"
+              type="button"
+              data-profile-delete-id="${escapeHTML(thread.id)}"
+            >
+              Delete
+            </button>
+          </div>
         </article>
       `;
     })
     .join("");
+
+  bindProfileDeleteButtons();
+}
+
+function bindProfileDeleteButtons() {
+  document.querySelectorAll("[data-profile-delete-id]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const threadId = button.dataset.profileDeleteId;
+      await deleteProfileThread(threadId);
+    });
+  });
+}
+
+async function deleteProfileThread(threadId) {
+  if (!currentUser) {
+    setStatus("You need to be logged in.", "error");
+    return;
+  }
+
+  const confirmed = confirm("Delete this post? This cannot be undone.");
+
+  if (!confirmed) {
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("threads")
+    .delete()
+    .eq("id", threadId)
+    .eq("user_id", currentUser.id);
+
+  if (error) {
+    setStatus(error.message, "error");
+    return;
+  }
+
+  setStatus("Post deleted.", "success");
+
+  await loadProfileStats();
 }
 
 async function saveProfilePage() {
