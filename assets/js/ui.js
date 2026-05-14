@@ -3,7 +3,7 @@ let selectedThreadImageFile = null;
 function getPageName() {
   const path = window.location.pathname.toLowerCase();
 
-  if (path.includes("profile.html")) {
+  if (path === "/profile/" || path === "/profile") {
     return "profile";
   }
 
@@ -66,11 +66,11 @@ function setBottomNavActive(section) {
 }
 
 function goHomePage() {
-  window.location.href = "index.html";
+  window.location.href = "/";
 }
 
 function goProfilePage() {
-  window.location.href = "profile.html";
+  window.location.href = "/profile/";
 }
 
 /* =========================
@@ -126,7 +126,7 @@ function setupSidebar() {
       closeSidebar();
 
       if (getPageName() !== "home") {
-        window.location.href = "index.html?compose=1";
+        window.location.href = "/?compose=1";
         return;
       }
 
@@ -182,7 +182,7 @@ function setupBottomNav() {
   if (bottomComposeBtn) {
     bottomComposeBtn.addEventListener("click", () => {
       if (pageName !== "home") {
-        window.location.href = "index.html?compose=1";
+        window.location.href = "/?compose=1";
         return;
       }
 
@@ -329,7 +329,7 @@ function handleThreadImageSelect(event) {
     modalImagePreviewWrap.classList.remove("hidden");
   }
 
-  setStatus("Image ready to upload 🚀", "success");
+  setStatus("");
 }
 
 function updateModalCharCount() {
@@ -485,9 +485,11 @@ function renderThreadModal() {
 }
 
 function mountSharedUI({ includeModal = false } = {}) {
-  document.body.insertAdjacentHTML("beforeend", renderBottomNav());
+  if (!document.getElementById("bottomHomeBtn")) {
+    document.body.insertAdjacentHTML("beforeend", renderBottomNav());
+  }
 
-  if (includeModal) {
+  if (includeModal && !document.getElementById("threadModalBackdrop")) {
     document.body.insertAdjacentHTML("beforeend", renderThreadModal());
     setupThreadModal();
   }
