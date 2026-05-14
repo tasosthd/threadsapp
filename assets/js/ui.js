@@ -195,13 +195,14 @@ function setupSidebar() {
   }
 
   /* =========================
-     MOBILE SWIPE TO OPEN SIDEBAR
-     Start from left area and swipe right
+     MOBILE SWIPE SIDEBAR
+     Closed: swipe right from left area → open
+     Open: swipe left → close
   ========================= */
 
   let touchStartX = 0;
   let touchStartY = 0;
-  let sidebarOpenedBySwipe = false;
+  let sidebarGestureDone = false;
 
   document.addEventListener(
     "touchstart",
@@ -210,7 +211,7 @@ function setupSidebar() {
 
       touchStartX = event.touches[0].clientX;
       touchStartY = event.touches[0].clientY;
-      sidebarOpenedBySwipe = false;
+      sidebarGestureDone = false;
     },
     { passive: true }
   );
@@ -219,11 +220,10 @@ function setupSidebar() {
     "touchmove",
     (event) => {
       if (!event.touches || event.touches.length !== 1) return;
+      if (sidebarGestureDone) return;
 
       const appSidebar = document.getElementById("appSidebar");
-
-      if (appSidebar?.classList.contains("active")) return;
-      if (sidebarOpenedBySwipe) return;
+      const sidebarIsOpen = appSidebar?.classList.contains("active");
 
       const currentX = event.touches[0].clientX;
       const currentY = event.touches[0].clientY;
@@ -232,18 +232,32 @@ function setupSidebar() {
       const swipeDistanceY = Math.abs(currentY - touchStartY);
 
       const isMobileWidth = window.innerWidth <= 900;
+      const mostlyHorizontal = swipeDistanceY < 58;
+
       const startedFromLeftArea = touchStartX <= 96;
       const swipedRightEnough = swipeDistanceX > 68;
-      const mostlyHorizontal = swipeDistanceY < 58;
+      const swipedLeftEnough = swipeDistanceX < -68;
 
       if (
         isMobileWidth &&
+        !sidebarIsOpen &&
         startedFromLeftArea &&
         swipedRightEnough &&
         mostlyHorizontal
       ) {
-        sidebarOpenedBySwipe = true;
+        sidebarGestureDone = true;
         openSidebar();
+        return;
+      }
+
+      if (
+        isMobileWidth &&
+        sidebarIsOpen &&
+        swipedLeftEnough &&
+        mostlyHorizontal
+      ) {
+        sidebarGestureDone = true;
+        closeSidebar();
       }
     },
     { passive: true }
@@ -253,11 +267,10 @@ function setupSidebar() {
     "touchend",
     (event) => {
       if (!event.changedTouches || event.changedTouches.length !== 1) return;
+      if (sidebarGestureDone) return;
 
       const appSidebar = document.getElementById("appSidebar");
-
-      if (appSidebar?.classList.contains("active")) return;
-      if (sidebarOpenedBySwipe) return;
+      const sidebarIsOpen = appSidebar?.classList.contains("active");
 
       const touchEndX = event.changedTouches[0].clientX;
       const touchEndY = event.changedTouches[0].clientY;
@@ -266,18 +279,32 @@ function setupSidebar() {
       const swipeDistanceY = Math.abs(touchEndY - touchStartY);
 
       const isMobileWidth = window.innerWidth <= 900;
+      const mostlyHorizontal = swipeDistanceY < 76;
+
       const startedFromLeftArea = touchStartX <= 96;
       const swipedRightEnough = swipeDistanceX > 74;
-      const mostlyHorizontal = swipeDistanceY < 76;
+      const swipedLeftEnough = swipeDistanceX < -74;
 
       if (
         isMobileWidth &&
+        !sidebarIsOpen &&
         startedFromLeftArea &&
         swipedRightEnough &&
         mostlyHorizontal
       ) {
-        sidebarOpenedBySwipe = true;
+        sidebarGestureDone = true;
         openSidebar();
+        return;
+      }
+
+      if (
+        isMobileWidth &&
+        sidebarIsOpen &&
+        swipedLeftEnough &&
+        mostlyHorizontal
+      ) {
+        sidebarGestureDone = true;
+        closeSidebar();
       }
     },
     { passive: true }
