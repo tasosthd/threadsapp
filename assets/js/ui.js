@@ -73,6 +73,80 @@ function goProfilePage() {
   window.location.href = "profile.html";
 }
 
+/* =========================
+   SIDEBAR
+========================= */
+
+function openSidebar() {
+  const appSidebar = document.getElementById("appSidebar");
+  const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+
+  if (!appSidebar || !sidebarBackdrop) return;
+
+  appSidebar.classList.add("active");
+  sidebarBackdrop.classList.add("active");
+
+  appSidebar.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
+function closeSidebar() {
+  const appSidebar = document.getElementById("appSidebar");
+  const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+
+  if (!appSidebar || !sidebarBackdrop) return;
+
+  appSidebar.classList.remove("active");
+  sidebarBackdrop.classList.remove("active");
+
+  appSidebar.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function setupSidebar() {
+  const sidebarOpenBtn = document.getElementById("sidebarOpenBtn");
+  const sidebarCloseBtn = document.getElementById("sidebarCloseBtn");
+  const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+  const sidebarComposeBtn = document.getElementById("sidebarComposeBtn");
+
+  if (sidebarOpenBtn) {
+    sidebarOpenBtn.addEventListener("click", openSidebar);
+  }
+
+  if (sidebarCloseBtn) {
+    sidebarCloseBtn.addEventListener("click", closeSidebar);
+  }
+
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener("click", closeSidebar);
+  }
+
+  if (sidebarComposeBtn) {
+    sidebarComposeBtn.addEventListener("click", () => {
+      closeSidebar();
+
+      if (getPageName() !== "home") {
+        window.location.href = "index.html?compose=1";
+        return;
+      }
+
+      if (typeof openThreadModal === "function") {
+        openThreadModal();
+      }
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeSidebar();
+    }
+  });
+}
+
+/* =========================
+   BOTTOM NAV
+========================= */
+
 function setupBottomNav() {
   const pageName = getPageName();
 
@@ -138,6 +212,10 @@ function setupBottomNav() {
   }
 }
 
+/* =========================
+   POST MODAL
+========================= */
+
 function openThreadModal() {
   const modalBackdrop = document.getElementById("threadModalBackdrop");
   const modalTextarea = document.getElementById("modalThreadInput");
@@ -173,7 +251,13 @@ function closeThreadModal() {
   modalBackdrop.classList.remove("active");
   modalBackdrop.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
+
+  resetThreadImagePicker();
 }
+
+/* =========================
+   IMAGE PICKER
+========================= */
 
 function resetThreadImagePicker() {
   selectedThreadImageFile = null;
@@ -306,6 +390,10 @@ function setupThreadModal() {
   updateModalCharCount();
 }
 
+/* =========================
+   RENDER SHARED UI
+========================= */
+
 function renderBottomNav() {
   return `
     <nav class="bottom-nav" aria-label="Bottom navigation">
@@ -405,4 +493,5 @@ function mountSharedUI({ includeModal = false } = {}) {
   }
 
   setupBottomNav();
+  setupSidebar();
 }
