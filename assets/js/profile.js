@@ -1,5 +1,6 @@
 let profileThreads = [];
 let profileLikes = [];
+let pendingDeleteThreadId = null;
 
 function updateProfileEditorUI() {
   const profileEditorAvatar = document.getElementById("profileEditorAvatar");
@@ -8,31 +9,15 @@ function updateProfileEditorUI() {
   const profileUsernameInput = document.getElementById("profileUsernameInput");
   const profileBioInput = document.getElementById("profileBioInput");
 
-  if (!currentUser || !currentProfile) {
-    return;
-  }
+  if (!currentUser || !currentProfile) return;
 
   const meta = getUserMeta(currentUser);
 
-  if (profileEditorAvatar) {
-    profileEditorAvatar.src = currentProfile.avatar_url || meta.avatar;
-  }
-
-  if (profileEditorName) {
-    profileEditorName.textContent = currentProfile.full_name || meta.name || "ThreadWave User";
-  }
-
-  if (profileEditorEmail) {
-    profileEditorEmail.textContent = currentProfile.email || meta.email || "";
-  }
-
-  if (profileUsernameInput) {
-    profileUsernameInput.value = currentProfile.username || "";
-  }
-
-  if (profileBioInput) {
-    profileBioInput.value = currentProfile.bio || "";
-  }
+  if (profileEditorAvatar) profileEditorAvatar.src = currentProfile.avatar_url || meta.avatar;
+  if (profileEditorName) profileEditorName.textContent = currentProfile.full_name || meta.name || "ThreadWave User";
+  if (profileEditorEmail) profileEditorEmail.textContent = currentProfile.email || meta.email || "";
+  if (profileUsernameInput) profileUsernameInput.value = currentProfile.username || "";
+  if (profileBioInput) profileBioInput.value = currentProfile.bio || "";
 }
 
 async function loadProfileStats() {
@@ -75,13 +60,8 @@ function renderProfileStats() {
     return total + threadLikes;
   }, 0);
 
-  if (profilePostCount) {
-    profilePostCount.textContent = profileThreads.length;
-  }
-
-  if (profileLikeCount) {
-    profileLikeCount.textContent = totalLikes;
-  }
+  if (profilePostCount) profilePostCount.textContent = profileThreads.length;
+  if (profileLikeCount) profileLikeCount.textContent = totalLikes;
 }
 
 function renderProfileRecentPosts() {
@@ -155,36 +135,134 @@ function renderProfileRecentPosts() {
 
 function bindProfileDeleteButtons() {
   document.querySelectorAll("[data-profile-delete-id]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const threadId = button.dataset.profileDeleteId;
-      await deleteProfileThread(threadId);
+    button.addEventListener("click", () => {
+      openDeletePostModal(button.dataset.profileDeleteId);
     });
   });
 }
 
-async function deleteProfileThread(threadId) {
+function renderDeletePostModal() {
+  return `
+    <div id="deletePostModalBackdrop" class="modal-backdrop" aria-hidden="true">
+      <section class="delete-post-modal" role="dialog" aria-modal="true" aria-labelledby="deletePostModalTitle">
+        <div class="delete-modal-icon">!</div>
+
+        <div class="delete-modal-content">
+          <h2 id="deletePostModalTitle">Delete this post?</h2>
+          <p>
+            This action cannot be undone. The post will be removed from your profile and the feed permanently.
+          </p>
+        </div>
+
+        <div class="delete-modal-actions">
+          <button id="cancelDeletePostBtn" class="btn ghost-btn" type="button">
+            Cancel
+          </button>
+
+          <button id="confirmDeletePostBtn" class="btn danger-btn" type="button">
+            Delete forever
+          </button>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function setupDeletePostModal() {
+  if (document.getElementById("deletePostModalBackdrop")) return;
+
+  document.body.insertAdjacentHTML("beforeend", renderDeletePostModal());
+
+  const backdrop = document.getElementById("deletePostModalBackdrop");
+  const cancelBtn = document.getElementById("cancelDeletePostBtn");
+  const confirmBtn = document.getElementById("confirmDeletePostBtn");
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", closeDeletePostModal);
+  }
+
+  if (confirmBtn) {
+    confirmBtn.addEventListener("click", confirmDeleteProfileThread);
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener("click", (event) => {
+      if (event.target === backdrop) {
+        closeDeletePostModal();
+      }
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (
+      event.key === "Escape" &&
+      backdrop &&
+      backdrop.classList.contains("active")
+    ) {
+      closeDeletePostModal();
+    }
+  });
+}
+
+function openDeletePostModal(threadId) {
+  pendingDeleteThreadId = threadId;
+
+  const backdrop = document.getElementById("deletePostModalBackdrop");
+  if (!backdrop) return;
+
+  backdrop.classList.add("active");
+  backdrop.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
+function closeDeletePostModal() {
+  pendingDeleteThreadId = null;
+
+  const backdrop = document.getElementById("deletePostModalBackdrop");
+  if (!backdrop) return;
+
+  backdrop.classList.remove("active");
+  backdrop.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+async function confirmDeleteProfileThread() {
   if (!currentUser) {
     setStatus("You need to be logged in.", "error");
+    closeDeletePostModal();
     return;
   }
 
-  const confirmed = confirm("Delete this post? This cannot be undone.");
-
-  if (!confirmed) {
+  if (!pendingDeleteThreadId) {
+    setStatus("Post not found.", "error");
+    closeDeletePostModal();
     return;
+  }
+
+  const confirmBtn = document.getElementById("confirmDeletePostBtn");
+
+  if (confirmBtn) {
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = "Deleting...";
   }
 
   const { error } = await supabaseClient
     .from("threads")
     .delete()
-    .eq("id", threadId)
+    .eq("id", pendingDeleteThreadId)
     .eq("user_id", currentUser.id);
+
+  if (confirmBtn) {
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = "Delete forever";
+  }
 
   if (error) {
     setStatus(error.message, "error");
     return;
   }
 
+  closeDeletePostModal();
   setStatus("Post deleted.", "success");
 
   await loadProfileStats();
@@ -268,6 +346,8 @@ function setupProfileButtons() {
 async function initProfilePage() {
   setupAuthButtons();
   setupProfileButtons();
+  setupDeletePostModal();
+
   mountSharedUI({ includeModal: false });
   setBottomNavActive("profile");
 
