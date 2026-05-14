@@ -1813,3 +1813,50 @@ input::placeholder {
     min-height: 96px;
   }
 }
+/* Make hamburger button stronger and more visible */
+
+.hamburger-btn {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(7, 31, 42, 0.16);
+  box-shadow:
+    0 14px 34px rgba(0, 70, 90, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.hamburger-btn span {
+  width: 24px;
+  height: 3px;
+  background: #071f2a;
+  opacity: 1;
+}
+
+.hamburger-btn:hover {
+  background: #ffffff;
+  border-color: rgba(0, 188, 231, 0.35);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 560px) {
+  .app-topbar {
+    padding: 12px;
+  }
+
+  .topbar-left {
+    gap: 14px;
+  }
+
+  .hamburger-btn {
+    width: 58px;
+    height: 58px;
+    border-radius: 22px;
+  }
+
+  .hamburger-btn span {
+    width: 26px;
+    height: 3.5px;
+  }
+
+  .compact-brand {
+    gap: 12px;
+  }
+}
