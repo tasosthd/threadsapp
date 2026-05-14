@@ -999,6 +999,8 @@ input::placeholder {
   max-height: 280px;
 }
 
+/* Instagram-style horizontal social actions */
+
 .thread-actions {
   display: flex;
   align-items: center;
@@ -1013,6 +1015,57 @@ input::placeholder {
   gap: 10px;
   flex-wrap: wrap;
 }
+
+.social-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: nowrap;
+}
+
+.social-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  outline: 0;
+  padding: 8px 4px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1;
+  transition: 0.2s ease;
+}
+
+.social-action-btn svg {
+  width: 23px;
+  height: 23px;
+  fill: currentColor;
+}
+
+.social-action-btn span {
+  min-width: 10px;
+  color: inherit;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.social-action-btn:hover {
+  color: var(--cyan-dark);
+  transform: translateY(-2px);
+}
+
+.social-action-btn.liked {
+  color: var(--danger);
+}
+
+.social-action-btn.liked:hover {
+  color: var(--danger);
+}
+
+/* Old mini actions still used for follow/delete/remove image */
 
 .mini-action {
   border: 1px solid var(--line);
@@ -1030,21 +1083,11 @@ input::placeholder {
 }
 
 .like-action.liked {
-  color: #fff;
-  border-color: rgba(0, 188, 231, 0.2);
-  background: linear-gradient(135deg, var(--cyan), var(--blue));
-  box-shadow: 0 12px 24px rgba(0, 188, 231, 0.22);
+  color: var(--danger);
 }
 
 .reply-action {
-  color: var(--cyan-dark);
-}
-
-.reply-action:hover {
-  color: #fff;
-  border-color: rgba(0, 188, 231, 0.2);
-  background: linear-gradient(135deg, var(--cyan), var(--blue));
-  box-shadow: 0 12px 24px rgba(0, 188, 231, 0.18);
+  color: var(--muted);
 }
 
 .delete-action {
@@ -1865,17 +1908,36 @@ input::placeholder {
   }
 
   .thread-actions {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
   }
 
-  .action-left {
-    width: 100%;
+  .action-left,
+  .social-actions {
+    width: auto;
   }
 
-  .thread-actions .mini-action:not(.feed-follow-btn) {
-    width: 100%;
-    text-align: center;
+  .social-actions {
+    gap: 16px;
+  }
+
+  .thread-actions .social-action-btn {
+    width: auto !important;
+    text-align: left;
+  }
+
+  .social-action-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .social-action-btn span {
+    font-size: 14px;
+  }
+
+  .thread-actions .mini-action:not(.feed-follow-btn):not(.delete-action) {
+    width: auto;
+    text-align: left;
   }
 
   .feed-follow-btn {
