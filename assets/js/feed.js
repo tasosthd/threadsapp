@@ -222,6 +222,7 @@ function renderThreads() {
       const isOwner = currentUser && thread.user_id === currentUser.id;
       const likedByUser = userLikedThread(thread.id);
       const likeCount = getThreadLikeCount(thread.id);
+
       const commentCount =
         typeof getThreadCommentCount === "function"
           ? getThreadCommentCount(thread.id)
@@ -283,10 +284,22 @@ function renderThreads() {
         ? `<p class="thread-content">${content}</p>`
         : "";
 
+      const deleteButton = isOwner
+        ? `
+          <button
+            class="mini-action delete-action"
+            data-delete-id="${escapeHTML(thread.id)}"
+            type="button"
+          >
+            Delete
+          </button>
+        `
+        : "";
+
       return `
         <article class="thread-card">
           <div class="thread-top">
-            <button class="thread-user" data-profile-id="${escapeHTML(thread.user_id)}">
+            <button class="thread-user" data-profile-id="${escapeHTML(thread.user_id)}" type="button">
               <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
               <div>
                 <strong>${escapeHTML(name)}</strong>
@@ -301,27 +314,33 @@ function renderThreads() {
           ${threadImage}
 
           <div class="thread-actions">
-            <div class="action-left">
+            <div class="action-left social-actions">
               <button
-                class="mini-action like-action ${likedByUser ? "liked" : ""}"
+                class="social-action-btn like-action ${likedByUser ? "liked" : ""}"
                 data-like-id="${escapeHTML(thread.id)}"
+                type="button"
+                aria-label="Like"
               >
-                ${likedByUser ? "♥ Liked" : "♡ Like"} · ${likeCount}
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12.1 21.35 10.65 20.03C5.4 15.26 2 12.18 2 8.4 2 5.32 4.42 2.9 7.5 2.9c1.74 0 3.41.81 4.5 2.09C13.09 3.71 14.76 2.9 16.5 2.9 19.58 2.9 22 5.32 22 8.4c0 3.78-3.4 6.86-8.65 11.63l-1.25 1.32Z"></path>
+                </svg>
+                <span>${likeCount}</span>
               </button>
 
               <button
-                class="mini-action reply-action"
+                class="social-action-btn reply-action"
                 data-comments-id="${escapeHTML(thread.id)}"
+                type="button"
+                aria-label="Replies"
               >
-                Reply · ${commentCount}
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Zm-2 12H6v-2h12v2Zm0-3H6V9h12v2Zm0-3H6V6h12v2Z"></path>
+                </svg>
+                <span>${commentCount}</span>
               </button>
             </div>
 
-            ${
-              isOwner
-                ? `<button class="mini-action delete-action" data-delete-id="${escapeHTML(thread.id)}">Delete</button>`
-                : ""
-            }
+            ${deleteButton}
           </div>
         </article>
       `;
