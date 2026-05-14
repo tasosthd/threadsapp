@@ -23,21 +23,47 @@
   <div class="bg-orb orb-two"></div>
 
   <div class="app-shell">
-    <header class="topbar">
-      <a class="brand" href="index.html" aria-label="ThreadWave home">
-        <div class="brand-logo">〰</div>
-        <div>
-          <h1>ThreadWave</h1>
-          <p>Post ideas. Sync everywhere.</p>
-        </div>
-      </a>
+    <header class="topbar app-topbar">
+      <div class="topbar-left">
+        <button id="sidebarOpenBtn" class="hamburger-btn" type="button" aria-label="Open menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-      <div class="auth-area">
+        <a class="brand compact-brand" href="index.html" aria-label="ThreadWave home">
+          <div class="brand-logo">〰</div>
+
+          <div>
+            <h1>ThreadWave</h1>
+            <p>Post ideas. Sync everywhere.</p>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <aside id="appSidebar" class="app-sidebar" aria-hidden="true">
+      <div class="sidebar-head">
+        <div class="brand sidebar-brand">
+          <div class="brand-logo">〰</div>
+
+          <div>
+            <h1>ThreadWave</h1>
+            <p>Your creator menu.</p>
+          </div>
+        </div>
+
+        <button id="sidebarCloseBtn" class="sidebar-close-btn" type="button" aria-label="Close menu">
+          ×
+        </button>
+      </div>
+
+      <div class="sidebar-auth">
         <button id="loginBtn" class="btn primary-btn" type="button">
           Continue with Google
         </button>
 
-        <div id="userBox" class="user-box hidden">
+        <div id="userBox" class="user-box sidebar-user-box hidden">
           <img id="userAvatar" src="" alt="User avatar" />
 
           <div class="user-meta">
@@ -45,16 +71,20 @@
             <span id="userEmail">email</span>
           </div>
 
-          <a id="desktopProfileBtn" class="btn ghost-btn desktop-profile-btn" href="profile.html">
-            Profile
-          </a>
-
           <button id="logoutBtn" class="btn ghost-btn" type="button">
             Logout
           </button>
         </div>
       </div>
-    </header>
+
+      <nav class="sidebar-links">
+        <a href="index.html">Home</a>
+        <a href="profile.html">Profile</a>
+        <button id="sidebarComposeBtn" type="button">Create thread</button>
+      </nav>
+    </aside>
+
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
     <main class="main-grid">
       <aside class="left-panel">
@@ -65,7 +95,7 @@
 
           <p>
             Google login, Supabase Auth, cloud posts, real likes, public profiles,
-            persistent sessions, and creator identity.
+            image uploads, comments, follows, persistent sessions, and creator identity.
           </p>
         </section>
 
@@ -85,9 +115,9 @@
           <h3>Next money upgrades</h3>
 
           <ul>
-            <li>Follow system</li>
+            <li>Notifications</li>
             <li>AI caption generator</li>
-            <li>Image uploads</li>
+            <li>Search users/posts</li>
             <li>Analytics dashboard</li>
           </ul>
         </section>
