@@ -95,14 +95,30 @@
         <h2>Build your identity.</h2>
 
         <p>
-          Edit your username, bio, and profile presence. Your posts, images,
-          likes, and creator stats live here.
+          Edit your username, bio, profile picture, and creator presence. Your posts,
+          images, likes, and creator stats live here.
         </p>
       </section>
 
       <section class="profile-editor-card">
         <div class="profile-editor-head">
-          <img id="profileEditorAvatar" src="" alt="Profile avatar" />
+          <div class="profile-avatar-control">
+            <img id="profileEditorAvatar" src="" alt="Profile avatar" />
+
+            <label class="avatar-upload-btn" for="profileAvatarInput">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 20a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h2.1l1.2-1.8A1 1 0 0 1 9.1 2h5.8a1 1 0 0 1 .8.4L16.9 4H19a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H5Zm7-3.5A4.5 4.5 0 1 0 12 7a4.5 4.5 0 0 0 0 9.5Zm0-2A2.5 2.5 0 1 1 12 9a2.5 2.5 0 0 1 0 5.5Z"></path>
+              </svg>
+              <span>Change photo</span>
+            </label>
+
+            <input
+              id="profileAvatarInput"
+              class="avatar-upload-input"
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+            />
+          </div>
 
           <div>
             <span class="eyebrow">Your account</span>
