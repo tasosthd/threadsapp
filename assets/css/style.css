@@ -1523,3 +1523,62 @@ input::placeholder {
     min-height: 96px;
   }
 }
+
+/* Mobile modal scroll fix */
+
+.thread-modal {
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.thread-modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.thread-modal::-webkit-scrollbar-track {
+  background: rgba(0, 188, 231, 0.08);
+  border-radius: 999px;
+}
+
+.thread-modal::-webkit-scrollbar-thumb {
+  background: rgba(2, 135, 168, 0.28);
+  border-radius: 999px;
+}
+
+@media (max-width: 560px) {
+  .modal-backdrop {
+    align-items: flex-start;
+    padding: 18px 12px;
+    overflow-y: auto;
+  }
+
+  .thread-modal {
+    width: 100%;
+    max-height: calc(100vh - 36px);
+    overflow-y: auto;
+    border-radius: 28px;
+  }
+
+  .modal-textarea {
+    min-height: 120px;
+  }
+
+  .image-preview-wrap img {
+    max-height: 170px;
+  }
+
+  .modal-footer {
+    position: sticky;
+    bottom: -1px;
+    z-index: 5;
+    padding-top: 14px;
+    padding-bottom: 2px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  #modalUploadBtn {
+    width: 100%;
+  }
+}
