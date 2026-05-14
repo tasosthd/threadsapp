@@ -99,10 +99,27 @@ function renderProfileRecentPosts() {
   }
 
   profilePostsList.innerHTML = profileThreads
-    .slice(0, 8)
+    .slice(0, 12)
     .map((thread) => {
       const date = formatDate(thread.created_at);
-      const content = escapeHTML(thread.content);
+      const content = escapeHTML(thread.content || "");
+
+      const threadText = content
+        ? `<p class="thread-content">${content}</p>`
+        : "";
+
+      const threadImage = thread.image_url
+        ? `
+          <div class="thread-image-wrap profile-thread-image-wrap">
+            <img
+              class="thread-image profile-thread-image"
+              src="${escapeHTML(thread.image_url)}"
+              alt="Profile thread image"
+              loading="lazy"
+            />
+          </div>
+        `
+        : "";
 
       return `
         <article class="thread-card">
@@ -116,7 +133,8 @@ function renderProfileRecentPosts() {
             </div>
           </div>
 
-          <p class="thread-content">${content}</p>
+          ${threadText}
+          ${threadImage}
         </article>
       `;
     })
