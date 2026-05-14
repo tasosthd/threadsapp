@@ -194,6 +194,54 @@ function setupSidebar() {
     });
   }
 
+  /* =========================
+     MOBILE SWIPE TO OPEN SIDEBAR
+     Swipe from left edge → right
+  ========================= */
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchEndX = 0;
+  let touchEndY = 0;
+
+  document.addEventListener(
+    "touchstart",
+    (event) => {
+      if (!event.touches || event.touches.length !== 1) return;
+
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+    },
+    { passive: true }
+  );
+
+  document.addEventListener(
+    "touchend",
+    (event) => {
+      if (!event.changedTouches || event.changedTouches.length !== 1) return;
+
+      const appSidebar = document.getElementById("appSidebar");
+
+      if (appSidebar?.classList.contains("active")) return;
+
+      touchEndX = event.changedTouches[0].clientX;
+      touchEndY = event.changedTouches[0].clientY;
+
+      const swipeDistanceX = touchEndX - touchStartX;
+      const swipeDistanceY = Math.abs(touchEndY - touchStartY);
+
+      const isPhoneWidth = window.innerWidth <= 768;
+      const startedNearLeftEdge = touchStartX <= 36;
+      const swipedRight = swipeDistanceX > 86;
+      const mostlyHorizontal = swipeDistanceY < 72;
+
+      if (isPhoneWidth && startedNearLeftEdge && swipedRight && mostlyHorizontal) {
+        openSidebar();
+      }
+    },
+    { passive: true }
+  );
+
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeSidebar();
