@@ -51,16 +51,19 @@ function renderProfileEditor() {
 
   const avatar =
     profileData?.avatar_url ||
+    currentProfile?.avatar_url ||
     meta.avatar ||
     fallbackAvatar(meta.email || "User");
 
   const name =
     profileData?.full_name ||
+    currentProfile?.full_name ||
     meta.name ||
     "ThreadWave User";
 
   const email =
     profileData?.email ||
+    currentProfile?.email ||
     meta.email ||
     "";
 
@@ -77,11 +80,11 @@ function renderProfileEditor() {
   }
 
   if (profileUsernameInput) {
-    profileUsernameInput.value = profileData?.username || "";
+    profileUsernameInput.value = profileData?.username || currentProfile?.username || "";
   }
 
   if (profileBioInput) {
-    profileBioInput.value = profileData?.bio || "";
+    profileBioInput.value = profileData?.bio || currentProfile?.bio || "";
   }
 }
 
@@ -127,18 +130,22 @@ function renderProfilePosts() {
     .map((thread) => {
       const avatar =
         profileData?.avatar_url ||
+        currentProfile?.avatar_url ||
         thread.user_avatar ||
         fallbackAvatar(thread.user_email || "User");
 
       const name =
         profileData?.full_name ||
+        currentProfile?.full_name ||
         thread.user_name ||
         "ThreadWave User";
 
       const username =
         profileData?.username
           ? `@${profileData.username}`
-          : thread.user_email || "";
+          : currentProfile?.username
+            ? `@${currentProfile.username}`
+            : thread.user_email || "";
 
       const content = escapeHTML(thread.content || "");
       const date = formatDate(thread.created_at);
@@ -288,6 +295,7 @@ async function saveProfileFromProfilePage() {
   const profileUsernameInput = document.getElementById("profileUsernameInput");
   const profileBioInput = document.getElementById("profileBioInput");
   const saveProfilePageBtn = document.getElementById("saveProfilePageBtn");
+  const profileEditorAvatar = document.getElementById("profileEditorAvatar");
 
   const username = cleanUsername(profileUsernameInput?.value || "");
   const bio = String(profileBioInput?.value || "").trim().slice(0, 160);
@@ -302,13 +310,34 @@ async function saveProfileFromProfilePage() {
     saveProfilePageBtn.textContent = "Saving...";
   }
 
+  /*
+    CEO FIX:
+    Preserve custom uploaded avatar when saving username/bio.
+    Never force Google avatar back here.
+  */
+  const currentAvatarUrl =
+    profileData?.avatar_url ||
+    currentProfile?.avatar_url ||
+    (
+      profileEditorAvatar?.src &&
+      !profileEditorAvatar.src.startsWith("blob:")
+        ? profileEditorAvatar.src
+        : null
+    );
+
+  const updatePayload = {
+    username,
+    bio,
+    updated_at: new Date().toISOString()
+  };
+
+  if (currentAvatarUrl) {
+    updatePayload.avatar_url = currentAvatarUrl;
+  }
+
   const { data, error } = await supabaseClient
     .from("profiles")
-    .update({
-      username,
-      bio,
-      updated_at: new Date().toISOString()
-    })
+    .update(updatePayload)
     .eq("id", currentUser.id)
     .select()
     .single();
@@ -332,6 +361,7 @@ async function saveProfileFromProfilePage() {
   currentProfile = data;
 
   renderProfileEditor();
+  renderProfilePosts();
   updateSharedAuthUI();
 
   setStatus("");
@@ -345,6 +375,11 @@ async function uploadProfileAvatar(file) {
   if (!currentUser || !file) return null;
 
   const extension = getProfileFileExtension(file);
+
+  /*
+    Use one stable filename per user.
+    upsert replaces it, ?v=Date.now() breaks browser cache.
+  */
   const filePath = `${currentUser.id}/avatar.${extension}`;
 
   const { error: uploadError } = await supabaseClient.storage
@@ -374,6 +409,7 @@ async function uploadProfileAvatar(file) {
 async function handleProfileAvatarChange(event) {
   if (!currentUser) {
     setStatus("Sign in first.", "error");
+    event.target.value = "";
     return;
   }
 
@@ -499,7 +535,9 @@ function closeDeletePostModal() {
 }
 
 function setupDeleteModal() {
-  document.body.insertAdjacentHTML("beforeend", renderDeleteModal());
+  if (!document.getElementById("deletePostModalBackdrop")) {
+    document.body.insertAdjacentHTML("beforeend", renderDeleteModal());
+  }
 
   const deletePostModalBackdrop = document.getElementById("deletePostModalBackdrop");
   const cancelDeletePostBtn = document.getElementById("cancelDeletePostBtn");
