@@ -6,17 +6,21 @@
 
   <title>Loomyva Profile</title>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <link rel="icon" type="image/png" href="../assets/img/index.png" />
-<link rel="apple-touch-icon" href="../assets/img/index.png">
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" href="/assets/img/index.png" />
+  <link rel="shortcut icon" type="image/png" href="/assets/img/index.png" />
+  <link rel="apple-touch-icon" href="/assets/img/index.png" />
+
+  <!-- Fonts -->
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet"
   />
-<link rel="icon" type="image/png" href="/assets/img/index.png" />
-<link rel="shortcut icon" type="image/png" href="/assets/img/index.png" />
-<link rel="apple-touch-icon" href="/assets/img/index.png" />
+
+  <!-- Main CSS -->
   <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
 
@@ -34,9 +38,13 @@
         </button>
 
         <a class="brand compact-brand" href="/" aria-label="Loomyva home">
-          
+          <img
+            src="/assets/img/index.png"
+            alt="Loomyva logo"
+            class="brand-logo"
+          />
 
-          <img src="/assets/img/index.png" alt="Loomyva logo" class="brand-logo" />
+          <div>
             <h1>Loomyva</h1>
             <p>Edit your creator identity.</p>
           </div>
@@ -47,7 +55,11 @@
     <aside id="appSidebar" class="app-sidebar" aria-hidden="true">
       <div class="sidebar-head">
         <div class="brand sidebar-brand">
-          <div class="brand-logo">〰</div>
+          <img
+            src="/assets/img/index.png"
+            alt="Loomyva logo"
+            class="brand-logo"
+          />
 
           <div>
             <h1>Loomyva</h1>
@@ -82,7 +94,7 @@
       </div>
 
       <nav class="sidebar-links">
-        <a href="../">Home</a>
+        <a href="/">Home</a>
         <a href="/profile/">Profile</a>
         <button id="sidebarComposeBtn" type="button">Create thread</button>
       </nav>
@@ -123,7 +135,7 @@
 
           <div>
             <span class="eyebrow">Your account</span>
-            <h2 id="profileEditorName">ThreadWave User</h2>
+            <h2 id="profileEditorName">Loomyva User</h2>
             <p id="profileEditorEmail">email</p>
           </div>
         </div>
@@ -188,8 +200,8 @@
     </main>
   </div>
 
+  <!-- App Scripts -->
   <script src="/assets/js/config.js"></script>
-  <script src="/assets/js/ui.js"></script>
   <script src="/assets/js/ui.js?v=profile-folder-3"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/profile.js"></script>
