@@ -503,7 +503,7 @@ function updatePublicProfileUI() {
   const name =
     profile?.full_name ||
     fallbackThread.user_name ||
-    "ThreadWave User";
+    "Loomyva User";
 
   const username =
     profile?.username
@@ -725,7 +725,7 @@ function subscribeToRealtime() {
   }
 
   realtimeChannel = supabaseClient
-    .channel("threadwave-realtime")
+    .channel("loomyva-realtime")
     .on(
       "postgres_changes",
       {
