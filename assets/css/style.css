@@ -1437,3 +1437,20 @@ input::placeholder {
     min-height: 96px;
   }
 }
+.profile-thread-actions {
+  justify-content: flex-end;
+}
+
+.profile-delete-btn {
+  min-width: 96px;
+}
+
+@media (max-width: 560px) {
+  .profile-thread-actions {
+    justify-content: stretch;
+  }
+
+  .profile-delete-btn {
+    width: 100%;
+  }
+}
