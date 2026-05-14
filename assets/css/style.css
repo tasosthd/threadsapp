@@ -156,26 +156,34 @@ button {
   width: 54px;
   height: 54px;
   flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  gap: 5px;
-  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid rgba(7, 31, 42, 0.16);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.76);
-  box-shadow: 0 14px 30px rgba(0, 70, 90, 0.1);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 14px 34px rgba(0, 70, 90, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   transition: 0.2s ease;
 }
 
 .hamburger-btn:hover {
+  background: #ffffff;
+  border-color: rgba(0, 188, 231, 0.35);
   transform: translateY(-2px);
 }
 
 .hamburger-btn span {
-  width: 22px;
+  width: 25px;
   height: 3px;
   display: block;
+  flex: 0 0 auto;
   border-radius: 999px;
-  background: var(--text);
+  background: #071f2a;
+  opacity: 1;
 }
 
 .app-sidebar {
@@ -1618,17 +1626,27 @@ input::placeholder {
 
   .app-topbar {
     top: 10px;
-    padding: 14px;
+    padding: 12px;
   }
 
   .topbar-left {
-    gap: 12px;
+    gap: 14px;
   }
 
   .hamburger-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 18px;
+    width: 58px;
+    height: 58px;
+    border-radius: 22px;
+    gap: 4px;
+  }
+
+  .hamburger-btn span {
+    width: 26px;
+    height: 3px;
+  }
+
+  .compact-brand {
+    gap: 12px;
   }
 
   .compact-brand .brand-logo {
@@ -1811,52 +1829,5 @@ input::placeholder {
 
   .comment-textarea {
     min-height: 96px;
-  }
-}
-/* Make hamburger button stronger and more visible */
-
-.hamburger-btn {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(7, 31, 42, 0.16);
-  box-shadow:
-    0 14px 34px rgba(0, 70, 90, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-}
-
-.hamburger-btn span {
-  width: 24px;
-  height: 3px;
-  background: #071f2a;
-  opacity: 1;
-}
-
-.hamburger-btn:hover {
-  background: #ffffff;
-  border-color: rgba(0, 188, 231, 0.35);
-  transform: translateY(-2px);
-}
-
-@media (max-width: 560px) {
-  .app-topbar {
-    padding: 12px;
-  }
-
-  .topbar-left {
-    gap: 14px;
-  }
-
-  .hamburger-btn {
-    width: 58px;
-    height: 58px;
-    border-radius: 22px;
-  }
-
-  .hamburger-btn span {
-    width: 26px;
-    height: 3.5px;
-  }
-
-  .compact-brand {
-    gap: 12px;
   }
 }
