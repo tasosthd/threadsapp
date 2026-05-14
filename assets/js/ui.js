@@ -196,7 +196,7 @@ function setupSidebar() {
 
   /* =========================
      MOBILE SWIPE SIDEBAR
-     Closed: swipe right from left area → open
+     Closed: swipe right from left/middle area → open
      Open: swipe left → close
   ========================= */
 
@@ -234,14 +234,20 @@ function setupSidebar() {
       const isMobileWidth = window.innerWidth <= 900;
       const mostlyHorizontal = swipeDistanceY < 58;
 
-      const startedFromLeftArea = touchStartX <= 96;
+      /*
+        This is the key upgrade:
+        User can start the swipe from the left 75% of the screen.
+        So it works from left side, middle, and slightly right area.
+      */
+      const startedFromOpenZone = touchStartX <= window.innerWidth * 0.75;
+
       const swipedRightEnough = swipeDistanceX > 68;
       const swipedLeftEnough = swipeDistanceX < -68;
 
       if (
         isMobileWidth &&
         !sidebarIsOpen &&
-        startedFromLeftArea &&
+        startedFromOpenZone &&
         swipedRightEnough &&
         mostlyHorizontal
       ) {
@@ -281,14 +287,18 @@ function setupSidebar() {
       const isMobileWidth = window.innerWidth <= 900;
       const mostlyHorizontal = swipeDistanceY < 76;
 
-      const startedFromLeftArea = touchStartX <= 96;
+      /*
+        Same open zone for touchend fallback.
+      */
+      const startedFromOpenZone = touchStartX <= window.innerWidth * 0.75;
+
       const swipedRightEnough = swipeDistanceX > 74;
       const swipedLeftEnough = swipeDistanceX < -74;
 
       if (
         isMobileWidth &&
         !sidebarIsOpen &&
-        startedFromLeftArea &&
+        startedFromOpenZone &&
         swipedRightEnough &&
         mostlyHorizontal
       ) {
