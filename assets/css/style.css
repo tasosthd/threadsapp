@@ -1620,17 +1620,8 @@ input::placeholder {
 .profile-editor-head {
   display: flex;
   align-items: center;
-  gap: 18px;
-  margin-bottom: 18px;
-}
-
-.profile-editor-head img {
-  width: 82px;
-  height: 82px;
-  border-radius: 28px;
-  object-fit: cover;
-  background: rgba(0, 188, 231, 0.12);
-  box-shadow: 0 16px 34px rgba(0, 188, 231, 0.18);
+  gap: 28px;
+  margin-bottom: 22px;
 }
 
 .profile-editor-head h2 {
@@ -1661,15 +1652,17 @@ input::placeholder {
 /* Avatar upload */
 
 .profile-avatar-control {
-  display: flex;
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
   flex: 0 0 auto;
+  padding-bottom: 18px;
 }
 
 .profile-avatar-control img {
-  width: 92px;
-  height: 92px;
+  width: 96px;
+  height: 96px;
   border-radius: 30px;
   object-fit: cover;
   background: rgba(0, 188, 231, 0.12);
@@ -1677,36 +1670,36 @@ input::placeholder {
 }
 
 .avatar-upload-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 11px 14px;
-  border: 1px solid rgba(0, 188, 231, 0.24);
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 3px solid rgba(255, 255, 255, 0.94);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
-  color: var(--cyan-dark);
-  font-size: 12px;
-  font-weight: 900;
-  white-space: nowrap;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  color: #fff;
   cursor: pointer;
-  box-shadow: 0 12px 26px rgba(0, 188, 231, 0.1);
+  box-shadow: 0 14px 30px rgba(0, 188, 231, 0.32);
+  transform: translateX(-50%);
   transition: 0.2s ease;
 }
 
 .avatar-upload-btn svg {
-  width: 18px;
-  height: 18px;
+  width: 21px;
+  height: 21px;
   fill: currentColor;
 }
 
+.avatar-upload-btn span {
+  display: none;
+}
+
 .avatar-upload-btn:hover {
-  color: #fff;
-  border-color: rgba(0, 188, 231, 0.32);
-  background: linear-gradient(135deg, var(--cyan), var(--blue));
-  transform: translateY(-2px);
-  box-shadow: 0 16px 32px rgba(0, 188, 231, 0.22);
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 18px 36px rgba(0, 188, 231, 0.42);
 }
 
 .avatar-upload-input {
@@ -1922,19 +1915,20 @@ input::placeholder {
   }
 
   .profile-avatar-control {
-    width: 100%;
-    align-items: flex-start;
-    flex-direction: column;
+    width: auto;
+    align-items: center;
+    flex-direction: row;
   }
 
   .profile-avatar-control img {
-    width: 96px;
-    height: 96px;
-    border-radius: 30px;
+    width: 104px;
+    height: 104px;
+    border-radius: 32px;
   }
 
   .avatar-upload-btn {
-    width: 100%;
+    width: 48px;
+    height: 48px;
   }
 
   .public-profile-follow,
@@ -2056,8 +2050,4 @@ input::placeholder {
   .comment-textarea {
     min-height: 96px;
   }
-}
-
-.status-msg {
-  display: block !important;
 }
