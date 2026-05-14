@@ -61,7 +61,7 @@ function renderProfileEditor() {
     profileData?.full_name ||
     currentProfile?.full_name ||
     meta.name ||
-    "ThreadWave User";
+    "Loomyva User";
 
   const email =
     profileData?.email ||
