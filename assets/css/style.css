@@ -409,16 +409,6 @@ button {
   font-weight: 900;
 }
 
-.composer {
-  padding: 18px;
-  border-radius: 32px;
-  background: var(--card-strong);
-}
-
-.composer.locked {
-  opacity: 0.76;
-}
-
 textarea {
   width: 100%;
   min-height: 136px;
@@ -434,15 +424,6 @@ textarea {
 textarea::placeholder,
 input::placeholder {
   color: #8ba4ad;
-}
-
-.composer-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
 }
 
 #charCount,
@@ -504,6 +485,8 @@ input::placeholder {
 .status-msg.error {
   color: var(--danger);
 }
+
+/* Public profile */
 
 .public-profile-card {
   padding: 22px;
@@ -608,6 +591,8 @@ input::placeholder {
   box-shadow: 0 14px 30px rgba(0, 188, 231, 0.22);
 }
 
+/* Threads */
+
 .threads-list {
   display: flex;
   flex-direction: column;
@@ -616,7 +601,12 @@ input::placeholder {
 
 .thread-card {
   padding: 18px;
+  border: 1px solid var(--line);
   border-radius: 30px;
+  background: var(--card);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  box-shadow: var(--shadow);
   animation: popIn 0.25s ease both;
 }
 
@@ -687,10 +677,11 @@ input::placeholder {
 }
 
 .thread-image-wrap {
+  width: min(100%, 440px);
   margin-top: 14px;
   overflow: hidden;
   border: 1px solid rgba(0, 188, 231, 0.18);
-  border-radius: 26px;
+  border-radius: 22px;
   background:
     radial-gradient(circle at top left, rgba(0, 188, 231, 0.1), transparent 42%),
     rgba(255, 255, 255, 0.62);
@@ -700,14 +691,23 @@ input::placeholder {
 .thread-image {
   display: block;
   width: 100%;
-  max-height: 520px;
+  max-height: 320px;
   object-fit: cover;
   object-position: center;
+  border-radius: 22px;
   transition: 0.25s ease;
 }
 
 .thread-image:hover {
   transform: scale(1.015);
+}
+
+.profile-thread-image-wrap {
+  width: min(100%, 380px);
+}
+
+.profile-thread-image {
+  max-height: 280px;
 }
 
 .thread-actions {
@@ -1003,7 +1003,7 @@ input::placeholder {
   white-space: nowrap;
 }
 
-/* Comments / replies modal */
+/* Comments */
 
 .comments-list {
   display: flex;
@@ -1101,7 +1101,7 @@ input::placeholder {
   font-weight: 800;
 }
 
-/* Bottom navigation */
+/* Bottom nav */
 
 .bottom-nav {
   position: fixed;
@@ -1243,8 +1243,6 @@ input::placeholder {
   }
 }
 
-/* Desktop keeps bottom navigation visible */
-
 @media (min-width: 901px) {
   body {
     padding-bottom: 112px;
@@ -1313,14 +1311,12 @@ input::placeholder {
     font-size: 12px;
   }
 
-  .composer-footer,
   .modal-footer,
   .image-preview-meta {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .composer-footer .btn,
   .modal-footer .btn,
   .image-preview-meta .mini-action {
     width: 100%;
@@ -1381,12 +1377,19 @@ input::placeholder {
     max-width: 160px;
   }
 
-  .thread-image-wrap {
-    border-radius: 22px;
+  .thread-image-wrap,
+  .profile-thread-image-wrap {
+    width: 100%;
+    border-radius: 20px;
   }
 
   .thread-image {
-    max-height: 420px;
+    max-height: 260px;
+    border-radius: 20px;
+  }
+
+  .profile-thread-image {
+    max-height: 240px;
   }
 
   .thread-actions {
