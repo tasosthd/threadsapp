@@ -7,7 +7,7 @@ function getUserMeta(user) {
   return {
     name: meta.full_name || meta.name || user?.email || "User",
     email: user?.email || "",
-    avatar: meta.avatar_url || meta.picture || fallbackAvatar(user?.email || "User")
+    avatar_url: existingProfile?.avatar_url || meta.avatar,
   };
 }
 
