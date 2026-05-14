@@ -1,5 +1,61 @@
 let selectedThreadImageFile = null;
 
+/* =========================
+   THEME MODE
+========================= */
+
+function getSavedTheme() {
+  return localStorage.getItem("loomyva-theme") || "light";
+}
+
+function applyTheme(theme) {
+  const safeTheme = theme === "dark" ? "dark" : "light";
+
+  document.documentElement.setAttribute("data-theme", safeTheme);
+  localStorage.setItem("loomyva-theme", safeTheme);
+
+  updateThemeButtons(safeTheme);
+}
+
+function updateThemeButtons(theme = getSavedTheme()) {
+  const lightThemeBtn = document.getElementById("lightThemeBtn");
+  const darkThemeBtn = document.getElementById("darkThemeBtn");
+
+  if (lightThemeBtn) {
+    lightThemeBtn.classList.toggle("active", theme === "light");
+    lightThemeBtn.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
+  }
+
+  if (darkThemeBtn) {
+    darkThemeBtn.classList.toggle("active", theme === "dark");
+    darkThemeBtn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+  }
+}
+
+function setupThemeToggle() {
+  const lightThemeBtn = document.getElementById("lightThemeBtn");
+  const darkThemeBtn = document.getElementById("darkThemeBtn");
+
+  const savedTheme = getSavedTheme();
+  applyTheme(savedTheme);
+
+  if (lightThemeBtn) {
+    lightThemeBtn.addEventListener("click", () => {
+      applyTheme("light");
+    });
+  }
+
+  if (darkThemeBtn) {
+    darkThemeBtn.addEventListener("click", () => {
+      applyTheme("dark");
+    });
+  }
+}
+
+/* =========================
+   PAGE / GLOBAL HELPERS
+========================= */
+
 function getPageName() {
   const path = window.location.pathname.toLowerCase();
 
@@ -88,6 +144,8 @@ function openSidebar() {
 
   appSidebar.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
+
+  updateThemeButtons();
 }
 
 function closeSidebar() {
@@ -485,6 +543,8 @@ function renderThreadModal() {
 }
 
 function mountSharedUI({ includeModal = false } = {}) {
+  applyTheme(getSavedTheme());
+
   if (!document.getElementById("bottomHomeBtn")) {
     document.body.insertAdjacentHTML("beforeend", renderBottomNav());
   }
@@ -496,4 +556,5 @@ function mountSharedUI({ includeModal = false } = {}) {
 
   setupBottomNav();
   setupSidebar();
+  setupThemeToggle();
 }
