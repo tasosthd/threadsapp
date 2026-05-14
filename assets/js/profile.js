@@ -2,6 +2,7 @@ let profileThreads = [];
 let profileLikes = [];
 let profileData = null;
 let pendingDeleteThreadId = null;
+let latestUploadedAvatarUrl = null;
 
 /* =========================
    HELPERS
@@ -50,6 +51,7 @@ function renderProfileEditor() {
   const meta = getUserMeta(currentUser);
 
   const avatar =
+    latestUploadedAvatarUrl ||
     profileData?.avatar_url ||
     currentProfile?.avatar_url ||
     meta.avatar ||
@@ -129,6 +131,7 @@ function renderProfilePosts() {
   profilePostsList.innerHTML = profileThreads
     .map((thread) => {
       const avatar =
+        latestUploadedAvatarUrl ||
         profileData?.avatar_url ||
         currentProfile?.avatar_url ||
         thread.user_avatar ||
@@ -223,6 +226,7 @@ async function loadProfilePageData() {
     profileData = null;
     profileThreads = [];
     profileLikes = [];
+    latestUploadedAvatarUrl = null;
 
     renderProfileEditor();
     renderProfileStats();
@@ -270,6 +274,7 @@ async function loadProfilePageData() {
 
   profileData = profileResponse.data || null;
   currentProfile = profileData || currentProfile;
+  latestUploadedAvatarUrl = profileData?.avatar_url || latestUploadedAvatarUrl;
 
   profileThreads = threadsResponse.data || [];
   profileLikes = likesResponse.data || [];
@@ -311,11 +316,12 @@ async function saveProfileFromProfilePage() {
   }
 
   /*
-    CEO FIX:
-    Preserve custom uploaded avatar when saving username/bio.
-    Never force Google avatar back here.
+    IMPORTANT:
+    latestUploadedAvatarUrl comes first.
+    This prevents Save Profile from restoring the old Google avatar.
   */
   const currentAvatarUrl =
+    latestUploadedAvatarUrl ||
     profileData?.avatar_url ||
     currentProfile?.avatar_url ||
     (
@@ -359,6 +365,7 @@ async function saveProfileFromProfilePage() {
 
   profileData = data;
   currentProfile = data;
+  latestUploadedAvatarUrl = data.avatar_url || latestUploadedAvatarUrl;
 
   renderProfileEditor();
   renderProfilePosts();
@@ -375,11 +382,6 @@ async function uploadProfileAvatar(file) {
   if (!currentUser || !file) return null;
 
   const extension = getProfileFileExtension(file);
-
-  /*
-    Use one stable filename per user.
-    upsert replaces it, ?v=Date.now() breaks browser cache.
-  */
   const filePath = `${currentUser.id}/avatar.${extension}`;
 
   const { error: uploadError } = await supabaseClient.storage
@@ -469,6 +471,7 @@ async function handleProfileAvatarChange(event) {
 
   profileData = data;
   currentProfile = data;
+  latestUploadedAvatarUrl = data.avatar_url;
 
   renderProfileEditor();
   renderProfilePosts();
@@ -654,6 +657,7 @@ async function initProfilePage() {
       profileData = null;
       profileThreads = [];
       profileLikes = [];
+      latestUploadedAvatarUrl = null;
 
       renderProfileEditor();
       renderProfileStats();
