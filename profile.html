@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <title>ThreadWave | Profile</title>
+  <title>ThreadWave Profile</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -23,21 +23,47 @@
   <div class="bg-orb orb-two"></div>
 
   <div class="app-shell">
-    <header class="topbar">
-      <a class="brand" href="index.html" aria-label="ThreadWave home">
-        <div class="brand-logo">〰</div>
-        <div>
-          <h1>ThreadWave</h1>
-          <p>Edit your creator identity.</p>
-        </div>
-      </a>
+    <header class="topbar app-topbar">
+      <div class="topbar-left">
+        <button id="sidebarOpenBtn" class="hamburger-btn" type="button" aria-label="Open menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-      <div class="auth-area">
+        <a class="brand compact-brand" href="index.html" aria-label="ThreadWave home">
+          <div class="brand-logo">〰</div>
+
+          <div>
+            <h1>ThreadWave</h1>
+            <p>Edit your creator identity.</p>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <aside id="appSidebar" class="app-sidebar" aria-hidden="true">
+      <div class="sidebar-head">
+        <div class="brand sidebar-brand">
+          <div class="brand-logo">〰</div>
+
+          <div>
+            <h1>ThreadWave</h1>
+            <p>Your creator menu.</p>
+          </div>
+        </div>
+
+        <button id="sidebarCloseBtn" class="sidebar-close-btn" type="button" aria-label="Close menu">
+          ×
+        </button>
+      </div>
+
+      <div class="sidebar-auth">
         <button id="loginBtn" class="btn primary-btn" type="button">
           Continue with Google
         </button>
 
-        <div id="userBox" class="user-box hidden">
+        <div id="userBox" class="user-box sidebar-user-box hidden">
           <img id="userAvatar" src="" alt="User avatar" />
 
           <div class="user-meta">
@@ -45,26 +71,30 @@
             <span id="userEmail">email</span>
           </div>
 
-          <a id="desktopProfileBtn" class="btn ghost-btn desktop-profile-btn" href="index.html">
-            Home
-          </a>
-          
           <button id="logoutBtn" class="btn ghost-btn" type="button">
             Logout
           </button>
         </div>
       </div>
-    </header>
+
+      <nav class="sidebar-links">
+        <a href="index.html">Home</a>
+        <a href="profile.html">Profile</a>
+        <button id="sidebarComposeBtn" type="button">Create thread</button>
+      </nav>
+    </aside>
+
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
     <main class="profile-page-grid">
       <section class="glass-card page-hero">
-        <span class="eyebrow">Profile command center</span>
+        <span class="eyebrow">Creator profile</span>
 
-        <h2>Build a profile people remember.</h2>
+        <h2>Build your identity.</h2>
 
         <p>
-          Update your username and bio. This identity appears across your posts,
-          public profile card, and creator stats.
+          Edit your username, bio, and profile presence. Your posts, images,
+          likes, and creator stats live here.
         </p>
       </section>
 
@@ -73,7 +103,7 @@
           <img id="profileEditorAvatar" src="" alt="Profile avatar" />
 
           <div>
-            <span class="eyebrow">Edit profile</span>
+            <span class="eyebrow">Your account</span>
             <h2 id="profileEditorName">ThreadWave User</h2>
             <p id="profileEditorEmail">email</p>
           </div>
@@ -106,7 +136,7 @@
             </button>
 
             <button id="goHomeBtn" class="btn ghost-btn" type="button">
-              Back to home
+              Back to feed
             </button>
           </div>
         </div>
@@ -124,7 +154,7 @@
         </div>
       </section>
 
-      <section class="feed-panel">
+      <section class="feed-panel profile-page-panel">
         <section class="feed-top">
           <div>
             <span class="eyebrow">Your recent posts</span>
