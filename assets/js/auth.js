@@ -45,7 +45,7 @@ async function upsertProfile() {
     full_name: meta.name,
     username: existingProfile?.username || defaultUsername,
 
-    /* 
+    /*
       Important:
       Keep custom uploaded avatar if it exists.
       Only use Google avatar if the user has never uploaded one.
@@ -153,7 +153,15 @@ function updateSharedAuthUI() {
 async function signInWithGoogle() {
   setStatus("");
 
-  const redirectTo = window.location.origin + window.location.pathname;
+  /*
+    Redirect user to profile page after Google login.
+
+    Works for:
+    - https://loomyva.com/profile/
+    - https://threadsapp-nu.vercel.app/profile/
+    - local testing too, if added in Supabase Redirect URLs
+  */
+  const redirectTo = `${window.location.origin}/profile/`;
 
   const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
