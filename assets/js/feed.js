@@ -797,7 +797,7 @@ function subscribeToRealtime() {
       {
         event: "*",
         schema: "public",
-        table: "follows"
+        table: "thread_follows"
       },
       async () => {
         await loadFeed();
