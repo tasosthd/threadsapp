@@ -206,13 +206,15 @@ async function createComment() {
     commentUploadBtn.textContent = "Uploading...";
   }
 
-  const { error } = await supabaseClient
+  const { data: createdComment, error } = await supabaseClient
     .from("thread_comments")
     .insert({
       thread_id: activeCommentThreadId,
       user_id: currentUser.id,
       content
-    });
+    })
+    .select("id")
+    .single();
 
   if (commentUploadBtn) {
     commentUploadBtn.disabled = false;
@@ -226,6 +228,10 @@ async function createComment() {
 
   commentInput.value = "";
   updateCommentCharCount();
+
+  if (typeof createCommentNotification === "function") {
+    await createCommentNotification(activeCommentThreadId, createdComment?.id || null);
+  }
 
   setStatus("Reply uploaded 🚀", "success");
 
