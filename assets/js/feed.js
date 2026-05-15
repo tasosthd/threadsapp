@@ -715,6 +715,10 @@ async function likeThread(id) {
       return;
     }
 
+    if (typeof createLikeNotification === "function") {
+      await createLikeNotification(id);
+    }
+
     setStatus("Liked 🚀", "success");
   }
 
@@ -868,6 +872,10 @@ async function initFeedPage() {
   listenForAuthChanges({
     onSignedIn: async () => {
       await loadFeed();
+
+      if (typeof initNotificationsSystem === "function") {
+        await initNotificationsSystem();
+      }
     },
     onSignedOut: async () => {
       currentProfile = null;
@@ -879,6 +887,10 @@ async function initFeedPage() {
       setBottomNavActive("home");
 
       await loadFeed();
+
+      if (typeof resetNotificationsSystem === "function") {
+        resetNotificationsSystem();
+      }
     }
   });
 
