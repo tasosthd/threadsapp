@@ -363,6 +363,31 @@ async function toggleFollowFromProfileModal(targetUserId) {
   profileUserModalFollowBtn.disabled = false;
 }
 
+async function unfollowUserDirectlyFromFollowingModal(targetUserId) {
+  if (!targetUserId) return;
+
+  const button = document.querySelector(`[data-direct-unfollow-user-id="${CSS.escape(targetUserId)}"]`);
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Unfollowing...";
+  }
+
+  const success = await unfollowUserFromProfile(targetUserId);
+
+  if (success) {
+    await loadProfileFollowStats();
+    await loadProfileFollowingList();
+
+    if (profileViewingModalUserId === targetUserId) {
+      await loadProfileUserModal(targetUserId);
+    }
+  } else if (button) {
+    button.disabled = false;
+    button.textContent = "Unfollow";
+  }
+}
+
 /* =========================
    FOLLOWING LIST MODAL
 ========================= */
@@ -474,32 +499,38 @@ function renderFollowingRows(followRows, followedProfiles) {
       const profile = profileById.get(follow.following_id) || null;
       const name = getSafeProfileName(profile, follow.following_id);
       const username = getSafeUsername(profile);
-      const bio = getSafeBio(profile);
       const avatar = getSafeAvatar(profile, name);
 
       return `
-        <article
-          class="following-person-card clickable-following-person"
-          role="button"
-          tabindex="0"
-          data-open-profile-user-id="${escapeHTML(follow.following_id)}"
-          aria-label="Open ${escapeHTML(name)} profile"
-        >
-          <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" loading="lazy" />
+        <article class="following-person-card instagram-following-row">
+          <button
+            class="following-profile-open-area"
+            type="button"
+            data-open-profile-user-id="${escapeHTML(follow.following_id)}"
+            aria-label="Open ${escapeHTML(name)} profile"
+          >
+            <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" loading="lazy" />
 
-          <div class="following-person-info">
-            <strong>${escapeHTML(name)}</strong>
-            <span>${escapeHTML(username)}</span>
-            <p>${escapeHTML(bio)}</p>
-          </div>
+            <div class="following-person-info">
+              <strong>${escapeHTML(name)}</strong>
+              <span>${escapeHTML(username)}</span>
+            </div>
+          </button>
 
-          <div class="following-person-arrow" aria-hidden="true">↗</div>
+          <button
+            class="mini-action following-unfollow-btn"
+            type="button"
+            data-direct-unfollow-user-id="${escapeHTML(follow.following_id)}"
+          >
+            Unfollow
+          </button>
         </article>
       `;
     })
     .join("");
 
   bindFollowingPersonCards();
+  bindFollowingUnfollowButtons();
 }
 
 function bindFollowingPersonCards() {
@@ -517,6 +548,19 @@ function bindFollowingPersonCards() {
         event.preventDefault();
         openProfileUserModal(card.dataset.openProfileUserId);
       }
+    });
+  });
+}
+
+function bindFollowingUnfollowButtons() {
+  document.querySelectorAll("[data-direct-unfollow-user-id]").forEach((button) => {
+    if (button.dataset.unfollowReady === "true") return;
+
+    button.dataset.unfollowReady = "true";
+
+    button.addEventListener("click", async (event) => {
+      event.stopPropagation();
+      await unfollowUserDirectlyFromFollowingModal(button.dataset.directUnfollowUserId);
     });
   });
 }
