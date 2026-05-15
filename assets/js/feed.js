@@ -882,6 +882,15 @@ async function initFeedPage() {
     }, 400);
   }
 
+  const profileParam = params.get("profile");
+
+  if (profileParam) {
+    setTimeout(() => {
+      openPublicProfile(profileParam);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }, 250);
+  }
+
   listenForAuthChanges({
     onSignedIn: async () => {
       await loadFeed();
