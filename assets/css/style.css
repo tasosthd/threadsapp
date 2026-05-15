@@ -4078,3 +4078,24 @@ html[data-theme="dark"] .notifications-modal {
     border-radius: 18px;
   }
 }
+
+/* Dedicated search page */
+.search-page-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin-top: 24px;
+  padding-bottom: 110px;
+}
+
+.search-page-hero {
+  overflow: hidden;
+}
+
+.search-page-card {
+  margin-top: 0;
+}
+
+.search-page-card .user-search-results {
+  max-height: none;
+}
