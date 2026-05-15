@@ -21,7 +21,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=following-modal-fix-1" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=notifications-system-1" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -57,6 +57,19 @@
             <p>Edit your creator identity.</p>
           </div>
         </a>
+
+        <button
+          class="topbar-notification-btn"
+          type="button"
+          data-open-notifications
+          aria-label="Open notifications"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 1 0-14 0v5l-2 2v1h18v-1l-2-2Z"></path>
+          </svg>
+
+          <span id="notificationsBadge" class="notification-badge hidden">0</span>
+        </button>
       </div>
     </header>
 
@@ -126,7 +139,14 @@
 
       <nav class="sidebar-links">
         <a href="/">Home</a>
+
         <a href="/profile/">Profile</a>
+
+        <button class="sidebar-notifications-link" type="button" data-open-notifications>
+          <span>Notifications</span>
+          <span id="sidebarNotificationsBadge" class="sidebar-notification-badge hidden">0</span>
+        </button>
+
         <button id="sidebarComposeBtn" type="button">Create thread</button>
       </nav>
     </aside>
@@ -245,12 +265,21 @@
 
   <!-- App Scripts -->
   <script src="/assets/js/config.js"></script>
-  <script src="/assets/js/ui.js?v=swipe-sidebar-4"></script>
-  <script src="/assets/js/auth.js?v=profile-redirect-1"></script>
-  <script src="/assets/js/profile.js?v=following-modal-fix-1"></script>
+  <script src="/assets/js/ui.js?v=notifications-system-1"></script>
+  <script src="/assets/js/auth.js?v=notifications-system-1"></script>
+  <script src="/assets/js/notifications.js?v=notifications-system-1"></script>
+  <script src="/assets/js/profile.js?v=notifications-system-1"></script>
 
   <script>
-    initProfilePage();
+    async function bootProfilePage() {
+      await initProfilePage();
+
+      if (typeof initNotificationsSystem === "function") {
+        await initNotificationsSystem();
+      }
+    }
+
+    bootProfilePage();
   </script>
 </body>
 </html>
