@@ -512,27 +512,49 @@ function updatePublicProfileUI() {
 
   const bio = profile?.bio || "No bio yet. This founder is moving in silence.";
 
-  if (publicProfileAvatar) publicProfileAvatar.src = avatar;
-  if (publicProfileName) publicProfileName.textContent = name;
-  if (publicProfileUsername) publicProfileUsername.textContent = username;
-  if (publicProfileBio) publicProfileBio.textContent = bio;
+  const postCount = userThreads.length;
+  const totalLikes = getUserTotalLikes(viewedProfileId);
+
+  const followerCount =
+    typeof getFollowerCount === "function"
+      ? getFollowerCount(viewedProfileId)
+      : 0;
+
+  const followingCount =
+    typeof getFollowingCount === "function"
+      ? getFollowingCount(viewedProfileId)
+      : 0;
+
+  if (publicProfileAvatar) {
+    publicProfileAvatar.src = avatar;
+  }
+
+  if (publicProfileName) {
+    publicProfileName.textContent = name;
+  }
+
+  if (publicProfileUsername) {
+    publicProfileUsername.textContent = username;
+  }
 
   if (publicProfilePosts) {
-    publicProfilePosts.textContent = `${userThreads.length} ${userThreads.length === 1 ? "post" : "posts"}`;
+    publicProfilePosts.textContent = `${postCount} ${postCount === 1 ? "Post" : "Posts"}`;
   }
 
   if (publicProfileLikes) {
-    publicProfileLikes.textContent = `${getUserTotalLikes(viewedProfileId)} total likes`;
+    publicProfileLikes.textContent = `${totalLikes} Total ${totalLikes === 1 ? "Like" : "Likes"}`;
   }
 
-  if (publicProfileFollowers && typeof getFollowerCount === "function") {
-    const followerCount = getFollowerCount(viewedProfileId);
-    publicProfileFollowers.textContent = `${followerCount} ${followerCount === 1 ? "follower" : "followers"}`;
+  if (publicProfileFollowers) {
+    publicProfileFollowers.textContent = `${followerCount} ${followerCount === 1 ? "Follower" : "Followers"}`;
   }
 
-  if (publicProfileFollowing && typeof getFollowingCount === "function") {
-    const followingCount = getFollowingCount(viewedProfileId);
-    publicProfileFollowing.textContent = `${followingCount} following`;
+  if (publicProfileFollowing) {
+    publicProfileFollowing.textContent = `${followingCount} Following`;
+  }
+
+  if (publicProfileBio) {
+    publicProfileBio.textContent = bio;
   }
 
   if (publicProfileFollowWrap) {
@@ -775,7 +797,7 @@ function subscribeToRealtime() {
       {
         event: "*",
         schema: "public",
-        table: "thread_follows"
+        table: "follows"
       },
       async () => {
         await loadFeed();
