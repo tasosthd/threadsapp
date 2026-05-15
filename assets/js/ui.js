@@ -441,7 +441,7 @@ function openThreadModal() {
   if (!modalBackdrop) return;
 
   if (typeof currentUser !== "undefined" && !currentUser) {
-    setStatus("Sign in first to create a thread.", "error");
+    setStatus(typeof t === "function" ? t("signInFirstThread") : "Sign in first to create a thread.", "error");
 
     if (typeof signInWithGoogle === "function") {
       signInWithGoogle();
@@ -619,28 +619,28 @@ function renderBottomNav() {
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M3 11.5 12 4l9 7.5V21a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-9.5Z"></path>
         </svg>
-        <span>Home</span>
+        <span data-i18n="navHome">${typeof t === "function" ? t("navHome") : "Home"}</span>
       </button>
 
       <button id="bottomSearchBtn" class="bottom-nav-btn" type="button">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M10.5 3a7.5 7.5 0 0 1 5.93 12.1l4.24 4.23a1 1 0 0 1-1.42 1.42l-4.23-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"></path>
         </svg>
-        <span>Search</span>
+        <span data-i18n="navSearch">${typeof t === "function" ? t("navSearch") : "Search"}</span>
       </button>
 
       <button id="bottomComposeBtn" class="bottom-nav-btn" type="button" aria-label="Create thread">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 5a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H6a1 1 0 1 1 0-2h5V6a1 1 0 0 1 1-1Z"></path>
         </svg>
-        <span>Create</span>
+        <span data-i18n="navCreate">${typeof t === "function" ? t("navCreate") : "Create"}</span>
       </button>
 
       <button id="bottomProfileBtn" class="bottom-nav-btn" type="button">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.42 0-8 2.24-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.76-3.58-5-8-5Z"></path>
         </svg>
-        <span>Profile</span>
+        <span data-i18n="navProfile">${typeof t === "function" ? t("navProfile") : "Profile"}</span>
       </button>
     </nav>
   `;
@@ -652,8 +652,8 @@ function renderThreadModal() {
       <section class="thread-modal" role="dialog" aria-modal="true" aria-labelledby="threadModalTitle">
         <div class="modal-head">
           <div>
-            <h2 id="threadModalTitle">Create thread</h2>
-            <p>Write your next move. Add an image if it makes the post hit harder.</p>
+            <h2 id="threadModalTitle" data-i18n="createThread">${typeof t === "function" ? t("createThread") : "Create thread"}</h2>
+            <p data-i18n="modalText">${typeof t === "function" ? t("modalText") : "Write your next move. Add an image if it makes the post hit harder."}</p>
           </div>
 
           <button id="modalCloseBtn" class="modal-close" type="button" aria-label="Close modal">
@@ -665,7 +665,7 @@ function renderThreadModal() {
           id="modalThreadInput"
           class="modal-textarea"
           maxlength="280"
-          placeholder="What's building in your mind today?"
+          placeholder="${typeof t === "function" ? t("modalPlaceholder") : "What's building in your mind today?"}" data-i18n-placeholder="modalPlaceholder"
         ></textarea>
 
         <div class="image-upload-box">
@@ -677,8 +677,8 @@ function renderThreadModal() {
             </span>
 
             <span>
-              <strong>Add image</strong>
-              <small>JPG, PNG, WEBP or GIF · max 6MB</small>
+              <strong data-i18n="addImage">${typeof t === "function" ? t("addImage") : "Add image"}</strong>
+              <small data-i18n="imageRules">${typeof t === "function" ? t("imageRules") : "JPG, PNG, WEBP or GIF · max 6MB"}</small>
             </span>
           </label>
 
@@ -695,7 +695,7 @@ function renderThreadModal() {
             <div class="image-preview-meta">
               <strong id="modalImageName"></strong>
               <button id="modalRemoveImageBtn" class="mini-action delete-action" type="button">
-                Remove image
+                ${typeof t === "function" ? t("removeImage") : "Remove image"}
               </button>
             </div>
           </div>
@@ -703,7 +703,7 @@ function renderThreadModal() {
 
         <div class="modal-footer">
           <span id="modalCharCount">0 / 280</span>
-          <button id="modalUploadBtn" class="btn primary-btn" type="button">Upload</button>
+          <button id="modalUploadBtn" class="btn primary-btn" type="button" data-i18n="upload">${typeof t === "function" ? t("upload") : "Upload"}</button>
         </div>
       </section>
     </div>
@@ -725,4 +725,8 @@ function mountSharedUI({ includeModal = false } = {}) {
   setupBottomNav();
   setupSidebar();
   setupThemeToggle();
+
+  if (typeof setupLanguageSwitcher === "function") {
+    setupLanguageSwitcher();
+  }
 }
