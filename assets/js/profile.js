@@ -3,6 +3,8 @@ let profileLikes = [];
 let profileData = null;
 let pendingDeleteThreadId = null;
 let latestUploadedAvatarUrl = null;
+let profileFollowersCount = 0;
+let profileFollowingCount = 0;
 
 /* =========================
    HELPERS
@@ -93,6 +95,8 @@ function renderProfileEditor() {
 function renderProfileStats() {
   const profilePostCount = document.getElementById("profilePostCount");
   const profileLikeCount = document.getElementById("profileLikeCount");
+  const profileFollowerCount = document.getElementById("profileFollowerCount");
+  const profileFollowingCountElement = document.getElementById("profileFollowingCount");
 
   if (profilePostCount) {
     profilePostCount.textContent = profileThreads.length;
@@ -100,6 +104,14 @@ function renderProfileStats() {
 
   if (profileLikeCount) {
     profileLikeCount.textContent = getProfileTotalLikes();
+  }
+
+  if (profileFollowerCount) {
+    profileFollowerCount.textContent = profileFollowersCount;
+  }
+
+  if (profileFollowingCountElement) {
+    profileFollowingCountElement.textContent = profileFollowingCount;
   }
 }
 
@@ -141,7 +153,7 @@ function renderProfilePosts() {
         profileData?.full_name ||
         currentProfile?.full_name ||
         thread.user_name ||
-        "ThreadWave User";
+        "Loomyva User";
 
       const username =
         profileData?.username
@@ -218,6 +230,55 @@ function renderProfilePosts() {
 }
 
 /* =========================
+   FOLLOW STATS
+========================= */
+
+async function loadProfileFollowStats() {
+  if (!currentUser) {
+    profileFollowersCount = 0;
+    profileFollowingCount = 0;
+    renderProfileStats();
+    return;
+  }
+
+  const followersRequest = supabaseClient
+    .from("follows")
+    .select("*", { count: "exact", head: true })
+    .eq("following_id", currentUser.id);
+
+  const followingRequest = supabaseClient
+    .from("follows")
+    .select("*", { count: "exact", head: true })
+    .eq("follower_id", currentUser.id);
+
+  const [followersResponse, followingResponse] = await Promise.all([
+    followersRequest,
+    followingRequest
+  ]);
+
+  if (followersResponse.error) {
+    setStatus(followersResponse.error.message, "error");
+    profileFollowersCount = 0;
+    profileFollowingCount = 0;
+    renderProfileStats();
+    return;
+  }
+
+  if (followingResponse.error) {
+    setStatus(followingResponse.error.message, "error");
+    profileFollowersCount = 0;
+    profileFollowingCount = 0;
+    renderProfileStats();
+    return;
+  }
+
+  profileFollowersCount = followersResponse.count || 0;
+  profileFollowingCount = followingResponse.count || 0;
+
+  renderProfileStats();
+}
+
+/* =========================
    LOAD PROFILE DATA
 ========================= */
 
@@ -226,6 +287,8 @@ async function loadProfilePageData() {
     profileData = null;
     profileThreads = [];
     profileLikes = [];
+    profileFollowersCount = 0;
+    profileFollowingCount = 0;
     latestUploadedAvatarUrl = null;
 
     renderProfileEditor();
@@ -251,10 +314,28 @@ async function loadProfilePageData() {
     .from("thread_likes")
     .select("*");
 
-  const [profileResponse, threadsResponse, likesResponse] = await Promise.all([
+  const followersRequest = supabaseClient
+    .from("follows")
+    .select("*", { count: "exact", head: true })
+    .eq("following_id", currentUser.id);
+
+  const followingRequest = supabaseClient
+    .from("follows")
+    .select("*", { count: "exact", head: true })
+    .eq("follower_id", currentUser.id);
+
+  const [
+    profileResponse,
+    threadsResponse,
+    likesResponse,
+    followersResponse,
+    followingResponse
+  ] = await Promise.all([
     profileRequest,
     threadsRequest,
-    likesRequest
+    likesRequest,
+    followersRequest,
+    followingRequest
   ]);
 
   if (profileResponse.error) {
@@ -272,12 +353,24 @@ async function loadProfilePageData() {
     return;
   }
 
+  if (followersResponse.error) {
+    setStatus(followersResponse.error.message, "error");
+    return;
+  }
+
+  if (followingResponse.error) {
+    setStatus(followingResponse.error.message, "error");
+    return;
+  }
+
   profileData = profileResponse.data || null;
   currentProfile = profileData || currentProfile;
   latestUploadedAvatarUrl = profileData?.avatar_url || latestUploadedAvatarUrl;
 
   profileThreads = threadsResponse.data || [];
   profileLikes = likesResponse.data || [];
+  profileFollowersCount = followersResponse.count || 0;
+  profileFollowingCount = followingResponse.count || 0;
 
   renderProfileEditor();
   renderProfileStats();
@@ -657,6 +750,8 @@ async function initProfilePage() {
       profileData = null;
       profileThreads = [];
       profileLikes = [];
+      profileFollowersCount = 0;
+      profileFollowingCount = 0;
       latestUploadedAvatarUrl = null;
 
       renderProfileEditor();
