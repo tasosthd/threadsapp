@@ -1,14 +1,13 @@
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function () {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then(function () {
-          console.log("Loomyva service worker registered");
-        })
-        .catch(function (error) {
-          console.error("Service worker registration failed:", error);
-        });
-    });
-  }
-</script>
+const CACHE_NAME = "loomyva-cache-v1";
+
+self.addEventListener("install", function () {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", function (event) {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener("fetch", function (event) {
+  event.respondWith(fetch(event.request));
+});
