@@ -1,5 +1,6 @@
 let userSearchQuery = "";
 let userSearchReady = false;
+let userSearchDataLoaded = false;
 
 function normalizeSearchText(value) {
   return String(value || "")
@@ -161,7 +162,10 @@ function bindUserSearchResultActions() {
 
       if (typeof openPublicProfile === "function") {
         openPublicProfile(userId);
+        return;
       }
+
+      window.location.href = `/?profile=${encodeURIComponent(userId)}`;
     });
   });
 
@@ -247,7 +251,12 @@ function setupUserSearchEvents() {
         closeSidebar();
       }
 
-      scrollToUserSearch();
+      if (window.location.pathname.toLowerCase().startsWith("/search")) {
+        scrollToUserSearch();
+        return;
+      }
+
+      window.location.href = "/search/";
     });
   }
 }
@@ -275,4 +284,64 @@ function initUserSearch() {
       window.history.replaceState({}, document.title, window.location.pathname);
     }, 350);
   }
+}
+
+
+async function loadUserSearchData() {
+  const [profilesResponse, threadsResponse] = await Promise.all([
+    supabaseClient
+      .from("profiles")
+      .select("*"),
+    supabaseClient
+      .from("threads")
+      .select("id,user_id")
+  ]);
+
+  if (profilesResponse.error) {
+    setStatus(profilesResponse.error.message, "error");
+    return;
+  }
+
+  if (threadsResponse.error) {
+    setStatus(threadsResponse.error.message, "error");
+    return;
+  }
+
+  profiles = profilesResponse.data || [];
+  threads = threadsResponse.data || [];
+
+  if (typeof loadFollows === "function") {
+    await loadFollows();
+  }
+
+  userSearchDataLoaded = true;
+  renderUserSearchResults();
+}
+
+async function initSearchPage() {
+  setupAuthButtons();
+  mountSharedUI({ includeModal: false });
+  setBottomNavActive("search");
+
+  await restoreSession();
+  initUserSearch();
+  await loadUserSearchData();
+
+  listenForAuthChanges({
+    onSignedIn: async () => {
+      await loadUserSearchData();
+
+      if (typeof initNotificationsSystem === "function") {
+        await initNotificationsSystem();
+      }
+    },
+    onSignedOut: async () => {
+      currentProfile = null;
+      await loadUserSearchData();
+
+      if (typeof resetNotificationsSystem === "function") {
+        resetNotificationsSystem();
+      }
+    }
+  });
 }
