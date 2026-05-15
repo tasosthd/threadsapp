@@ -182,7 +182,6 @@ html[data-theme="dark"] .orb-two {
   flex: 1 1 auto;
 }
 
-/* Logo image - no background */
 .brand-logo {
   width: 56px;
   height: 56px;
@@ -1232,8 +1231,6 @@ input::placeholder {
   opacity: 1;
   transform: none;
 }
-
-/* Old mini actions still used for follow/delete/remove image */
 
 .mini-action {
   border: 1px solid var(--line);
@@ -2312,6 +2309,7 @@ html[data-theme="dark"] .avatar-upload-btn {
   padding: 20px;
   background: rgba(8, 20, 35, 0.42);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.22s ease;
@@ -2328,7 +2326,7 @@ html[data-theme="dark"] .avatar-upload-btn {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 32px;
-  background: var(--card);
+  background: var(--card-strong);
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
   transform: translateY(16px) scale(0.98);
   transition: transform 0.22s ease;
@@ -2396,6 +2394,20 @@ html[data-theme="dark"] .avatar-upload-btn {
   padding: 18px 18px 22px;
 }
 
+.following-modal-list::-webkit-scrollbar {
+  width: 7px;
+}
+
+.following-modal-list::-webkit-scrollbar-track {
+  background: rgba(0, 188, 231, 0.08);
+  border-radius: 999px;
+}
+
+.following-modal-list::-webkit-scrollbar-thumb {
+  background: rgba(2, 135, 168, 0.3);
+  border-radius: 999px;
+}
+
 .following-person-card {
   display: flex;
   gap: 14px;
@@ -2404,6 +2416,7 @@ html[data-theme="dark"] .avatar-upload-btn {
   border: 1px solid var(--line);
   border-radius: 24px;
   background: var(--soft-card);
+  transition: 0.2s ease;
 }
 
 .following-person-card img {
@@ -2417,6 +2430,7 @@ html[data-theme="dark"] .avatar-upload-btn {
 
 .following-person-info {
   min-width: 0;
+  flex: 1 1 auto;
 }
 
 .following-person-info strong,
@@ -2444,6 +2458,35 @@ html[data-theme="dark"] .avatar-upload-btn {
   font-size: 13px;
   line-height: 1.45;
   font-weight: 600;
+}
+
+.clickable-following-person {
+  cursor: pointer;
+}
+
+.clickable-following-person:hover,
+.clickable-following-person:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(0, 188, 231, 0.36);
+  background:
+    radial-gradient(circle at top left, rgba(0, 188, 231, 0.12), transparent 42%),
+    var(--soft-card-2);
+  box-shadow: 0 16px 38px rgba(0, 70, 90, 0.14);
+  outline: none;
+}
+
+.following-person-arrow {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--image-soft-bg);
+  color: var(--cyan-dark);
+  font-size: 15px;
+  font-weight: 900;
 }
 
 .following-modal-state,
@@ -2474,8 +2517,255 @@ html[data-theme="dark"] .avatar-upload-btn {
 }
 
 .following-modal-empty.error span {
-  color: #d33;
+  color: var(--danger);
 }
+
+/* =========================
+   Profile user modal
+========================= */
+
+.profile-user-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(7, 20, 31, 0.48);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.profile-user-modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.profile-user-modal {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: min(720px, 86vh);
+  overflow-y: auto;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top left, rgba(0, 188, 231, 0.14), transparent 44%),
+    var(--modal-bg);
+  box-shadow: 0 34px 100px rgba(0, 30, 48, 0.36);
+  transform: translateY(16px) scale(0.98);
+  transition: transform 0.22s ease;
+}
+
+html[data-theme="dark"] .profile-user-modal {
+  box-shadow: 0 34px 100px rgba(0, 0, 0, 0.58);
+}
+
+.profile-user-modal-backdrop.active .profile-user-modal {
+  transform: translateY(0) scale(1);
+}
+
+.profile-user-modal::-webkit-scrollbar {
+  width: 7px;
+}
+
+.profile-user-modal::-webkit-scrollbar-track {
+  background: rgba(0, 188, 231, 0.08);
+  border-radius: 999px;
+}
+
+.profile-user-modal::-webkit-scrollbar-thumb {
+  background: rgba(2, 135, 168, 0.3);
+  border-radius: 999px;
+}
+
+.profile-user-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--soft-card);
+  box-shadow: 0 14px 34px rgba(0, 70, 90, 0.12);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.profile-user-modal-close:hover {
+  transform: translateY(-2px);
+}
+
+.profile-user-modal-close span {
+  position: absolute;
+  left: 12px;
+  top: 21px;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--text);
+}
+
+.profile-user-modal-close span:first-child {
+  transform: rotate(45deg);
+}
+
+.profile-user-modal-close span:last-child {
+  transform: rotate(-45deg);
+}
+
+.profile-user-modal-body {
+  display: grid;
+  gap: 16px;
+}
+
+.profile-user-modal-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-right: 58px;
+}
+
+.profile-user-modal-hero img {
+  width: 92px;
+  height: 92px;
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  object-fit: cover;
+  background: rgba(0, 188, 231, 0.12);
+  box-shadow: 0 18px 40px rgba(0, 188, 231, 0.18);
+}
+
+.profile-user-modal-hero h2 {
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.profile-user-modal-hero p {
+  margin-top: 7px;
+  color: var(--cyan-dark);
+  font-size: 13px;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.profile-user-modal-bio {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--soft-card);
+  color: var(--thread-text);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.profile-user-modal-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.profile-user-modal-stats div {
+  padding: 15px 10px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--soft-card);
+  text-align: center;
+}
+
+.profile-user-modal-stats strong,
+.profile-user-modal-stats span {
+  display: block;
+}
+
+.profile-user-modal-stats strong {
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.profile-user-modal-stats span {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.profile-user-modal-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-user-modal-follow-btn {
+  width: 100%;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.profile-user-modal-follow-btn.primary-btn {
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 16px 34px rgba(0, 188, 231, 0.26);
+}
+
+.profile-user-modal-follow-btn.ghost-btn {
+  color: var(--cyan-dark);
+  border: 1px solid rgba(0, 188, 231, 0.25);
+  background: var(--soft-card);
+}
+
+.profile-user-modal-follow-btn.ghost-btn:not(:disabled):hover {
+  color: #fff;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 16px 34px rgba(0, 188, 231, 0.22);
+}
+
+.profile-user-modal-state,
+.profile-user-modal-empty {
+  padding: 32px 18px;
+  border: 1px dashed var(--line);
+  border-radius: 26px;
+  background: var(--soft-card);
+  color: var(--muted);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.profile-user-modal-empty strong,
+.profile-user-modal-empty span {
+  display: block;
+}
+
+.profile-user-modal-empty strong {
+  color: var(--text);
+  font-size: 17px;
+}
+
+.profile-user-modal-empty span {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.profile-user-modal-empty.error span {
+  color: var(--danger);
+}
+
+/* Following + profile modal responsive */
 
 @media (max-width: 560px) {
   .following-modal-backdrop {
@@ -2498,5 +2788,69 @@ html[data-theme="dark"] .avatar-upload-btn {
 
   .following-modal-list {
     padding: 14px;
+  }
+
+  .following-person-card {
+    gap: 12px;
+    padding: 12px;
+    border-radius: 22px;
+  }
+
+  .following-person-card img {
+    width: 50px;
+    height: 50px;
+    border-radius: 17px;
+  }
+
+  .following-person-info p {
+    font-size: 12px;
+  }
+
+  .following-person-arrow {
+    width: 31px;
+    height: 31px;
+    border-radius: 12px;
+  }
+
+  .profile-user-modal-backdrop {
+    align-items: end;
+    padding: 12px;
+  }
+
+  .profile-user-modal {
+    width: 100%;
+    max-height: 84vh;
+    padding: 20px 16px 18px;
+    border-radius: 30px;
+  }
+
+  .profile-user-modal-close {
+    top: 16px;
+    right: 16px;
+  }
+
+  .profile-user-modal-hero {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+    padding-right: 54px;
+  }
+
+  .profile-user-modal-hero img {
+    width: 88px;
+    height: 88px;
+    border-radius: 28px;
+  }
+
+  .profile-user-modal-hero h2 {
+    font-size: 26px;
+  }
+
+  .profile-user-modal-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-user-modal-stats div {
+    min-height: 92px;
   }
 }
