@@ -316,6 +316,10 @@ async function followUserFromProfile(targetUserId) {
     return false;
   }
 
+  if (typeof createFollowNotification === "function") {
+    await createFollowNotification(targetUserId);
+  }
+
   setStatus("Followed creator 🚀", "success");
   return true;
 }
@@ -1948,6 +1952,10 @@ async function initProfilePage() {
     onSignedIn: async () => {
       await loadProfilePageData();
       subscribeToProfileRealtime();
+
+      if (typeof initNotificationsSystem === "function") {
+        await initNotificationsSystem();
+      }
     },
     onSignedOut: async () => {
       profileData = null;
@@ -1967,6 +1975,10 @@ async function initProfilePage() {
       closeProfileUserModal();
 
       unsubscribeProfileRealtime();
+
+      if (typeof resetNotificationsSystem === "function") {
+        resetNotificationsSystem();
+      }
 
       setBottomNavActive("profile");
     }
