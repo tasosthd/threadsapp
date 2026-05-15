@@ -4099,3 +4099,63 @@ html[data-theme="dark"] .notifications-modal {
 .search-page-card .user-search-results {
   max-height: none;
 }
+
+/* =========================
+   LANGUAGE SWITCHER
+   Same visual system as Dark / Light mode
+========================= */
+.sidebar-language-box {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top left, rgba(0, 188, 231, 0.1), transparent 44%),
+    var(--soft-card);
+}
+
+.language-toggle-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.language-toggle-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--input-bg);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  transition: 0.2s ease;
+}
+
+.language-toggle-btn:hover {
+  color: var(--cyan-dark);
+  transform: translateY(-2px);
+  border-color: rgba(0, 188, 231, 0.28);
+}
+
+.language-toggle-btn.active {
+  color: #fff;
+  border-color: rgba(0, 188, 231, 0.24);
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 12px 26px rgba(0, 188, 231, 0.22);
+}
+
+.language-toggle-btn span:first-child {
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.language-toggle-btn span:last-child {
+  font-size: 12px;
+  font-weight: 900;
+}
