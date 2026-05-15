@@ -2256,3 +2256,32 @@ html[data-theme="dark"] .avatar-upload-btn {
     min-height: 96px;
   }
 }
+
+.profile-main-stats-card {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.profile-social-stats-card {
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: -6px;
+}
+
+.profile-social-stats-card div {
+  min-height: 112px;
+}
+
+@media (max-width: 560px) {
+  .profile-main-stats-card,
+  .profile-social-stats-card {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-social-stats-card {
+    margin-top: -4px;
+  }
+
+  .profile-social-stats-card div,
+  .profile-main-stats-card div {
+    min-height: 118px;
+  }
+}
