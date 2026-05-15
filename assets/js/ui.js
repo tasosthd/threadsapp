@@ -63,6 +63,10 @@ function getPageName() {
     return "profile";
   }
 
+  if (path === "/search/" || path === "/search") {
+    return "search";
+  }
+
   return "home";
 }
 
@@ -134,6 +138,10 @@ function setBottomNavActive(section) {
 
 function goHomePage() {
   window.location.href = "/";
+}
+
+function goSearchPage() {
+  window.location.href = "/search/";
 }
 
 function goProfilePage() {
@@ -377,26 +385,15 @@ function setupBottomNav() {
 
   if (bottomSearchBtn) {
     bottomSearchBtn.addEventListener("click", () => {
-      if (pageName !== "home") {
-        window.location.href = "/?search=1";
+      if (pageName === "search") {
+        if (typeof scrollToUserSearch === "function") {
+          scrollToUserSearch();
+        }
+
         return;
       }
 
-      setBottomNavActive("search");
-
-      if (typeof scrollToUserSearch === "function") {
-        scrollToUserSearch();
-        return;
-      }
-
-      const userSearchCard = document.getElementById("userSearchCard");
-
-      if (userSearchCard) {
-        userSearchCard.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-      }
+      goSearchPage();
     });
   }
 
