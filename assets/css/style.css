@@ -986,6 +986,15 @@ input::placeholder {
   margin-top: 16px;
 }
 
+.public-profile-stats-top {
+  margin-top: 18px;
+  margin-bottom: 16px;
+}
+
+.public-profile-stats-top + .public-profile-bio {
+  margin-top: 0;
+}
+
 .public-profile-stat {
   padding: 10px 13px;
   border: 1px solid var(--line);
@@ -994,6 +1003,7 @@ input::placeholder {
   color: var(--text);
   font-size: 12px;
   font-weight: 900;
+  text-transform: none;
   transition: 0.2s ease;
 }
 
@@ -2098,6 +2108,15 @@ html[data-theme="dark"] .avatar-upload-btn {
   .profile-editor-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .public-profile-stats-top {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .public-profile-stat {
+    text-align: center;
   }
 
   .profile-avatar-control {
