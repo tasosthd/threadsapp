@@ -205,16 +205,16 @@ function renderThreads() {
 
   if (!visibleThreads.length) {
     const message = viewedProfileId
-      ? "This profile has not posted yet."
+      ? typeof t === "function" ? t("thisProfileNoPosts") : "This profile has not posted yet."
       : activeFilter === "mine"
-        ? "You have not posted yet. Drop your first founder thought."
+        ? typeof t === "function" ? t("youNoPosts") : "You have not posted yet. Drop your first founder thought."
         : activeFilter === "following"
-          ? "No posts from people you follow yet. Follow some creators first."
-          : "Be the first founder to post something powerful.";
+          ? typeof t === "function" ? t("followingNoPosts") : "No posts from people you follow yet. Follow some creators first."
+          : typeof t === "function" ? t("firstPost") : "Be the first founder to post something powerful.";
 
     threadsList.innerHTML = `
       <div class="empty-state">
-        <strong>No threads yet.</strong>
+        <strong>${typeof t === "function" ? t("noThreadsYet") : "No threads yet."}</strong>
         ${message}
       </div>
     `;
@@ -266,7 +266,7 @@ function renderThreads() {
             type="button"
             data-follow-user-id="${escapeHTML(thread.user_id)}"
           >
-            ${alreadyFollowing ? "Following" : "Follow"}
+            ${alreadyFollowing ? (typeof t === "function" ? t("following") : "Following") : (typeof t === "function" ? t("follow") : "Follow")}
           </button>
         `
         : "";
@@ -295,7 +295,7 @@ function renderThreads() {
             data-delete-id="${escapeHTML(thread.id)}"
             type="button"
           >
-            Delete
+            ${typeof t === "function" ? t("delete") : "Delete"}
           </button>
         `
         : "";
@@ -411,24 +411,24 @@ function updateFilterUI() {
   if (!feedTitle) return;
 
   if (activeFilter === "mine") {
-    feedTitle.textContent = "My Threads";
+    feedTitle.textContent = typeof t === "function" ? t("myThreads") : "My Threads";
   } else if (activeFilter === "following") {
-    feedTitle.textContent = "Following";
+    feedTitle.textContent = typeof t === "function" ? t("following") : "Following";
   } else if (activeFilter === "profile") {
-    feedTitle.textContent = "Profile Threads";
+    feedTitle.textContent = typeof t === "function" ? t("profileThreads") : "Profile Threads";
   } else {
-    feedTitle.textContent = "Latest Threads";
+    feedTitle.textContent = typeof t === "function" ? t("latestThreads") : "Latest Threads";
   }
 }
 
 function setFilter(filter) {
   if (filter === "mine" && !currentUser) {
-    setStatus("Sign in to see your posts.", "error");
+    setStatus(typeof t === "function" ? t("signIn") : "Sign in to see your posts.", "error");
     return;
   }
 
   if (filter === "following" && !currentUser) {
-    setStatus("Sign in to see your following feed.", "error");
+    setStatus(typeof t === "function" ? t("signIn") : "Sign in to see your following feed.", "error");
     return;
   }
 
@@ -523,7 +523,7 @@ function updatePublicProfileUI() {
       ? `@${profile.username}`
       : fallbackThread.user_email || "@user";
 
-  const bio = profile?.bio || "No bio yet. This founder is moving in silence.";
+  const bio = profile?.bio || (typeof t === "function" ? t("noBioYet") : "No bio yet. This founder is moving in silence.");
 
   const postCount = userThreads.length;
   const totalLikes = getUserTotalLikes(viewedProfileId);
@@ -551,19 +551,19 @@ function updatePublicProfileUI() {
   }
 
   if (publicProfilePosts) {
-    publicProfilePosts.textContent = `${postCount} ${postCount === 1 ? "Post" : "Posts"}`;
+    publicProfilePosts.textContent = `${postCount} ${postCount === 1 ? (typeof t === "function" ? t("post") : "Post") : (typeof t === "function" ? t("posts") : "Posts")}`;
   }
 
   if (publicProfileLikes) {
-    publicProfileLikes.textContent = `${totalLikes} Total ${totalLikes === 1 ? "Like" : "Likes"}`;
+    publicProfileLikes.textContent = `${totalLikes} ${typeof t === "function" ? t("totalLikes") : "Total Likes"}`;
   }
 
   if (publicProfileFollowers) {
-    publicProfileFollowers.textContent = `${followerCount} ${followerCount === 1 ? "Follower" : "Followers"}`;
+    publicProfileFollowers.textContent = `${followerCount} ${followerCount === 1 ? (typeof t === "function" ? t("follower") : "Follower") : (typeof t === "function" ? t("followers") : "Followers")}`;
   }
 
   if (publicProfileFollowing) {
-    publicProfileFollowing.textContent = `${followingCount} Following`;
+    publicProfileFollowing.textContent = `${followingCount} ${typeof t === "function" ? t("following") : "Following"}`;
   }
 
   if (publicProfileBio) {
@@ -585,7 +585,7 @@ function updatePublicProfileUI() {
           type="button"
           data-follow-user-id="${escapeHTML(viewedProfileId)}"
         >
-          ${alreadyFollowing ? "Following" : "Follow"}
+          ${alreadyFollowing ? (typeof t === "function" ? t("following") : "Following") : (typeof t === "function" ? t("follow") : "Follow")}
         </button>
       `;
     }
@@ -611,36 +611,36 @@ async function uploadThreadFromModal() {
       : null;
 
   if (!currentUser) {
-    setStatus("Sign in first to create a thread.", "error");
+    setStatus(typeof t === "function" ? t("signInFirstThread") : "Sign in first to create a thread.", "error");
     signInWithGoogle();
     return;
   }
 
   if (!content && !imageFile) {
-    setStatus("Write something or add an image first.", "error");
+    setStatus(typeof t === "function" ? t("writeOrImage") : "Write something or add an image first.", "error");
     return;
   }
 
   if (content.length > 280) {
-    setStatus("Keep it under 280 characters.", "error");
+    setStatus(typeof t === "function" ? t("keepUnder280") : "Keep it under 280 characters.", "error");
     return;
   }
 
   if (modalUploadBtn) {
     modalUploadBtn.disabled = true;
-    modalUploadBtn.textContent = imageFile ? "Uploading image..." : "Uploading...";
+    modalUploadBtn.textContent = imageFile ? (typeof t === "function" ? t("uploadingImage") : "Uploading image...") : (typeof t === "function" ? t("uploading") : "Uploading...");
   }
 
   let imageUrl = null;
 
   if (imageFile) {
-    setStatus("Uploading image...", "success");
+    setStatus(typeof t === "function" ? t("uploadingImage") : "Uploading image...", "success");
     imageUrl = await uploadThreadImage(imageFile);
 
     if (!imageUrl) {
       if (modalUploadBtn) {
         modalUploadBtn.disabled = false;
-        modalUploadBtn.textContent = "Upload";
+        modalUploadBtn.textContent = typeof t === "function" ? t("upload") : "Upload";
       }
 
       return;
@@ -648,7 +648,7 @@ async function uploadThreadFromModal() {
   }
 
   if (modalUploadBtn) {
-    modalUploadBtn.textContent = "Publishing...";
+    modalUploadBtn.textContent = typeof t === "function" ? t("publishing") : "Publishing...";
   }
 
   const meta = getUserMeta(currentUser);
@@ -666,7 +666,7 @@ async function uploadThreadFromModal() {
 
   if (modalUploadBtn) {
     modalUploadBtn.disabled = false;
-    modalUploadBtn.textContent = "Upload";
+    modalUploadBtn.textContent = typeof t === "function" ? t("upload") : "Upload";
   }
 
   if (error) {
@@ -689,14 +689,14 @@ async function uploadThreadFromModal() {
   updateFilterUI();
   setBottomNavActive("home");
 
-  setStatus("Thread uploaded 🚀", "success");
+  setStatus(typeof t === "function" ? t("threadUploaded") : "Thread uploaded 🚀", "success");
 
   await loadFeed();
 }
 
 async function likeThread(id) {
   if (!currentUser) {
-    setStatus("Sign in to like threads.", "error");
+    setStatus(typeof t === "function" ? t("signInLike") : "Sign in to like threads.", "error");
     return;
   }
 
@@ -714,7 +714,7 @@ async function likeThread(id) {
       return;
     }
 
-    setStatus("Like removed.");
+    setStatus(typeof t === "function" ? t("likeRemoved") : "Like removed.");
   } else {
     const { error } = await supabaseClient
       .from("thread_likes")
@@ -732,7 +732,7 @@ async function likeThread(id) {
       await createLikeNotification(id);
     }
 
-    setStatus("Liked 🚀", "success");
+    setStatus(typeof t === "function" ? t("liked") : "Liked 🚀", "success");
   }
 
   await loadFeed();
@@ -871,6 +871,12 @@ async function initFeedPage() {
 
   await restoreSession();
   await loadFeed();
+
+  window.addEventListener("loomyva:language-change", () => {
+    updateFilterUI();
+    updatePublicProfileUI();
+    renderThreads();
+  });
 
   const params = new URLSearchParams(window.location.search);
 
