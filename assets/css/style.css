@@ -2286,147 +2286,217 @@ html[data-theme="dark"] .avatar-upload-btn {
   }
 }
 
+/* =========================
+   Following modal + clickable profile stat
+========================= */
 
-/* Following list modal */
-.profile-stat-button {
-  width: 100%;
-  min-height: 112px;
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  background: var(--soft-card);
-  color: var(--text);
-  text-align: left;
+.clickable-stat-card {
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.profile-stat-button:hover {
+.clickable-stat-card:hover,
+.clickable-stat-card:focus-visible {
   transform: translateY(-2px);
-  border-color: rgba(0, 188, 231, 0.45);
-  background:
-    radial-gradient(circle at top left, rgba(0, 188, 231, 0.12), transparent 42%),
-    var(--soft-card-2);
+  border-color: rgba(75, 139, 255, 0.45);
+  box-shadow: 0 18px 46px rgba(42, 91, 160, 0.16);
+  outline: none;
 }
 
-.profile-stat-button:focus-visible {
-  outline: 3px solid rgba(0, 188, 231, 0.35);
-  outline-offset: 3px;
+.following-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(8, 20, 35, 0.42);
+  backdrop-filter: blur(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
 }
 
-.profile-stat-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-  transform: none;
-}
-
-.profile-stat-button strong {
-  display: block;
-  font-size: 30px;
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-
-.profile-stat-button span {
-  display: block;
-  margin-top: 7px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
+.following-modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .following-modal {
   width: min(620px, 100%);
+  max-height: min(720px, 86vh);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 32px;
+  background: var(--card);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
+  transform: translateY(16px) scale(0.98);
+  transition: transform 0.22s ease;
 }
 
-.following-users-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-height: min(58vh, 560px);
-  overflow-y: auto;
-  padding: 4px 4px 8px;
+.following-modal-backdrop.active .following-modal {
+  transform: translateY(0) scale(1);
 }
 
-.following-users-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.following-users-list::-webkit-scrollbar-track {
-  border-radius: 999px;
-  background: rgba(0, 188, 231, 0.08);
-}
-
-.following-users-list::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: rgba(2, 135, 168, 0.28);
-}
-
-.following-user-card {
+.following-modal-head {
   display: flex;
   align-items: flex-start;
-  gap: 13px;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 24px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.following-modal-head h2 {
+  margin-top: 6px;
+  font-size: 28px;
+  letter-spacing: -0.05em;
+}
+
+.following-modal-head p {
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.following-modal-close {
+  position: relative;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--soft-card);
+  cursor: pointer;
+}
+
+.following-modal-close span {
+  position: absolute;
+  left: 12px;
+  top: 21px;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--text);
+}
+
+.following-modal-close span:first-child {
+  transform: rotate(45deg);
+}
+
+.following-modal-close span:last-child {
+  transform: rotate(-45deg);
+}
+
+.following-modal-list {
+  display: grid;
+  gap: 12px;
+  max-height: calc(86vh - 132px);
+  overflow: auto;
+  padding: 18px 18px 22px;
+}
+
+.following-person-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
   padding: 14px;
   border: 1px solid var(--line);
   border-radius: 24px;
   background: var(--soft-card);
-  animation: popIn 0.22s ease both;
 }
 
-.following-user-card img {
-  width: 52px;
-  height: 52px;
+.following-person-card img {
+  width: 54px;
+  height: 54px;
   flex: 0 0 auto;
   border-radius: 18px;
   object-fit: cover;
   border: 1px solid var(--line);
-  background: rgba(0, 188, 231, 0.1);
 }
 
-.following-user-info {
+.following-person-info {
   min-width: 0;
 }
 
-.following-user-info strong,
-.following-user-info span {
+.following-person-info strong,
+.following-person-info span,
+.following-person-info p {
   display: block;
 }
 
-.following-user-info strong {
-  color: var(--text);
+.following-person-info strong {
   font-size: 15px;
-  font-weight: 900;
-  overflow-wrap: anywhere;
+  letter-spacing: -0.02em;
 }
 
-.following-user-info span {
-  margin-top: 2px;
+.following-person-info span {
+  margin-top: 3px;
   color: var(--muted);
   font-size: 12px;
   font-weight: 800;
-  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
-.following-user-info p {
-  margin-top: 7px;
-  color: var(--thread-text);
+.following-person-info p {
+  margin-top: 8px;
+  color: var(--text);
   font-size: 13px;
-  font-weight: 650;
-  line-height: 1.55;
-  overflow-wrap: anywhere;
+  line-height: 1.45;
+  font-weight: 600;
 }
 
-.compact-empty-state {
-  padding: 18px;
+.following-modal-state,
+.following-modal-empty {
+  padding: 24px;
+  border: 1px dashed var(--line);
   border-radius: 24px;
+  background: var(--soft-card);
+  color: var(--muted);
+  font-weight: 800;
+  text-align: center;
+}
+
+.following-modal-empty strong,
+.following-modal-empty span {
+  display: block;
+}
+
+.following-modal-empty strong {
+  color: var(--text);
+  font-size: 16px;
+}
+
+.following-modal-empty span {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.following-modal-empty.error span {
+  color: #d33;
 }
 
 @media (max-width: 560px) {
-  .profile-stat-button {
-    min-height: 118px;
+  .following-modal-backdrop {
+    align-items: end;
+    padding: 12px;
   }
 
-  .following-user-card {
-    border-radius: 20px;
+  .following-modal {
+    border-radius: 28px;
+    max-height: 84vh;
+  }
+
+  .following-modal-head {
+    padding: 20px 18px 14px;
+  }
+
+  .following-modal-head h2 {
+    font-size: 24px;
+  }
+
+  .following-modal-list {
+    padding: 14px;
   }
 }
