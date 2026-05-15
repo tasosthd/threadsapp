@@ -129,6 +129,12 @@ function renderProfileStats() {
 
   if (profileFollowerCount) {
     profileFollowerCount.textContent = profileFollowersCount;
+
+    const followerStatCard = profileFollowerCount.closest("div");
+
+    if (followerStatCard) {
+      followerStatCard.setAttribute("aria-label", `Open followers list. ${profileFollowersCount} followers`);
+    }
   }
 
   if (profileFollowingCountElement) {
@@ -352,9 +358,14 @@ async function toggleFollowFromProfileModal(targetUserId) {
     await loadProfileFollowStats();
 
     const followingModalBackdrop = document.getElementById("followingModalBackdrop");
+    const followersModalBackdrop = document.getElementById("followersModalBackdrop");
 
     if (followingModalBackdrop?.classList.contains("active")) {
       await loadProfileFollowingList();
+    }
+
+    if (followersModalBackdrop?.classList.contains("active")) {
+      await loadProfileFollowersList();
     }
 
     await loadProfileUserModal(targetUserId);
@@ -440,6 +451,7 @@ function setupFollowingModal() {
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeFollowingModal();
+      closeFollowersModal();
       closeProfileUserModal();
     }
   });
@@ -470,9 +482,13 @@ function closeFollowingModal() {
   followingModalBackdrop.classList.remove("active");
   followingModalBackdrop.setAttribute("aria-hidden", "true");
 
+  const followersModalBackdrop = document.getElementById("followersModalBackdrop");
   const profileUserModalBackdrop = document.getElementById("profileUserModalBackdrop");
 
-  if (!profileUserModalBackdrop?.classList.contains("active")) {
+  if (
+    !followersModalBackdrop?.classList.contains("active") &&
+    !profileUserModalBackdrop?.classList.contains("active")
+  ) {
     document.body.style.overflow = "";
   }
 }
@@ -534,7 +550,7 @@ function renderFollowingRows(followRows, followedProfiles) {
 }
 
 function bindFollowingPersonCards() {
-  document.querySelectorAll("[data-open-profile-user-id]").forEach((card) => {
+  document.querySelectorAll("#followingModalList [data-open-profile-user-id]").forEach((card) => {
     if (card.dataset.profileCardReady === "true") return;
 
     card.dataset.profileCardReady = "true";
@@ -640,6 +656,290 @@ function setupFollowingStatButton() {
 }
 
 /* =========================
+   FOLLOWERS LIST MODAL
+========================= */
+
+function renderFollowersModalShell() {
+  return `
+    <div id="followersModalBackdrop" class="followers-modal-backdrop" aria-hidden="true">
+      <section class="followers-modal" role="dialog" aria-modal="true" aria-labelledby="followersModalTitle">
+        <div class="followers-modal-head">
+          <div>
+            <span class="eyebrow">Social graph</span>
+            <h2 id="followersModalTitle">Followers</h2>
+            <p>People who follow you on Loomyva.</p>
+          </div>
+
+          <button id="followersModalCloseBtn" class="followers-modal-close" type="button" aria-label="Close followers list">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+
+        <div id="followersModalList" class="followers-modal-list">
+          <div class="followers-modal-state">Loading followers...</div>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function setupFollowersModal() {
+  if (!document.getElementById("followersModalBackdrop")) {
+    document.body.insertAdjacentHTML("beforeend", renderFollowersModalShell());
+  }
+
+  const followersModalBackdrop = document.getElementById("followersModalBackdrop");
+  const followersModalCloseBtn = document.getElementById("followersModalCloseBtn");
+
+  if (followersModalCloseBtn) {
+    followersModalCloseBtn.addEventListener("click", closeFollowersModal);
+  }
+
+  if (followersModalBackdrop) {
+    followersModalBackdrop.addEventListener("click", (event) => {
+      if (event.target === followersModalBackdrop) {
+        closeFollowersModal();
+      }
+    });
+  }
+}
+
+function openFollowersModal() {
+  if (!currentUser) {
+    setStatus("Sign in first to see your followers.", "error");
+    return;
+  }
+
+  const followersModalBackdrop = document.getElementById("followersModalBackdrop");
+
+  if (!followersModalBackdrop) return;
+
+  followersModalBackdrop.classList.add("active");
+  followersModalBackdrop.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+
+  loadProfileFollowersList();
+}
+
+function closeFollowersModal() {
+  const followersModalBackdrop = document.getElementById("followersModalBackdrop");
+
+  if (!followersModalBackdrop) return;
+
+  followersModalBackdrop.classList.remove("active");
+  followersModalBackdrop.setAttribute("aria-hidden", "true");
+
+  const followingModalBackdrop = document.getElementById("followingModalBackdrop");
+  const profileUserModalBackdrop = document.getElementById("profileUserModalBackdrop");
+
+  if (
+    !followingModalBackdrop?.classList.contains("active") &&
+    !profileUserModalBackdrop?.classList.contains("active")
+  ) {
+    document.body.style.overflow = "";
+  }
+}
+
+function setupFollowersStatButton() {
+  const profileFollowerCountElement = document.getElementById("profileFollowerCount");
+  const followerStatCard = profileFollowerCountElement?.closest("div");
+
+  if (!followerStatCard || followerStatCard.dataset.followersClickReady === "true") return;
+
+  followerStatCard.dataset.followersClickReady = "true";
+  followerStatCard.classList.add("clickable-stat-card");
+  followerStatCard.setAttribute("role", "button");
+  followerStatCard.setAttribute("tabindex", "0");
+  followerStatCard.setAttribute("aria-label", "Open followers list");
+
+  followerStatCard.addEventListener("click", openFollowersModal);
+
+  followerStatCard.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openFollowersModal();
+    }
+  });
+}
+
+async function loadProfileFollowersList() {
+  const followersModalList = document.getElementById("followersModalList");
+
+  if (!currentUser || !followersModalList) return;
+
+  followersModalList.innerHTML = `<div class="followers-modal-state">Loading followers...</div>`;
+
+  const { data: followRows, error: followsError } = await supabaseClient
+    .from("thread_follows")
+    .select("follower_id, created_at")
+    .eq("following_id", currentUser.id)
+    .order("created_at", { ascending: false });
+
+  if (followsError) {
+    followersModalList.innerHTML = `
+      <div class="followers-modal-empty error">
+        <strong>Could not load followers.</strong>
+        <span>${escapeHTML(followsError.message)}</span>
+      </div>
+    `;
+    return;
+  }
+
+  const safeFollowRows = followRows || [];
+  const followerIds = [...new Set(safeFollowRows.map((follow) => follow.follower_id).filter(Boolean))];
+
+  if (!followerIds.length) {
+    followersModalList.innerHTML = `
+      <div class="followers-modal-empty">
+        <strong>No followers yet.</strong>
+        <span>Keep posting. Your audience will show up here.</span>
+      </div>
+    `;
+    return;
+  }
+
+  const { data: followerProfiles, error: profilesError } = await supabaseClient
+    .from("profiles")
+    .select("id, full_name, username, email, avatar_url, bio")
+    .in("id", followerIds);
+
+  if (profilesError) {
+    followersModalList.innerHTML = `
+      <div class="followers-modal-empty error">
+        <strong>Could not load follower profiles.</strong>
+        <span>${escapeHTML(profilesError.message)}</span>
+      </div>
+    `;
+    return;
+  }
+
+  renderFollowerRows(safeFollowRows, followerProfiles || []);
+}
+
+function renderFollowerRows(followRows, followerProfiles) {
+  const followersModalList = document.getElementById("followersModalList");
+
+  if (!followersModalList) return;
+
+  const profileById = new Map((followerProfiles || []).map((profile) => [profile.id, profile]));
+
+  followersModalList.innerHTML = followRows
+    .map((follow) => {
+      const profile = profileById.get(follow.follower_id) || null;
+      const name = getSafeProfileName(profile, follow.follower_id);
+      const username = getSafeUsername(profile);
+      const avatar = getSafeAvatar(profile, name);
+      const isOwnProfile = currentUser && follow.follower_id === currentUser.id;
+
+      return `
+        <article class="followers-person-card instagram-followers-row">
+          <button
+            class="followers-profile-open-area"
+            type="button"
+            data-open-profile-user-id="${escapeHTML(follow.follower_id)}"
+            aria-label="Open ${escapeHTML(name)} profile"
+          >
+            <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" loading="lazy" />
+
+            <div class="followers-person-info">
+              <strong>${escapeHTML(name)}</strong>
+              <span>${escapeHTML(username)}</span>
+            </div>
+          </button>
+
+          ${
+            isOwnProfile
+              ? `
+                <button class="mini-action followers-follow-btn" type="button" disabled>
+                  You
+                </button>
+              `
+              : `
+                <button
+                  class="mini-action followers-follow-btn"
+                  type="button"
+                  data-follower-action-user-id="${escapeHTML(follow.follower_id)}"
+                >
+                  Loading...
+                </button>
+              `
+          }
+        </article>
+      `;
+    })
+    .join("");
+
+  bindFollowerProfileCards();
+  setupFollowerActionButtons();
+}
+
+function bindFollowerProfileCards() {
+  document.querySelectorAll("#followersModalList [data-open-profile-user-id]").forEach((button) => {
+    if (button.dataset.followerProfileReady === "true") return;
+
+    button.dataset.followerProfileReady = "true";
+
+    button.addEventListener("click", () => {
+      openProfileUserModal(button.dataset.openProfileUserId);
+    });
+
+    button.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openProfileUserModal(button.dataset.openProfileUserId);
+      }
+    });
+  });
+}
+
+async function setupFollowerActionButtons() {
+  const buttons = document.querySelectorAll("[data-follower-action-user-id]");
+
+  for (const button of buttons) {
+    const targetUserId = button.dataset.followerActionUserId;
+    const following = await isCurrentUserFollowing(targetUserId);
+
+    button.textContent = following ? "Following" : "Follow";
+    button.classList.toggle("following", following);
+
+    if (button.dataset.followerActionReady === "true") continue;
+
+    button.dataset.followerActionReady = "true";
+
+    button.addEventListener("click", async (event) => {
+      event.stopPropagation();
+
+      button.disabled = true;
+      button.textContent = "Updating...";
+
+      const currentlyFollowing = await isCurrentUserFollowing(targetUserId);
+
+      const success = currentlyFollowing
+        ? await unfollowUserFromProfile(targetUserId)
+        : await followUserFromProfile(targetUserId);
+
+      if (success) {
+        await loadProfileFollowStats();
+
+        const updatedFollowing = await isCurrentUserFollowing(targetUserId);
+
+        button.textContent = updatedFollowing ? "Following" : "Follow";
+        button.classList.toggle("following", updatedFollowing);
+
+        if (profileViewingModalUserId === targetUserId) {
+          await loadProfileUserModal(targetUserId);
+        }
+      } else {
+        button.textContent = "Try again";
+      }
+
+      button.disabled = false;
+    });
+  }
+}
+
+/* =========================
    USER PROFILE MODAL
 ========================= */
 
@@ -708,8 +1008,12 @@ function closeProfileUserModal() {
   profileUserModalBackdrop.setAttribute("aria-hidden", "true");
 
   const followingModalBackdrop = document.getElementById("followingModalBackdrop");
+  const followersModalBackdrop = document.getElementById("followersModalBackdrop");
 
-  if (!followingModalBackdrop?.classList.contains("active")) {
+  if (
+    !followingModalBackdrop?.classList.contains("active") &&
+    !followersModalBackdrop?.classList.contains("active")
+  ) {
     document.body.style.overflow = "";
   }
 }
@@ -1281,10 +1585,12 @@ function closeDeletePostModal() {
   deletePostModalBackdrop.setAttribute("aria-hidden", "true");
 
   const followingModalBackdrop = document.getElementById("followingModalBackdrop");
+  const followersModalBackdrop = document.getElementById("followersModalBackdrop");
   const profileUserModalBackdrop = document.getElementById("profileUserModalBackdrop");
 
   if (
     !followingModalBackdrop?.classList.contains("active") &&
+    !followersModalBackdrop?.classList.contains("active") &&
     !profileUserModalBackdrop?.classList.contains("active")
   ) {
     document.body.style.overflow = "";
@@ -1393,9 +1699,14 @@ function subscribeToProfileRealtime() {
         await loadProfileFollowStats();
 
         const followingModalBackdrop = document.getElementById("followingModalBackdrop");
+        const followersModalBackdrop = document.getElementById("followersModalBackdrop");
 
         if (followingModalBackdrop?.classList.contains("active")) {
           await loadProfileFollowingList();
+        }
+
+        if (followersModalBackdrop?.classList.contains("active")) {
+          await loadProfileFollowersList();
         }
 
         if (profileViewingModalUserId) {
@@ -1444,9 +1755,14 @@ function subscribeToProfileRealtime() {
         await loadProfilePageData();
 
         const followingModalBackdrop = document.getElementById("followingModalBackdrop");
+        const followersModalBackdrop = document.getElementById("followersModalBackdrop");
 
         if (followingModalBackdrop?.classList.contains("active")) {
           await loadProfileFollowingList();
+        }
+
+        if (followersModalBackdrop?.classList.contains("active")) {
+          await loadProfileFollowersList();
         }
 
         if (profileViewingModalUserId) {
@@ -1490,9 +1806,13 @@ async function initProfilePage() {
   });
 
   setupDeleteModal();
+
   setupFollowingModal();
+  setupFollowersModal();
   setupProfileUserModal();
+
   setupFollowingStatButton();
+  setupFollowersStatButton();
 
   setBottomNavActive("profile");
 
@@ -1517,8 +1837,11 @@ async function initProfilePage() {
       renderProfileEditor();
       renderProfileStats();
       renderProfilePosts();
+
       closeFollowingModal();
+      closeFollowersModal();
       closeProfileUserModal();
+
       unsubscribeProfileRealtime();
 
       setBottomNavActive("profile");
