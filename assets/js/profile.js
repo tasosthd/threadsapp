@@ -58,6 +58,10 @@ function getSafeAvatar(profile, fallbackName = "User") {
   return profile?.avatar_url || fallbackAvatar(fallbackName);
 }
 
+function getProfileModalPostLikeCount(threadId, modalLikes) {
+  return (modalLikes || []).filter((like) => like.thread_id === threadId).length;
+}
+
 /* =========================
    PROFILE UI
 ========================= */
@@ -1066,6 +1070,112 @@ async function getUserProfileStats(userId) {
   };
 }
 
+async function getProfileModalPosts(userId) {
+  const { data: modalThreads, error: threadsError } = await supabaseClient
+    .from("threads")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(6);
+
+  if (threadsError) throw threadsError;
+
+  const safeModalThreads = modalThreads || [];
+  const modalThreadIds = safeModalThreads.map((thread) => thread.id);
+
+  if (!modalThreadIds.length) {
+    return {
+      threads: [],
+      likes: []
+    };
+  }
+
+  const { data: modalLikes, error: likesError } = await supabaseClient
+    .from("thread_likes")
+    .select("*")
+    .in("thread_id", modalThreadIds);
+
+  if (likesError) throw likesError;
+
+  return {
+    threads: safeModalThreads,
+    likes: modalLikes || []
+  };
+}
+
+function renderProfileModalPosts(modalThreads, modalLikes) {
+  if (!modalThreads.length) {
+    return `
+      <section class="profile-user-modal-posts">
+        <div class="profile-user-modal-posts-head">
+          <span class="eyebrow">Latest posts</span>
+          <h3>Recent Threads</h3>
+        </div>
+
+        <div class="profile-user-modal-posts-empty">
+          <strong>No posts yet.</strong>
+          <span>This creator has not posted anything yet.</span>
+        </div>
+      </section>
+    `;
+  }
+
+  const postCards = modalThreads
+    .map((thread) => {
+      const content = escapeHTML(thread.content || "");
+      const date = formatDate(thread.created_at);
+      const likeCount = getProfileModalPostLikeCount(thread.id, modalLikes);
+
+      const textBlock = content
+        ? `<p class="profile-user-modal-post-text">${content}</p>`
+        : "";
+
+      const imageBlock = thread.image_url
+        ? `
+          <div class="profile-user-modal-post-image-wrap">
+            <img
+              src="${escapeHTML(thread.image_url)}"
+              alt="Post image"
+              loading="lazy"
+            />
+          </div>
+        `
+        : "";
+
+      return `
+        <article class="profile-user-modal-post-card">
+          ${textBlock}
+          ${imageBlock}
+
+          <div class="profile-user-modal-post-meta">
+            <span>${escapeHTML(date)}</span>
+
+            <span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12.1 21.35 10.65 20.03C5.4 15.26 2 12.18 2 8.4 2 5.32 4.42 2.9 7.5 2.9c1.74 0 3.41.81 4.5 2.09C13.09 3.71 14.76 2.9 16.5 2.9 19.58 2.9 22 5.32 22 8.4c0 3.78-3.4 6.86-8.65 11.63l-1.25 1.32Z"></path>
+              </svg>
+              ${likeCount}
+            </span>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+
+  return `
+    <section class="profile-user-modal-posts">
+      <div class="profile-user-modal-posts-head">
+        <span class="eyebrow">Latest posts</span>
+        <h3>Recent Threads</h3>
+      </div>
+
+      <div class="profile-user-modal-posts-list">
+        ${postCards}
+      </div>
+    </section>
+  `;
+}
+
 async function loadProfileUserModal(userId) {
   const profileUserModalBody = document.getElementById("profileUserModalBody");
 
@@ -1106,12 +1216,23 @@ async function loadProfileUserModal(userId) {
     following: 0
   };
 
+  let modalPostData = {
+    threads: [],
+    likes: []
+  };
+
   try {
-    stats = await getUserProfileStats(userId);
+    const [loadedStats, loadedPostData] = await Promise.all([
+      getUserProfileStats(userId),
+      getProfileModalPosts(userId)
+    ]);
+
+    stats = loadedStats;
+    modalPostData = loadedPostData;
   } catch (error) {
     profileUserModalBody.innerHTML = `
       <div class="profile-user-modal-empty error">
-        <strong>Could not load stats.</strong>
+        <strong>Could not load profile data.</strong>
         <span>${escapeHTML(error.message)}</span>
       </div>
     `;
@@ -1124,6 +1245,7 @@ async function loadProfileUserModal(userId) {
   const avatar = getSafeAvatar(profile, name);
   const isOwnProfile = currentUser && userId === currentUser.id;
   const following = await isCurrentUserFollowing(userId);
+  const postsMarkup = renderProfileModalPosts(modalPostData.threads, modalPostData.likes);
 
   const followButton = isOwnProfile
     ? `
@@ -1180,6 +1302,8 @@ async function loadProfileUserModal(userId) {
     <div class="profile-user-modal-actions">
       ${followButton}
     </div>
+
+    ${postsMarkup}
   `;
 
   const profileUserModalFollowBtn = document.getElementById("profileUserModalFollowBtn");
