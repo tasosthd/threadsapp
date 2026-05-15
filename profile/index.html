@@ -21,7 +21,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=theme-toggle-1" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=followers-1" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -141,7 +141,7 @@
 
         <p>
           Edit your username, bio, profile picture, and creator presence. Your posts,
-          images, likes, and creator stats live here.
+          images, likes, followers, following, and creator stats live here.
         </p>
       </section>
 
@@ -204,7 +204,7 @@
         </div>
       </section>
 
-      <section class="glass-card stats-card">
+      <section class="glass-card stats-card profile-stats-card">
         <div>
           <strong id="profilePostCount">0</strong>
           <span>Your posts</span>
@@ -213,6 +213,16 @@
         <div>
           <strong id="profileLikeCount">0</strong>
           <span>Total likes</span>
+        </div>
+
+        <div>
+          <strong id="profileFollowerCount">0</strong>
+          <span>Followers</span>
+        </div>
+
+        <div>
+          <strong id="profileFollowingCount">0</strong>
+          <span>Following</span>
         </div>
       </section>
 
@@ -233,13 +243,9 @@
 
   <!-- App Scripts -->
   <script src="/assets/js/config.js"></script>
-  <script src="/assets/js/ui.js?v=theme-toggle-1"></script>
-  <script src="/assets/js/auth.js?v=profile-redirect-1"></script>
-  <script src="/assets/js/profile.js?v=theme-toggle-1"></script>
-  <script src="/assets/js/ui.js?v=swipe-sidebar-1"></script>
-  <script src="/assets/js/ui.js?v=swipe-sidebar-2"></script>
-  <script src="/assets/js/ui.js?v=swipe-sidebar-3"></script>
   <script src="/assets/js/ui.js?v=swipe-sidebar-4"></script>
+  <script src="/assets/js/auth.js?v=profile-redirect-1"></script>
+  <script src="/assets/js/profile.js?v=followers-1"></script>
 
   <script>
     initProfilePage();
