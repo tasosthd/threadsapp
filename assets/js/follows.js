@@ -83,6 +83,10 @@ async function toggleFollowUser(userId) {
       return;
     }
 
+    if (typeof createFollowNotification === "function") {
+      await createFollowNotification(userId);
+    }
+
     setStatus("Followed 🚀", "success");
   }
 
