@@ -2577,6 +2577,282 @@ html[data-theme="dark"] .avatar-upload-btn {
 }
 
 /* =========================
+   Followers modal - Instagram style
+========================= */
+
+.followers-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(8, 20, 35, 0.42);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.followers-modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.followers-modal {
+  width: min(620px, 100%);
+  max-height: min(720px, 86vh);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 32px;
+  background: var(--card-strong);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
+  transform: translateY(16px) scale(0.98);
+  transition: transform 0.22s ease;
+}
+
+.followers-modal-backdrop.active .followers-modal {
+  transform: translateY(0) scale(1);
+}
+
+.followers-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 24px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.followers-modal-head h2 {
+  margin-top: 6px;
+  font-size: 28px;
+  letter-spacing: -0.05em;
+}
+
+.followers-modal-head p {
+  margin-top: 6px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.followers-modal-close {
+  position: relative;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--soft-card);
+  cursor: pointer;
+}
+
+.followers-modal-close span {
+  position: absolute;
+  left: 12px;
+  top: 21px;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--text);
+}
+
+.followers-modal-close span:first-child {
+  transform: rotate(45deg);
+}
+
+.followers-modal-close span:last-child {
+  transform: rotate(-45deg);
+}
+
+.followers-modal-list {
+  display: grid;
+  gap: 10px;
+  max-height: calc(86vh - 132px);
+  overflow: auto;
+  padding: 14px 18px 18px;
+}
+
+.followers-modal-list::-webkit-scrollbar {
+  width: 7px;
+}
+
+.followers-modal-list::-webkit-scrollbar-track {
+  background: rgba(0, 188, 231, 0.08);
+  border-radius: 999px;
+}
+
+.followers-modal-list::-webkit-scrollbar-thumb {
+  background: rgba(2, 135, 168, 0.3);
+  border-radius: 999px;
+}
+
+.followers-person-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 74px;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.followers-person-card:last-child {
+  border-bottom: 0;
+}
+
+.instagram-followers-row {
+  transition: background 0.18s ease;
+}
+
+.instagram-followers-row:hover {
+  background: rgba(0, 188, 231, 0.04);
+}
+
+.followers-profile-open-area {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.followers-profile-open-area img {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: rgba(0, 188, 231, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.followers-profile-open-area:hover img,
+.followers-profile-open-area:focus-visible img {
+  transform: scale(1.04);
+  box-shadow: 0 12px 26px rgba(0, 188, 231, 0.18);
+}
+
+.followers-profile-open-area:focus-visible {
+  outline: none;
+}
+
+.followers-person-info {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.followers-person-info strong,
+.followers-person-info span {
+  display: block;
+}
+
+.followers-person-info strong {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.followers-profile-open-area:hover .followers-person-info strong,
+.followers-profile-open-area:focus-visible .followers-person-info strong {
+  color: var(--cyan-dark);
+}
+
+.followers-person-info span {
+  max-width: 100%;
+  overflow: hidden;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.followers-follow-btn {
+  flex: 0 0 auto;
+  min-width: 104px;
+  padding: 9px 14px;
+  border: 1px solid rgba(0, 188, 231, 0.18);
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(0, 188, 231, 0.18);
+}
+
+.followers-follow-btn.following {
+  color: var(--cyan-dark);
+  border: 1px solid rgba(0, 188, 231, 0.24);
+  background: var(--soft-card);
+  box-shadow: none;
+}
+
+.followers-follow-btn.following:hover {
+  color: #fff;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 12px 24px rgba(0, 188, 231, 0.18);
+}
+
+.followers-follow-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.followers-modal-state,
+.followers-modal-empty {
+  padding: 24px;
+  border: 1px dashed var(--line);
+  border-radius: 24px;
+  background: var(--soft-card);
+  color: var(--muted);
+  font-weight: 800;
+  text-align: center;
+}
+
+.followers-modal-empty strong,
+.followers-modal-empty span {
+  display: block;
+}
+
+.followers-modal-empty strong {
+  color: var(--text);
+  font-size: 16px;
+}
+
+.followers-modal-empty span {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.followers-modal-empty.error span {
+  color: var(--danger);
+}
+
+/* =========================
    Profile user modal
 ========================= */
 
@@ -2821,56 +3097,67 @@ html[data-theme="dark"] .profile-user-modal {
   color: var(--danger);
 }
 
-/* Following + profile modal responsive */
+/* Following + followers + profile modal responsive */
 
 @media (max-width: 560px) {
-  .following-modal-backdrop {
+  .following-modal-backdrop,
+  .followers-modal-backdrop {
     align-items: end;
     padding: 12px;
   }
 
-  .following-modal {
+  .following-modal,
+  .followers-modal {
     border-radius: 28px;
     max-height: 84vh;
   }
 
-  .following-modal-head {
+  .following-modal-head,
+  .followers-modal-head {
     padding: 20px 18px 14px;
   }
 
-  .following-modal-head h2 {
+  .following-modal-head h2,
+  .followers-modal-head h2 {
     font-size: 24px;
   }
 
-  .following-modal-list {
+  .following-modal-list,
+  .followers-modal-list {
     gap: 8px;
     padding: 10px 14px 14px;
   }
 
-  .following-person-card {
+  .following-person-card,
+  .followers-person-card {
     min-height: 70px;
     gap: 10px;
     padding: 9px 0;
   }
 
-  .following-profile-open-area {
+  .following-profile-open-area,
+  .followers-profile-open-area {
     gap: 11px;
   }
 
-  .following-profile-open-area img {
+  .following-profile-open-area img,
+  .followers-profile-open-area img {
     width: 48px;
     height: 48px;
   }
 
-  .following-person-info strong {
+  .following-person-info strong,
+  .followers-person-info strong {
     font-size: 13px;
   }
 
-  .following-person-info span {
+  .following-person-info span,
+  .followers-person-info span {
     font-size: 11px;
   }
 
-  .following-unfollow-btn {
+  .following-unfollow-btn,
+  .followers-follow-btn {
     min-width: 92px;
     padding: 8px 10px;
     border-radius: 11px;
