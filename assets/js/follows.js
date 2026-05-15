@@ -40,7 +40,7 @@ function getFollowingIdsForCurrentUser() {
 
 async function toggleFollowUser(userId) {
   if (!currentUser) {
-    setStatus("Sign in first to follow users.", "error");
+    setStatus(typeof t === "function" ? t("signIn") : "Sign in first to follow users.", "error");
     signInWithGoogle();
     return;
   }
@@ -69,7 +69,7 @@ async function toggleFollowUser(userId) {
       return;
     }
 
-    setStatus("Unfollowed.");
+    setStatus(typeof t === "function" ? t("unfollowed") : "Unfollowed.");
   } else {
     const { error } = await supabaseClient
       .from("thread_follows")
@@ -87,7 +87,7 @@ async function toggleFollowUser(userId) {
       await createFollowNotification(userId);
     }
 
-    setStatus("Followed 🚀", "success");
+    setStatus(typeof t === "function" ? t("followed") : "Followed 🚀", "success");
   }
 
   await loadFollows();
