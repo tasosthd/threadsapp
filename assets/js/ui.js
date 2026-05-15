@@ -113,11 +113,22 @@ function cleanUsername(value) {
 
 function setBottomNavActive(section) {
   const bottomHomeBtn = document.getElementById("bottomHomeBtn");
+  const bottomSearchBtn = document.getElementById("bottomSearchBtn");
+  const bottomComposeBtn = document.getElementById("bottomComposeBtn");
   const bottomProfileBtn = document.getElementById("bottomProfileBtn");
 
   if (!bottomHomeBtn || !bottomProfileBtn) return;
 
   bottomHomeBtn.classList.toggle("active", section === "home");
+
+  if (bottomSearchBtn) {
+    bottomSearchBtn.classList.toggle("active", section === "search");
+  }
+
+  if (bottomComposeBtn) {
+    bottomComposeBtn.classList.toggle("active", section === "compose");
+  }
+
   bottomProfileBtn.classList.toggle("active", section === "profile");
 }
 
@@ -335,6 +346,7 @@ function setupBottomNav() {
   const pageName = getPageName();
 
   const bottomHomeBtn = document.getElementById("bottomHomeBtn");
+  const bottomSearchBtn = document.getElementById("bottomSearchBtn");
   const bottomComposeBtn = document.getElementById("bottomComposeBtn");
   const bottomProfileBtn = document.getElementById("bottomProfileBtn");
 
@@ -360,6 +372,31 @@ function setupBottomNav() {
       }
 
       goHomePage();
+    });
+  }
+
+  if (bottomSearchBtn) {
+    bottomSearchBtn.addEventListener("click", () => {
+      if (pageName !== "home") {
+        window.location.href = "/?search=1";
+        return;
+      }
+
+      setBottomNavActive("search");
+
+      if (typeof scrollToUserSearch === "function") {
+        scrollToUserSearch();
+        return;
+      }
+
+      const userSearchCard = document.getElementById("userSearchCard");
+
+      if (userSearchCard) {
+        userSearchCard.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
     });
   }
 
@@ -588,10 +625,18 @@ function renderBottomNav() {
         <span>Home</span>
       </button>
 
-      <button id="bottomComposeBtn" class="bottom-nav-main" type="button" aria-label="Create thread">
+      <button id="bottomSearchBtn" class="bottom-nav-btn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M10.5 3a7.5 7.5 0 0 1 5.93 12.1l4.24 4.23a1 1 0 0 1-1.42 1.42l-4.23-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"></path>
+        </svg>
+        <span>Search</span>
+      </button>
+
+      <button id="bottomComposeBtn" class="bottom-nav-btn" type="button" aria-label="Create thread">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 5a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H6a1 1 0 1 1 0-2h5V6a1 1 0 0 1 1-1Z"></path>
         </svg>
+        <span>Create</span>
       </button>
 
       <button id="bottomProfileBtn" class="bottom-nav-btn" type="button">
