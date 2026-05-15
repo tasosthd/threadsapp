@@ -170,7 +170,7 @@ function renderProfilePosts() {
   if (!profileThreads.length) {
     profilePostsList.innerHTML = `
       <div class="empty-state">
-        <strong>No posts yet.</strong>
+        <strong>${typeof t === "function" ? t("noThreadsYet") : "No posts yet."}</strong>
         Your profile posts will appear here after you upload your first thread.
       </div>
     `;
@@ -320,13 +320,13 @@ async function followUserFromProfile(targetUserId) {
     await createFollowNotification(targetUserId);
   }
 
-  setStatus("Followed creator 🚀", "success");
+  setStatus(typeof t === "function" ? t("followed") : "Followed creator 🚀", "success");
   return true;
 }
 
 async function unfollowUserFromProfile(targetUserId) {
   if (!currentUser) {
-    setStatus("Sign in first.", "error");
+    setStatus(typeof t === "function" ? t("signIn") : "Sign in first.", "error");
     return false;
   }
 
@@ -345,7 +345,7 @@ async function unfollowUserFromProfile(targetUserId) {
     return false;
   }
 
-  setStatus("Unfollowed creator.", "success");
+  setStatus(typeof t === "function" ? t("unfollowed") : "Unfollowed creator.", "success");
   return true;
 }
 
@@ -908,7 +908,7 @@ async function setupFollowerActionButtons() {
     const targetUserId = button.dataset.followerActionUserId;
     const following = await isCurrentUserFollowing(targetUserId);
 
-    button.textContent = following ? "Following" : "Follow";
+    button.textContent = following ? (typeof t === "function" ? t("following") : "Following") : (typeof t === "function" ? t("follow") : "Follow");
     button.classList.toggle("following", following);
 
     if (button.dataset.followerActionReady === "true") continue;
@@ -932,7 +932,7 @@ async function setupFollowerActionButtons() {
 
         const updatedFollowing = await isCurrentUserFollowing(targetUserId);
 
-        button.textContent = updatedFollowing ? "Following" : "Follow";
+        button.textContent = updatedFollowing ? (typeof t === "function" ? t("following") : "Following") : (typeof t === "function" ? t("follow") : "Follow");
         button.classList.toggle("following", updatedFollowing);
 
         if (profileViewingModalUserId === targetUserId) {
@@ -1117,7 +1117,7 @@ function renderProfileModalPosts(modalThreads, modalLikes) {
         </div>
 
         <div class="profile-user-modal-posts-empty">
-          <strong>No posts yet.</strong>
+          <strong>${typeof t === "function" ? t("noThreadsYet") : "No posts yet."}</strong>
           <span>This creator has not posted anything yet.</span>
         </div>
       </section>
@@ -1264,7 +1264,7 @@ async function loadProfileUserModal(userId) {
         type="button"
         data-profile-modal-follow-user-id="${escapeHTML(userId)}"
       >
-        ${following ? "Unfollow" : "Follow"}
+        ${following ? (typeof t === "function" ? t("unfollowed").replace(".", "") : "Unfollow") : (typeof t === "function" ? t("follow") : "Follow")}
       </button>
     `;
 
@@ -1294,12 +1294,12 @@ async function loadProfileUserModal(userId) {
 
       <div>
         <strong>${stats.followers}</strong>
-        <span>Followers</span>
+        <span>${typeof t === "function" ? t("followers") : "Followers"}</span>
       </div>
 
       <div>
         <strong>${stats.following}</strong>
-        <span>Following</span>
+        <span>${typeof t === "function" ? t("following") : "Following"}</span>
       </div>
     </div>
 
@@ -1476,7 +1476,7 @@ async function loadProfilePageData() {
 
 async function saveProfileFromProfilePage() {
   if (!currentUser) {
-    setStatus("Sign in first.", "error");
+    setStatus(typeof t === "function" ? t("signIn") : "Sign in first.", "error");
     return;
   }
 
@@ -1588,7 +1588,7 @@ async function uploadProfileAvatar(file) {
 
 async function handleProfileAvatarChange(event) {
   if (!currentUser) {
-    setStatus("Sign in first.", "error");
+    setStatus(typeof t === "function" ? t("signIn") : "Sign in first.", "error");
     event.target.value = "";
     return;
   }
@@ -1946,6 +1946,15 @@ async function initProfilePage() {
 
   await restoreSession();
   await loadProfilePageData();
+
+  window.addEventListener("loomyva:language-change", () => {
+    renderProfileStats();
+    renderProfilePosts();
+    if (profileViewingModalUserId) {
+      renderProfileUserModal(profileViewingModalUserId);
+    }
+  });
+
   subscribeToProfileRealtime();
 
   listenForAuthChanges({
