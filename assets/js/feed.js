@@ -135,6 +135,10 @@ async function loadFeed() {
   renderFeedStats();
   renderThreads();
 
+  if (typeof renderUserSearchResults === "function") {
+    renderUserSearchResults();
+  }
+
   const statusText = document.getElementById("statusMsg")?.textContent || "";
 
   if (
@@ -434,6 +438,11 @@ function setFilter(filter) {
   updatePublicProfileUI();
   updateFilterUI();
   renderThreads();
+
+  if (typeof closeUserSearchFocus === "function") {
+    closeUserSearchFocus();
+  }
+
   setBottomNavActive("home");
 }
 
@@ -445,6 +454,10 @@ function openPublicProfile(userId) {
   updateFilterUI();
   updatePublicProfileUI();
   renderThreads();
+
+  if (typeof markUserSearchProfileOpen === "function") {
+    markUserSearchProfileOpen(userId);
+  }
 
   const publicProfileView = document.getElementById("publicProfileView");
 
