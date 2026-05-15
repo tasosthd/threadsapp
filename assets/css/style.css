@@ -1702,10 +1702,10 @@ html[data-theme="dark"] .thread-modal {
   bottom: 18px;
   z-index: 200;
   display: grid;
-  grid-template-columns: 1fr 74px 1fr;
+  grid-template-columns: repeat(4, 1fr);
   align-items: center;
-  gap: 12px;
-  width: min(430px, calc(100% - 28px));
+  gap: 8px;
+  width: min(470px, calc(100% - 28px));
   padding: 10px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -1726,45 +1726,29 @@ html[data-theme="dark"] .bottom-nav {
   outline: 0;
   display: grid;
   place-items: center;
-  color: var(--muted);
-  transition: 0.2s ease;
-}
-
-.bottom-nav-btn {
   gap: 4px;
+  min-width: 0;
   height: 52px;
   border-radius: 999px;
   background: transparent;
+  color: var(--muted);
   font-size: 11px;
   font-weight: 900;
+  transition: 0.2s ease;
 }
 
-.bottom-nav-btn svg {
+.bottom-nav-btn svg,
+.bottom-nav-main svg {
   width: 21px;
   height: 21px;
   fill: currentColor;
 }
 
-.bottom-nav-btn.active {
+.bottom-nav-btn.active,
+.bottom-nav-main.active {
   color: #fff;
   background: linear-gradient(135deg, var(--cyan), var(--blue));
   box-shadow: 0 12px 26px rgba(0, 188, 231, 0.24);
-}
-
-.bottom-nav-main {
-  width: 66px;
-  height: 66px;
-  justify-self: center;
-  border-radius: 24px;
-  color: #fff;
-  background: linear-gradient(135deg, var(--cyan), var(--blue));
-  box-shadow: 0 18px 34px rgba(0, 188, 231, 0.34);
-}
-
-.bottom-nav-main svg {
-  width: 31px;
-  height: 31px;
-  fill: currentColor;
 }
 
 .bottom-nav-btn:hover,
