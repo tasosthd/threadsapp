@@ -261,4 +261,18 @@ function initUserSearch() {
   userSearchReady = true;
   setupUserSearchEvents();
   renderUserSearchResults();
+
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("search") === "1") {
+    setTimeout(() => {
+      scrollToUserSearch();
+
+      if (typeof setBottomNavActive === "function") {
+        setBottomNavActive("search");
+      }
+
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }, 350);
+  }
 }
