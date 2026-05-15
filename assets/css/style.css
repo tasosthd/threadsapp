@@ -2388,10 +2388,10 @@ html[data-theme="dark"] .avatar-upload-btn {
 
 .following-modal-list {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   max-height: calc(86vh - 132px);
   overflow: auto;
-  padding: 18px 18px 22px;
+  padding: 14px 18px 18px;
 }
 
 .following-modal-list::-webkit-scrollbar {
@@ -2408,24 +2408,67 @@ html[data-theme="dark"] .avatar-upload-btn {
   border-radius: 999px;
 }
 
+/* Instagram-style following row */
+
 .following-person-card {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 14px;
-  align-items: flex-start;
-  padding: 14px;
-  border: 1px solid var(--line);
-  border-radius: 24px;
-  background: var(--soft-card);
-  transition: 0.2s ease;
+  min-height: 74px;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
-.following-person-card img {
-  width: 54px;
-  height: 54px;
+.following-person-card:last-child {
+  border-bottom: 0;
+}
+
+.instagram-following-row {
+  transition: background 0.18s ease;
+}
+
+.instagram-following-row:hover {
+  background: rgba(0, 188, 231, 0.04);
+}
+
+.following-profile-open-area {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.following-profile-open-area img {
+  width: 52px;
+  height: 52px;
   flex: 0 0 auto;
-  border-radius: 18px;
+  border-radius: 999px;
   object-fit: cover;
   border: 1px solid var(--line);
+  background: rgba(0, 188, 231, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.following-profile-open-area:hover img,
+.following-profile-open-area:focus-visible img {
+  transform: scale(1.04);
+  box-shadow: 0 12px 26px rgba(0, 188, 231, 0.18);
+}
+
+.following-profile-open-area:focus-visible {
+  outline: none;
 }
 
 .following-person-info {
@@ -2434,59 +2477,72 @@ html[data-theme="dark"] .avatar-upload-btn {
 }
 
 .following-person-info strong,
-.following-person-info span,
-.following-person-info p {
+.following-person-info span {
   display: block;
 }
 
 .following-person-info strong {
-  font-size: 15px;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.2;
   letter-spacing: -0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.following-profile-open-area:hover .following-person-info strong,
+.following-profile-open-area:focus-visible .following-person-info strong {
+  color: var(--cyan-dark);
 }
 
 .following-person-info span {
-  margin-top: 3px;
+  max-width: 100%;
+  overflow: hidden;
+  margin-top: 4px;
   color: var(--muted);
   font-size: 12px;
   font-weight: 800;
-  word-break: break-word;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .following-person-info p {
-  margin-top: 8px;
-  color: var(--text);
-  font-size: 13px;
-  line-height: 1.45;
-  font-weight: 600;
+  display: none;
 }
 
-.clickable-following-person {
-  cursor: pointer;
+.following-unfollow-btn {
+  flex: 0 0 auto;
+  min-width: 104px;
+  padding: 9px 14px;
+  border: 1px solid rgba(236, 75, 75, 0.18);
+  border-radius: 12px;
+  background: var(--soft-card);
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: none;
 }
 
-.clickable-following-person:hover,
-.clickable-following-person:focus-visible {
-  transform: translateY(-2px);
-  border-color: rgba(0, 188, 231, 0.36);
-  background:
-    radial-gradient(circle at top left, rgba(0, 188, 231, 0.12), transparent 42%),
-    var(--soft-card-2);
-  box-shadow: 0 16px 38px rgba(0, 70, 90, 0.14);
-  outline: none;
+.following-unfollow-btn:hover {
+  color: #fff;
+  border-color: rgba(236, 75, 75, 0.28);
+  background: linear-gradient(135deg, #ff6b6b, var(--danger));
+  box-shadow: 0 12px 24px rgba(236, 75, 75, 0.18);
+}
+
+.following-unfollow-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .following-person-arrow {
-  width: 34px;
-  height: 34px;
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  background: var(--image-soft-bg);
-  color: var(--cyan-dark);
-  font-size: 15px;
-  font-weight: 900;
+  display: none;
 }
 
 .following-modal-state,
@@ -2787,29 +2843,38 @@ html[data-theme="dark"] .profile-user-modal {
   }
 
   .following-modal-list {
-    padding: 14px;
+    gap: 8px;
+    padding: 10px 14px 14px;
   }
 
   .following-person-card {
-    gap: 12px;
-    padding: 12px;
-    border-radius: 22px;
+    min-height: 70px;
+    gap: 10px;
+    padding: 9px 0;
   }
 
-  .following-person-card img {
-    width: 50px;
-    height: 50px;
-    border-radius: 17px;
+  .following-profile-open-area {
+    gap: 11px;
   }
 
-  .following-person-info p {
-    font-size: 12px;
+  .following-profile-open-area img {
+    width: 48px;
+    height: 48px;
   }
 
-  .following-person-arrow {
-    width: 31px;
-    height: 31px;
-    border-radius: 12px;
+  .following-person-info strong {
+    font-size: 13px;
+  }
+
+  .following-person-info span {
+    font-size: 11px;
+  }
+
+  .following-unfollow-btn {
+    min-width: 92px;
+    padding: 8px 10px;
+    border-radius: 11px;
+    font-size: 11px;
   }
 
   .profile-user-modal-backdrop {
