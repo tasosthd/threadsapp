@@ -795,6 +795,10 @@ html[data-theme="dark"] .sidebar-account-row {
   gap: 12px;
 }
 
+.profile-stats-card {
+  grid-template-columns: repeat(4, 1fr);
+}
+
 .stats-card div {
   padding: 16px;
   border: 1px solid var(--line);
@@ -1924,6 +1928,14 @@ html[data-theme="dark"] .avatar-upload-btn {
 
   .desktop-profile-btn {
     display: none;
+  }
+}
+
+/* Profile stats responsive */
+
+@media (max-width: 700px) {
+  .profile-stats-card {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
