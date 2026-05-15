@@ -23,7 +23,7 @@ const LOOMYVA_I18N = {
     createThread: "Create thread",
     founderFeed: "Founder feed",
     privateSocialEngine: "Your private social engine.",
-    homeIntroText: "Google login, Supabase Auth, cloud posts, real likes, public profiles, image uploads, comments, follows, persistent sessions, and creator identity.",
+    /* homeIntroText: "Google login, Supabase Auth, cloud posts, real likes, public profiles, image uploads, comments, follows, persistent sessions, and creator identity.", */
     totalThreads: "Total threads",
     yourPosts: "Your posts",
     nextUpgrades: "Next money upgrades",
@@ -112,7 +112,7 @@ const LOOMYVA_I18N = {
     createThread: "Νέο thread",
     founderFeed: "Founder feed",
     privateSocialEngine: "Το προσωπικό σου social engine.",
-    homeIntroText: "Google login, Supabase Auth, cloud posts, αληθινά likes, δημόσια προφίλ, εικόνες, σχόλια, follows, μόνιμες συνδέσεις και creator identity.",
+    /* homeIntroText: "Google login, Supabase Auth, cloud posts, αληθινά likes, δημόσια προφίλ, εικόνες, σχόλια, follows, μόνιμες συνδέσεις και creator identity.", */
     totalThreads: "Σύνολο threads",
     yourPosts: "Οι δημοσιεύσεις σου",
     nextUpgrades: "Επόμενα money upgrades",
