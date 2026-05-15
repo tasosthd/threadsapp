@@ -87,8 +87,8 @@ function renderUserSearchResults() {
   if (!matches.length) {
     resultsWrap.innerHTML = `
       <div class="user-search-empty">
-        <strong>No users found.</strong>
-        <span>Try another name or username.</span>
+        <strong>${typeof t === "function" ? t("noUsersFound") : "No users found."}</strong>
+        <span>${typeof t === "function" ? t("tryAnotherUser") : "Try another name or username."}</span>
       </div>
     `;
     return;
@@ -100,14 +100,14 @@ function renderUserSearchResults() {
       const name = getProfileDisplayName(profile);
       const username = getProfileUsernameLabel(profile);
       const avatar = getProfileAvatar(profile);
-      const bio = profile.bio || "No bio yet.";
+      const bio = profile.bio || (typeof t === "function" ? t("noBioYet") : "No bio yet.");
       const postCount = getProfilePostCount(userId);
       const followerCount = typeof getFollowerCount === "function" ? getFollowerCount(userId) : 0;
       const isOwnProfile = currentUser && currentUser.id === userId;
       const alreadyFollowing = typeof isFollowingUser === "function" ? isFollowingUser(userId) : false;
 
       const followButton = isOwnProfile
-        ? `<span class="user-search-you">You</span>`
+        ? `<span class="user-search-you">${typeof t === "function" ? t("you") : "You"}</span>`
         : currentUser
           ? `
             <button
@@ -115,7 +115,7 @@ function renderUserSearchResults() {
               type="button"
               data-follow-user-id="${escapeHTML(userId)}"
             >
-              ${alreadyFollowing ? "Following" : "Follow"}
+              ${alreadyFollowing ? (typeof t === "function" ? t("following") : "Following") : (typeof t === "function" ? t("follow") : "Follow")}
             </button>
           `
           : `
@@ -124,7 +124,7 @@ function renderUserSearchResults() {
               type="button"
               data-search-login
             >
-              Sign in
+              ${typeof t === "function" ? t("signIn") : "Sign in"}
             </button>
           `;
 
@@ -139,7 +139,7 @@ function renderUserSearchResults() {
               <p>${escapeHTML(bio)}</p>
 
               <small>
-                ${postCount} ${postCount === 1 ? "post" : "posts"} · ${followerCount} ${followerCount === 1 ? "follower" : "followers"}
+                ${postCount} ${postCount === 1 ? (typeof t === "function" ? t("post") : "post") : (typeof t === "function" ? t("posts") : "posts")} · ${followerCount} ${followerCount === 1 ? (typeof t === "function" ? t("follower") : "follower") : (typeof t === "function" ? t("followers") : "followers")}
               </small>
             </div>
           </button>
@@ -270,6 +270,8 @@ function initUserSearch() {
   userSearchReady = true;
   setupUserSearchEvents();
   renderUserSearchResults();
+
+  window.addEventListener("loomyva:language-change", renderUserSearchResults);
 
   const params = new URLSearchParams(window.location.search);
 
