@@ -55,7 +55,7 @@
 
           <div>
             <h1>Loomyva</h1>
-            <p>Post ideas. Sync everywhere.</p>
+            <p><span data-i18n="appSubtitleHome">Post ideas. Sync everywhere.</span></p>
           </div>
         </a>
 
@@ -85,7 +85,7 @@
 
           <div>
             <h1>Loomyva</h1>
-            <p>Your creator menu.</p>
+            <p><span data-i18n="creatorMenu">Your creator menu.</span></p>
           </div>
         </div>
 
@@ -96,7 +96,7 @@
 
       <div class="sidebar-auth">
         <button id="loginBtn" class="btn primary-btn" type="button">
-          Continue with Google
+          <span data-i18n="loginGoogle">Continue with Google</span>
         </button>
 
         <div id="userBox" class="sidebar-account-row hidden">
@@ -117,8 +117,8 @@
 
       <div class="sidebar-theme-box">
         <div class="sidebar-theme-head">
-          <span>Appearance</span>
-          <small>Choose your vibe</small>
+          <span data-i18n="appearance">Appearance</span>
+          <small data-i18n="chooseVibe">Choose your vibe</small>
         </div>
 
         <div class="theme-toggle-group" role="group" aria-label="Choose theme">
@@ -126,27 +126,27 @@
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Zm0 4a1 1 0 0 1-1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 1-1 1Zm0-18a1 1 0 0 1-1-1V2a1 1 0 1 1 2 0v1a1 1 0 0 1-1 1Zm10 8a1 1 0 0 1-1 1h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1ZM4 12a1 1 0 0 1-1 1H2a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1Zm14.95 6.95a1 1 0 0 1-1.41 0l-.71-.71a1 1 0 0 1 1.41-1.41l.71.71a1 1 0 0 1 0 1.41ZM7.17 7.17a1 1 0 0 1-1.41 0l-.71-.71A1 1 0 0 1 6.46 5.05l.71.71a1 1 0 0 1 0 1.41Zm11.78-2.12a1 1 0 0 1 0 1.41l-.71.71a1 1 0 1 1-1.41-1.41l.71-.71a1 1 0 0 1 1.41 0ZM7.17 16.83a1 1 0 0 1 0 1.41l-.71.71a1 1 0 0 1-1.41-1.41l.71-.71a1 1 0 0 1 1.41 0Z"></path>
             </svg>
-            <span>Light</span>
+            <span data-i18n="light">Light</span>
           </button>
 
           <button id="darkThemeBtn" class="theme-toggle-btn" type="button" aria-label="Use dark mode">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M21 14.7A8.7 8.7 0 0 1 9.3 3a1 1 0 0 0-1.18-1.45A10.7 10.7 0 1 0 22.45 15.88 1 1 0 0 0 21 14.7Z"></path>
             </svg>
-            <span>Dark</span>
+            <span data-i18n="dark">Dark</span>
           </button>
         </div>
       </div>
 
       <nav class="sidebar-links">
-        <a href="/">Home</a>
-        <a href="/search/">Search</a>
-        <a href="/profile/">Profile</a>
+        <a href="/" data-i18n="navHome">Home</a>
+        <a href="/search/" data-i18n="navSearch">Search</a>
+        <a href="/profile/" data-i18n="navProfile">Profile</a>
         <button class="sidebar-notifications-link" type="button" data-open-notifications>
-          Notifications
+          <span data-i18n="notifications">Notifications</span>
           <span id="sidebarNotificationsBadge" class="sidebar-notification-badge hidden">0</span>
         </button>
-        <button id="sidebarComposeBtn" type="button">Create thread</button>
+        <button id="sidebarComposeBtn" type="button" data-i18n="createThread">Create thread</button>
       </nav>
     </aside>
 
@@ -155,30 +155,29 @@
     <main class="main-grid">
       <aside class="left-panel">
         <section class="glass-card intro-card">
-          <span class="eyebrow">Founder feed</span>
+          <span class="eyebrow" data-i18n="founderFeed">Founder feed</span>
 
-          <h2>Your private social engine.</h2>
+          <h2 data-i18n="privateSocialEngine">Your private social engine.</h2>
 
           <p>
-            Google login, Supabase Auth, cloud posts, real likes, public profiles,
-            image uploads, comments, follows, persistent sessions, and creator identity.
+            <span data-i18n="homeIntroText">Google login, Supabase Auth, cloud posts, real likes, public profiles, image uploads, comments, follows, persistent sessions, and creator identity.</span>
           </p>
         </section>
 
         <section class="glass-card stats-card">
           <div>
             <strong id="totalThreads">0</strong>
-            <span>Total threads</span>
+            <span data-i18n="totalThreads">Total threads</span>
           </div>
 
           <div>
             <strong id="myThreads">0</strong>
-            <span>Your posts</span>
+            <span data-i18n="yourPosts">Your posts</span>
           </div>
         </section>
 
         <section class="glass-card roadmap-card">
-          <h3>Next money upgrades</h3>
+          <h3 data-i18n="nextUpgrades">Next money upgrades</h3>
 
           <ul>
             <li>Notifications</li>
@@ -196,14 +195,14 @@
               <img id="publicProfileAvatar" src="" alt="Public profile avatar" />
 
               <div>
-                <span class="eyebrow">Public profile</span>
+                <span class="eyebrow" data-i18n="publicProfile">Public profile</span>
                 <h3 id="publicProfileName">Profile Name</h3>
                 <p id="publicProfileUsername">@username</p>
               </div>
             </div>
 
             <button id="backToFeedBtn" class="btn ghost-btn" type="button">
-              Back to feed
+              <span data-i18n="backToFeed">Back to feed</span>
             </button>
           </div>
 
@@ -215,7 +214,7 @@
           </div>
 
           <p id="publicProfileBio" class="public-profile-bio">
-            No bio yet.
+            <span data-i18n="noBioYet">No bio yet.</span>
           </p>
 
           <div id="publicProfileFollowWrap" class="public-profile-follow"></div>
@@ -223,25 +222,25 @@
 
         <section class="feed-top">
           <div>
-            <span class="eyebrow">Live cloud feed</span>
-            <h2 id="feedTitle">Latest Threads</h2>
+            <span class="eyebrow" data-i18n="liveCloudFeed">Live cloud feed</span>
+            <h2 id="feedTitle" data-i18n="latestThreads">Latest Threads</h2>
           </div>
 
           <div class="filter-pills">
             <button id="allPostsBtn" class="pill active" type="button">
-              All Posts
+              <span data-i18n="allPosts">All Posts</span>
             </button>
 
             <button id="myPostsBtn" class="pill" type="button">
-              My Posts
+              <span data-i18n="myPosts">My Posts</span>
             </button>
 
             <button id="followingPostsBtn" class="pill" type="button">
-              Following
+              <span data-i18n="following">Following</span>
             </button>
 
             <button id="refreshBtn" class="pill" type="button">
-              Refresh
+              <span data-i18n="refresh">Refresh</span>
             </button>
           </div>
         </section>
@@ -255,6 +254,7 @@
 
   <!-- App Scripts -->
   <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/language.js?v=language-1"></script>
   <script src="/assets/js/ui.js?v=theme-toggle-2"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/notifications.js?v=notifications-system-2"></script>
