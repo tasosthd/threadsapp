@@ -242,12 +242,12 @@ async function loadProfileFollowStats() {
   }
 
   const followersRequest = supabaseClient
-    .from("thread_follows")
+    .from("follows")
     .select("*", { count: "exact", head: true })
     .eq("following_id", currentUser.id);
 
   const followingRequest = supabaseClient
-    .from("thread_follows")
+    .from("follows")
     .select("*", { count: "exact", head: true })
     .eq("follower_id", currentUser.id);
 
@@ -315,12 +315,12 @@ async function loadProfilePageData() {
     .select("*");
 
   const followersRequest = supabaseClient
-    .from("thread_follows")
+    .from("follows")
     .select("*", { count: "exact", head: true })
     .eq("following_id", currentUser.id);
 
   const followingRequest = supabaseClient
-    .from("thread_follows")
+    .from("follows")
     .select("*", { count: "exact", head: true })
     .eq("follower_id", currentUser.id);
 
