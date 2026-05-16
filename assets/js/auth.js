@@ -232,6 +232,19 @@ function setButtonLoading(button, isLoading, loadingText, defaultText) {
    EMAIL SIGN IN
 ========================= */
 
+function isAuthPage() {
+  return document.body?.dataset.authPage === "login" || document.body?.dataset.authPage === "signup";
+}
+
+function redirectLoggedOutUsersToLogin() {
+  if (!currentUser && !isAuthPage()) {
+    window.location.href = "/login/";
+    return true;
+  }
+
+  return false;
+}
+
 async function signInWithEmailPassword(event) {
   if (event) {
     event.preventDefault();
@@ -413,6 +426,10 @@ async function signOut() {
   }
 
   setStatus("");
+
+  if (!isAuthPage()) {
+    window.location.href = "/login/";
+  }
 }
 
 /* =========================
@@ -433,13 +450,17 @@ async function restoreSession() {
   if (currentUser) {
     await upsertProfile();
 
-    if (document.body?.dataset.authPage === "signup") {
+    if (isAuthPage()) {
       window.location.href = "/profile/";
       return;
     }
   } else {
     currentProfile = null;
     updateSharedAuthUI();
+
+    if (redirectLoggedOutUsersToLogin()) {
+      return;
+    }
   }
 
   setStatus("");
