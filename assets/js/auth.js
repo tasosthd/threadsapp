@@ -8,12 +8,13 @@ let currentProfile = null;
 function getUserMeta(user) {
   const meta = user?.user_metadata || {};
   const username = meta.username ? cleanUsername(meta.username) : "";
+  const safeName = username || meta.full_name || meta.name || "User";
 
   return {
-    name: username || meta.full_name || meta.name || "User",
+    name: safeName,
     username,
     email: user?.email || "",
-    avatar: meta.avatar_url || meta.picture || fallbackAvatar(username || user?.email || "User")
+    avatar: meta.avatar_url || meta.picture || fallbackAvatar(safeName)
   };
 }
 
@@ -43,24 +44,11 @@ async function upsertProfile() {
     return;
   }
 
-  const username = existingProfile?.username || defaultUsername;
-
-  /*
-    If an older email-created profile saved the email as full_name,
-    prefer the username so the sidebar does not show the full email as the main name.
-  */
-  const existingFullNameLooksLikeEmail =
-    existingProfile?.full_name && existingProfile.full_name.includes("@");
-
-  const fullName = existingFullNameLooksLikeEmail
-    ? username
-    : existingProfile?.full_name || meta.name || username;
-
   const profilePayload = {
     id: currentUser.id,
     email: meta.email,
-    full_name: fullName,
-    username,
+    full_name: existingProfile?.full_name || meta.name || defaultUsername,
+    username: existingProfile?.username || defaultUsername,
 
     /*
       Important:
@@ -134,8 +122,10 @@ function updateSharedAuthUI() {
       userName.textContent = "User";
     }
 
+    /* Never reveal the user's email in the sidebar. */
     if (userEmail) {
-      userEmail.textContent = "email";
+      userEmail.textContent = "";
+      userEmail.setAttribute("aria-hidden", "true");
     }
 
     if (logoutBtn) {
@@ -150,23 +140,14 @@ function updateSharedAuthUI() {
   const avatar =
     currentProfile?.avatar_url ||
     meta.avatar ||
-    fallbackAvatar(meta.username || meta.email || "User");
+    fallbackAvatar(currentProfile?.username || meta.username || "User");
 
-  /*
-    Main display name should be the username first.
-    The email can still appear underneath as account info.
-  */
-  const name =
+  const username =
     currentProfile?.username ||
-    currentProfile?.full_name ||
     meta.username ||
-    meta.name ||
-    "User";
+    "user";
 
-  const email =
-    currentProfile?.email ||
-    meta.email ||
-    "";
+  const displayName = username.startsWith("@") ? username : `@${username}`;
 
   if (loginBtn) {
     loginBtn.classList.add("hidden");
@@ -191,11 +172,13 @@ function updateSharedAuthUI() {
   }
 
   if (userName) {
-    userName.textContent = name;
+    userName.textContent = displayName;
   }
 
+  /* Never reveal the user's email in the sidebar. */
   if (userEmail) {
-    userEmail.textContent = email;
+    userEmail.textContent = "";
+    userEmail.setAttribute("aria-hidden", "true");
   }
 
   if (logoutBtn) {
@@ -214,9 +197,8 @@ function getEmailAuthFields() {
 
   const email = emailInput ? emailInput.value.trim() : "";
   const rawUsername = usernameInput ? usernameInput.value.trim() : "";
-  const password = passwordInput ? passwordInput.value : "";
-
   const username = rawUsername ? cleanUsername(rawUsername) : "";
+  const password = passwordInput ? passwordInput.value : "";
 
   return { email, username, password };
 }
@@ -324,10 +306,6 @@ async function signUpWithEmailPassword() {
 
   setButtonLoading(emailSignupBtn, true, "Creating account...", "Create account");
 
-  /*
-    Check if the username is already taken before creating the auth user.
-    This depends on your profiles SELECT policy being public/readable.
-  */
   const { data: usernameExists, error: usernameCheckError } = await supabaseClient
     .from("profiles")
     .select("id")
@@ -371,7 +349,6 @@ async function signUpWithEmailPassword() {
   /*
     If email confirmation is OFF, Supabase returns a session and the user can enter immediately.
     If email confirmation is ON, Supabase returns a user but no session, so they must confirm email first.
-    The chosen username is saved in user_metadata and will be written to profiles after confirmation/login.
   */
   if (data.session && currentUser) {
     await upsertProfile();
@@ -380,7 +357,7 @@ async function signUpWithEmailPassword() {
     return;
   }
 
-  setStatus("Account created. Check your email to confirm your account, then log in.", "success");
+  setStatus("Account created. Check your inbox to confirm your account, then log in.", "success");
 }
 
 /* =========================
