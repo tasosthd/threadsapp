@@ -274,7 +274,11 @@ async function signInWithEmailPassword(event) {
    EMAIL SIGN UP
 ========================= */
 
-async function signUpWithEmailPassword() {
+async function signUpWithEmailPassword(event) {
+  if (event) {
+    event.preventDefault();
+  }
+
   setStatus("");
 
   const { email, fullName, username, password } = getEmailAuthFields();
@@ -428,6 +432,11 @@ async function restoreSession() {
 
   if (currentUser) {
     await upsertProfile();
+
+    if (document.body?.dataset.authPage === "signup") {
+      window.location.href = "/profile/";
+      return;
+    }
   } else {
     currentProfile = null;
     updateSharedAuthUI();
@@ -519,12 +528,18 @@ function setupAuthButtons() {
   }
 
   if (emailAuthForm) {
-    emailAuthForm.addEventListener("submit", signInWithEmailPassword);
+    const authMode = emailAuthForm.dataset.authMode || document.body?.dataset.authPage || "login";
+
+    if (authMode === "signup") {
+      emailAuthForm.addEventListener("submit", signUpWithEmailPassword);
+    } else {
+      emailAuthForm.addEventListener("submit", signInWithEmailPassword);
+    }
   } else if (emailLoginBtn) {
     emailLoginBtn.addEventListener("click", signInWithEmailPassword);
   }
 
-  if (emailSignupBtn) {
+  if (emailSignupBtn && !emailAuthForm) {
     emailSignupBtn.addEventListener("click", signUpWithEmailPassword);
   }
 
