@@ -78,16 +78,25 @@ async function upsertProfile() {
 
 function updateSharedAuthUI() {
   const loginBtn = document.getElementById("loginBtn");
+  const googleLoginBtn = document.getElementById("googleLoginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
+
   const userBox = document.getElementById("userBox");
   const userAvatar = document.getElementById("userAvatar");
   const userName = document.getElementById("userName");
   const userEmail = document.getElementById("userEmail");
 
-  if (!loginBtn || !userBox) return;
+  if (!userBox) return;
 
   if (!currentUser) {
-    loginBtn.classList.remove("hidden");
+    if (loginBtn) {
+      loginBtn.classList.remove("hidden");
+    }
+
+    if (googleLoginBtn) {
+      googleLoginBtn.classList.remove("hidden");
+    }
+
     userBox.classList.add("hidden");
 
     if (userAvatar) {
@@ -126,7 +135,14 @@ function updateSharedAuthUI() {
     meta.email ||
     "";
 
-  loginBtn.classList.add("hidden");
+  if (loginBtn) {
+    loginBtn.classList.add("hidden");
+  }
+
+  if (googleLoginBtn) {
+    googleLoginBtn.classList.add("hidden");
+  }
+
   userBox.classList.remove("hidden");
 
   if (userAvatar) {
@@ -147,7 +163,140 @@ function updateSharedAuthUI() {
 }
 
 /* =========================
-   SIGN IN / SIGN OUT
+   EMAIL AUTH HELPERS
+========================= */
+
+function getEmailAuthFields() {
+  const emailInput = document.getElementById("authEmail");
+  const passwordInput = document.getElementById("authPassword");
+
+  const email = emailInput ? emailInput.value.trim() : "";
+  const password = passwordInput ? passwordInput.value : "";
+
+  return { email, password };
+}
+
+function validateEmailAuth(email, password) {
+  if (!email || !password) {
+    setStatus("Please enter your email and password.", "error");
+    return false;
+  }
+
+  if (!email.includes("@") || !email.includes(".")) {
+    setStatus("Please enter a valid email address.", "error");
+    return false;
+  }
+
+  if (password.length < 6) {
+    setStatus("Password must be at least 6 characters.", "error");
+    return false;
+  }
+
+  return true;
+}
+
+function setButtonLoading(button, isLoading, loadingText, defaultText) {
+  if (!button) return;
+
+  button.disabled = isLoading;
+  button.textContent = isLoading ? loadingText : defaultText;
+}
+
+/* =========================
+   EMAIL SIGN IN
+========================= */
+
+async function signInWithEmailPassword(event) {
+  if (event) {
+    event.preventDefault();
+  }
+
+  setStatus("");
+
+  const { email, password } = getEmailAuthFields();
+
+  if (!validateEmailAuth(email, password)) return;
+
+  const emailLoginBtn = document.getElementById("emailLoginBtn");
+
+  setButtonLoading(emailLoginBtn, true, "Logging in...", "Log in");
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  setButtonLoading(emailLoginBtn, false, "Logging in...", "Log in");
+
+  if (error) {
+    setStatus(error.message, "error");
+    return;
+  }
+
+  currentUser = data.user || null;
+
+  if (currentUser) {
+    await upsertProfile();
+  }
+
+  setStatus("Logged in successfully.", "success");
+
+  window.location.href = "/profile/";
+}
+
+/* =========================
+   EMAIL SIGN UP
+========================= */
+
+async function signUpWithEmailPassword() {
+  setStatus("");
+
+  const { email, password } = getEmailAuthFields();
+
+  if (!validateEmailAuth(email, password)) return;
+
+  const emailSignupBtn = document.getElementById("emailSignupBtn");
+
+  setButtonLoading(emailSignupBtn, true, "Creating account...", "Create account");
+
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: `${window.location.origin}/profile/`
+    }
+  });
+
+  setButtonLoading(emailSignupBtn, false, "Creating account...", "Create account");
+
+  if (error) {
+    setStatus(error.message, "error");
+    return;
+  }
+
+  currentUser = data.user || null;
+
+  /*
+    If Supabase email confirmation is OFF:
+    user is logged in instantly.
+
+    If Supabase email confirmation is ON:
+    user may need to confirm email first.
+  */
+  if (currentUser) {
+    await upsertProfile();
+
+    setStatus("Account created successfully.", "success");
+
+    window.location.href = "/profile/";
+    return;
+  }
+
+  setStatus("Account created. Check your email to confirm your account.", "success");
+}
+
+/* =========================
+   GOOGLE SIGN IN
 ========================= */
 
 async function signInWithGoogle() {
@@ -163,6 +312,15 @@ async function signInWithGoogle() {
   */
   const redirectTo = `${window.location.origin}/profile/`;
 
+  const googleLoginBtn = document.getElementById("googleLoginBtn");
+  const loginBtn = document.getElementById("loginBtn");
+
+  setButtonLoading(googleLoginBtn, true, "Opening Google...", "Continue with Google");
+
+  if (loginBtn && loginBtn !== googleLoginBtn) {
+    loginBtn.disabled = true;
+  }
+
   const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
     options: {
@@ -170,10 +328,20 @@ async function signInWithGoogle() {
     }
   });
 
+  setButtonLoading(googleLoginBtn, false, "Opening Google...", "Continue with Google");
+
+  if (loginBtn && loginBtn !== googleLoginBtn) {
+    loginBtn.disabled = false;
+  }
+
   if (error) {
     setStatus(error.message, "error");
   }
 }
+
+/* =========================
+   SIGN OUT
+========================= */
 
 async function signOut() {
   const logoutBtn = document.getElementById("logoutBtn");
@@ -272,10 +440,48 @@ function listenForAuthChanges({ onSignedIn, onSignedOut } = {}) {
 
 function setupAuthButtons() {
   const loginBtn = document.getElementById("loginBtn");
+  const googleLoginBtn = document.getElementById("googleLoginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
 
+  const emailAuthForm = document.getElementById("emailAuthForm");
+  const emailLoginBtn = document.getElementById("emailLoginBtn");
+  const emailSignupBtn = document.getElementById("emailSignupBtn");
+
+  /*
+    Old Google button support:
+    If your old HTML still has id="loginBtn",
+    this keeps it working as Google login.
+  */
   if (loginBtn) {
     loginBtn.addEventListener("click", signInWithGoogle);
+  }
+
+  /*
+    New Google button:
+    Better name for the secondary Google option.
+  */
+  if (googleLoginBtn) {
+    googleLoginBtn.addEventListener("click", signInWithGoogle);
+  }
+
+  /*
+    Main email/password login form.
+    Pressing Enter inside the password field will log in.
+  */
+  if (emailAuthForm) {
+    emailAuthForm.addEventListener("submit", signInWithEmailPassword);
+  }
+
+  /*
+    Extra support if the login button exists outside the form,
+    or if browser behavior is weird.
+  */
+  if (emailLoginBtn) {
+    emailLoginBtn.addEventListener("click", signInWithEmailPassword);
+  }
+
+  if (emailSignupBtn) {
+    emailSignupBtn.addEventListener("click", signUpWithEmailPassword);
   }
 
   if (logoutBtn) {
