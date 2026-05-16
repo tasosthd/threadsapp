@@ -171,6 +171,11 @@ function bindUserSearchResultActions() {
 
   document.querySelectorAll("[data-search-login]").forEach((button) => {
     button.addEventListener("click", () => {
+      if (typeof openSidebar === "function") {
+        openSidebar();
+        return;
+      }
+
       if (typeof signInWithGoogle === "function") {
         signInWithGoogle();
       }
