@@ -448,10 +448,36 @@ function listenForAuthChanges({ onSignedIn, onSignedOut } = {}) {
 }
 
 /* =========================
+   PASSWORD VISIBILITY TOGGLE
+========================= */
+
+function setupPasswordToggle() {
+  const passwordInput = document.getElementById("authPassword");
+  const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+
+  if (!passwordInput || !togglePasswordBtn) return;
+
+  togglePasswordBtn.addEventListener("click", () => {
+    const isVisible = passwordInput.type === "text";
+
+    passwordInput.type = isVisible ? "password" : "text";
+
+    togglePasswordBtn.classList.toggle("is-visible", !isVisible);
+
+    togglePasswordBtn.setAttribute(
+      "aria-label",
+      isVisible ? "Show password" : "Hide password"
+    );
+  });
+}
+
+/* =========================
    BUTTON SETUP
 ========================= */
 
 function setupAuthButtons() {
+  setupPasswordToggle();
+
   const loginBtn = document.getElementById("loginBtn");
   const googleLoginBtn = document.getElementById("googleLoginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
