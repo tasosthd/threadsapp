@@ -186,7 +186,7 @@ async function followUserFromSearch(targetUserId, button) {
       await followUser(targetUserId);
     } else {
       const { error } = await supabaseClient
-        .from("followers")
+        .from("thread_follows")
         .insert({
           follower_id: currentUser.id,
           following_id: targetUserId
@@ -233,7 +233,7 @@ async function unfollowUserFromSearch(targetUserId, button) {
       await unfollowUser(targetUserId);
     } else {
       const { error } = await supabaseClient
-        .from("followers")
+        .from("thread_follows")
         .delete()
         .eq("follower_id", currentUser.id)
         .eq("following_id", targetUserId);
