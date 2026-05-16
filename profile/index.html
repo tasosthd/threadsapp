@@ -24,7 +24,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=username-fullname-auth-1" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=split-auth-pages-1" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -107,24 +107,6 @@
             required
           />
 
-          <input
-            type="text"
-            id="authFullName"
-            class="sidebar-auth-input"
-            placeholder="Full name"
-            autocomplete="name"
-            maxlength="60"
-          />
-
-          <input
-            type="text"
-            id="authUsername"
-            class="sidebar-auth-input"
-            placeholder="Username for signup"
-            autocomplete="username"
-            maxlength="28"
-          />
-
           <div class="password-field-wrap">
             <input
               type="password"
@@ -147,12 +129,12 @@
             </button>
           </div>
 
+          <a class="auth-switch-link" href="/create-account/">
+            Are you a new user? <strong>Create Account</strong>
+          </a>
+
           <button id="emailLoginBtn" class="btn primary-btn" type="submit">
             Log in
-          </button>
-
-          <button id="emailSignupBtn" class="btn ghost-btn" type="button">
-            Create account
           </button>
         </form>
 
@@ -348,7 +330,7 @@
   <script src="/assets/js/config.js"></script>
   <script src="/assets/js/language.js?v=language-1"></script>
   <script src="/assets/js/ui.js?v=notifications-system-1"></script>
-  <script src="/assets/js/auth.js?v=username-fullname-auth-1"></script>
+  <script src="/assets/js/auth.js?v=split-auth-pages-1"></script>
   <script src="/assets/js/notifications.js?v=notifications-system-1"></script>
   <script src="/assets/js/profile.js?v=username-fullname-auth-1"></script>
 
