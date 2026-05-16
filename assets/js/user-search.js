@@ -2,6 +2,18 @@ let userSearchQuery = "";
 let userSearchReady = false;
 let userSearchDataLoaded = false;
 
+/*
+  Search follow fallback state.
+
+  Your project already loads /assets/js/follows.js before this file.
+  This file will use your existing follow system if available.
+
+  If follows.js does not expose the needed functions, this fallback makes
+  the Search page Follow / Following buttons still work directly.
+*/
+let searchFollowerRows = [];
+let searchFollowActionBusy = false;
+
 function normalizeSearchText(value) {
   return String(value || "")
     .toLowerCase()
@@ -22,7 +34,15 @@ function getProfileUsernameLabel(profile) {
 }
 
 function getProfileAvatar(profile) {
-  return profile?.avatar_url || fallbackAvatar(getProfileDisplayName(profile));
+  if (profile?.avatar_url) {
+    return profile.avatar_url;
+  }
+
+  if (typeof fallbackAvatar === "function") {
+    return fallbackAvatar(getProfileDisplayName(profile));
+  }
+
+  return "/assets/img/index.png";
 }
 
 function getProfilePostCount(userId) {
@@ -39,8 +59,8 @@ function getSearchableProfiles() {
   return profiles
     .filter((profile) => profile && profile.id && !seen.has(profile.id) && seen.add(profile.id))
     .sort((a, b) => {
-      const aFollowers = typeof getFollowerCount === "function" ? getFollowerCount(a.id) : 0;
-      const bFollowers = typeof getFollowerCount === "function" ? getFollowerCount(b.id) : 0;
+      const aFollowers = getSearchFollowerCount(a.id);
+      const bFollowers = getSearchFollowerCount(b.id);
       const aPosts = getProfilePostCount(a.id);
       const bPosts = getProfilePostCount(b.id);
 
@@ -70,6 +90,203 @@ function searchProfiles(query) {
     })
     .slice(0, 12);
 }
+
+/* =========================================================
+   FOLLOW HELPERS FOR SEARCH PAGE
+========================================================= */
+
+function getSearchFollowerCount(userId) {
+  if (typeof getFollowerCount === "function") {
+    return getFollowerCount(userId);
+  }
+
+  if (!Array.isArray(searchFollowerRows)) return 0;
+
+  return searchFollowerRows.filter((row) => row.following_id === userId).length;
+}
+
+function getSearchFollowingCount(userId) {
+  if (typeof getFollowingCount === "function") {
+    return getFollowingCount(userId);
+  }
+
+  if (!Array.isArray(searchFollowerRows)) return 0;
+
+  return searchFollowerRows.filter((row) => row.follower_id === userId).length;
+}
+
+function isSearchFollowingUser(userId) {
+  if (typeof isFollowingUser === "function") {
+    return isFollowingUser(userId);
+  }
+
+  if (!currentUser || !Array.isArray(searchFollowerRows)) {
+    return false;
+  }
+
+  return searchFollowerRows.some((row) => {
+    return row.follower_id === currentUser.id && row.following_id === userId;
+  });
+}
+
+async function loadSearchFollowsFallback() {
+  if (typeof loadFollows === "function") {
+    await loadFollows();
+    return;
+  }
+
+  if (!window.supabaseClient) {
+    console.warn("supabaseClient missing. Cannot load follows.");
+    searchFollowerRows = [];
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("followers")
+    .select("follower_id, following_id, created_at");
+
+  if (error) {
+    console.error("Load search follows fallback error:", error);
+    searchFollowerRows = [];
+    return;
+  }
+
+  searchFollowerRows = data || [];
+}
+
+async function followUserFromSearch(targetUserId, button) {
+  if (!targetUserId || searchFollowActionBusy) return;
+
+  if (!currentUser) {
+    if (typeof openSidebar === "function") {
+      openSidebar();
+      return;
+    }
+
+    if (typeof signInWithGoogle === "function") {
+      await signInWithGoogle();
+    }
+
+    return;
+  }
+
+  if (currentUser.id === targetUserId) return;
+
+  searchFollowActionBusy = true;
+  setSearchFollowButtonLoading(button, true);
+
+  try {
+    /*
+      If your existing follows.js exposes toggleFollowUser(userId),
+      we use it. Otherwise we directly insert into public.followers.
+    */
+    if (typeof toggleFollowUser === "function") {
+      await toggleFollowUser(targetUserId);
+    } else if (typeof followUser === "function") {
+      await followUser(targetUserId);
+    } else {
+      const { error } = await supabaseClient
+        .from("followers")
+        .insert({
+          follower_id: currentUser.id,
+          following_id: targetUserId
+        });
+
+      if (error && error.code !== "23505") {
+        throw error;
+      }
+    }
+
+    await loadSearchFollowsFallback();
+    renderUserSearchResults();
+  } catch (error) {
+    console.error("Follow from search error:", error);
+    showSearchFollowButtonError(button);
+  } finally {
+    searchFollowActionBusy = false;
+    setSearchFollowButtonLoading(button, false);
+  }
+}
+
+async function unfollowUserFromSearch(targetUserId, button) {
+  if (!targetUserId || searchFollowActionBusy) return;
+
+  if (!currentUser) {
+    if (typeof openSidebar === "function") {
+      openSidebar();
+    }
+
+    return;
+  }
+
+  searchFollowActionBusy = true;
+  setSearchFollowButtonLoading(button, true);
+
+  try {
+    /*
+      If your existing follows.js exposes toggleFollowUser(userId),
+      we use it. Otherwise we directly delete from public.followers.
+    */
+    if (typeof toggleFollowUser === "function") {
+      await toggleFollowUser(targetUserId);
+    } else if (typeof unfollowUser === "function") {
+      await unfollowUser(targetUserId);
+    } else {
+      const { error } = await supabaseClient
+        .from("followers")
+        .delete()
+        .eq("follower_id", currentUser.id)
+        .eq("following_id", targetUserId);
+
+      if (error) {
+        throw error;
+      }
+    }
+
+    await loadSearchFollowsFallback();
+    renderUserSearchResults();
+  } catch (error) {
+    console.error("Unfollow from search error:", error);
+    showSearchFollowButtonError(button);
+  } finally {
+    searchFollowActionBusy = false;
+    setSearchFollowButtonLoading(button, false);
+  }
+}
+
+function setSearchFollowButtonLoading(button, isLoading) {
+  if (!button) return;
+
+  button.disabled = isLoading;
+  button.classList.toggle("loading", isLoading);
+
+  if (isLoading) {
+    button.dataset.originalText = button.textContent.trim();
+    button.textContent = "...";
+    return;
+  }
+
+  if (button.dataset.originalText) {
+    button.textContent = button.dataset.originalText;
+    delete button.dataset.originalText;
+  }
+}
+
+function showSearchFollowButtonError(button) {
+  if (!button) return;
+
+  const oldText = button.dataset.originalText || button.textContent.trim();
+
+  button.textContent = "Error";
+
+  setTimeout(() => {
+    button.textContent = oldText;
+  }, 1200);
+}
+
+/* =========================================================
+   RENDER SEARCH RESULTS
+========================================================= */
 
 function renderUserSearchResults() {
   const resultsWrap = document.getElementById("userSearchResults");
@@ -102,9 +319,10 @@ function renderUserSearchResults() {
       const avatar = getProfileAvatar(profile);
       const bio = profile.bio || (typeof t === "function" ? t("noBioYet") : "No bio yet.");
       const postCount = getProfilePostCount(userId);
-      const followerCount = typeof getFollowerCount === "function" ? getFollowerCount(userId) : 0;
+      const followerCount = getSearchFollowerCount(userId);
+      const followingCount = getSearchFollowingCount(userId);
       const isOwnProfile = currentUser && currentUser.id === userId;
-      const alreadyFollowing = typeof isFollowingUser === "function" ? isFollowingUser(userId) : false;
+      const alreadyFollowing = isSearchFollowingUser(userId);
 
       const followButton = isOwnProfile
         ? `<span class="user-search-you">${typeof t === "function" ? t("you") : "You"}</span>`
@@ -114,6 +332,8 @@ function renderUserSearchResults() {
               class="user-search-follow ${alreadyFollowing ? "following" : ""}"
               type="button"
               data-follow-user-id="${escapeHTML(userId)}"
+              data-search-follow-state="${alreadyFollowing ? "following" : "not-following"}"
+              aria-label="${alreadyFollowing ? "Unfollow" : "Follow"} ${escapeHTML(name)}"
             >
               ${alreadyFollowing ? (typeof t === "function" ? t("following") : "Following") : (typeof t === "function" ? t("follow") : "Follow")}
             </button>
@@ -139,7 +359,7 @@ function renderUserSearchResults() {
               <p>${escapeHTML(bio)}</p>
 
               <small>
-                ${postCount} ${postCount === 1 ? (typeof t === "function" ? t("post") : "post") : (typeof t === "function" ? t("posts") : "posts")} · ${followerCount} ${followerCount === 1 ? (typeof t === "function" ? t("follower") : "follower") : (typeof t === "function" ? t("followers") : "followers")}
+                ${postCount} ${postCount === 1 ? (typeof t === "function" ? t("post") : "post") : (typeof t === "function" ? t("posts") : "posts")} · ${followerCount} ${followerCount === 1 ? (typeof t === "function" ? t("follower") : "follower") : (typeof t === "function" ? t("followers") : "followers")} · ${followingCount} ${followingCount === 1 ? (typeof t === "function" ? t("followingSingular") : "following") : (typeof t === "function" ? t("following") : "following")}
               </small>
             </div>
           </button>
@@ -182,10 +402,42 @@ function bindUserSearchResultActions() {
     });
   });
 
+  /*
+    If your existing follows.js has bindFollowButtons(), use it.
+    If not, bind the Search page buttons here.
+  */
   if (typeof bindFollowButtons === "function") {
     bindFollowButtons();
+
+    document.querySelectorAll("[data-follow-user-id]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        setTimeout(async () => {
+          await loadSearchFollowsFallback();
+          renderUserSearchResults();
+        }, 250);
+      });
+    });
+
+    return;
   }
+
+  document.querySelectorAll("[data-follow-user-id]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const userId = button.dataset.followUserId;
+      const isFollowing = button.dataset.searchFollowState === "following";
+
+      if (isFollowing) {
+        await unfollowUserFromSearch(userId, button);
+      } else {
+        await followUserFromSearch(userId, button);
+      }
+    });
+  });
 }
+
+/* =========================================================
+   SEARCH UX
+========================================================= */
 
 function scrollToUserSearch() {
   const card = document.getElementById("userSearchCard");
@@ -293,6 +545,9 @@ function initUserSearch() {
   }
 }
 
+/* =========================================================
+   DATA LOADING
+========================================================= */
 
 async function loadUserSearchData() {
   const [profilesResponse, threadsResponse] = await Promise.all([
@@ -317,13 +572,15 @@ async function loadUserSearchData() {
   profiles = profilesResponse.data || [];
   threads = threadsResponse.data || [];
 
-  if (typeof loadFollows === "function") {
-    await loadFollows();
-  }
+  await loadSearchFollowsFallback();
 
   userSearchDataLoaded = true;
   renderUserSearchResults();
 }
+
+/* =========================================================
+   PAGE INIT
+========================================================= */
 
 async function initSearchPage() {
   setupAuthButtons();
