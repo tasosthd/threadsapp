@@ -13,6 +13,9 @@
   <link rel="icon" type="image/png" href="/assets/img/index.png" />
   <link rel="shortcut icon" type="image/png" href="/assets/img/index.png" />
   <link rel="apple-touch-icon" href="/assets/img/index.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <meta name="theme-color" content="#050816" />
 
   <!-- Fonts -->
   <link
@@ -21,7 +24,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=split-search-1" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=password-eye-1" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -104,14 +107,27 @@
             required
           />
 
-          <input
-            type="password"
-            id="authPassword"
-            class="sidebar-auth-input"
-            placeholder="Password"
-            autocomplete="current-password"
-            required
-          />
+          <div class="password-field-wrap">
+            <input
+              type="password"
+              id="authPassword"
+              class="sidebar-auth-input password-input"
+              placeholder="Password"
+              autocomplete="current-password"
+              required
+            />
+
+            <button
+              id="togglePasswordBtn"
+              class="password-toggle-btn"
+              type="button"
+              aria-label="Show password"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5c5.5 0 9.5 5.1 10.8 6.9a.9.9 0 0 1 0 1.1C21.5 14.9 17.5 20 12 20S2.5 14.9 1.2 13a.9.9 0 0 1 0-1.1C2.5 10.1 6.5 5 12 5Zm0 2C7.9 7 4.7 10.4 3.3 12.5 4.7 14.6 7.9 18 12 18s7.3-3.4 8.7-5.5C19.3 10.4 16.1 7 12 7Zm0 2.2a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6Zm0 2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Z"></path>
+              </svg>
+            </button>
+          </div>
 
           <button id="emailLoginBtn" class="btn primary-btn" type="submit">
             Log in
@@ -172,15 +188,16 @@
       <nav class="sidebar-links">
         <a href="/" data-i18n="navHome">Home</a>
         <a href="/search/" data-i18n="navSearch">Search</a>
-
         <a href="/profile/" data-i18n="navProfile">Profile</a>
 
         <button class="sidebar-notifications-link" type="button" data-open-notifications>
-          <span>Notifications</span>
+          <span data-i18n="notifications">Notifications</span>
           <span id="sidebarNotificationsBadge" class="sidebar-notification-badge hidden">0</span>
         </button>
 
-        <button id="sidebarComposeBtn" type="button" data-i18n="createThread">Create thread</button>
+        <button id="sidebarComposeBtn" type="button" data-i18n="createThread">
+          Create thread
+        </button>
       </nav>
     </aside>
 
@@ -193,7 +210,9 @@
         <h2 data-i18n="buildIdentity">Build your identity.</h2>
 
         <p>
-          <span data-i18n="profileHeroText">Edit your username, bio, profile picture, and creator presence. Your posts, images, likes, followers, following, and creator stats live here.</span>
+          <span data-i18n="profileHeroText">
+            Edit your username, bio, profile picture, and creator presence. Your posts, images, likes, followers, following, and creator stats live here.
+          </span>
         </p>
       </section>
 
@@ -264,7 +283,8 @@
               id="profileBioInput"
               class="bio-field"
               maxlength="160"
-              placeholder="Write your founder bio..." data-i18n-placeholder="bioPlaceholder"
+              placeholder="Write your founder bio..."
+              data-i18n-placeholder="bioPlaceholder"
             ></textarea>
           </label>
 
@@ -299,7 +319,7 @@
   <script src="/assets/js/config.js"></script>
   <script src="/assets/js/language.js?v=language-1"></script>
   <script src="/assets/js/ui.js?v=notifications-system-1"></script>
-  <script src="/assets/js/auth.js?v=email-auth-2"></script>
+  <script src="/assets/js/auth.js?v=password-eye-1"></script>
   <script src="/assets/js/notifications.js?v=notifications-system-1"></script>
   <script src="/assets/js/profile.js?v=notifications-system-1"></script>
 
