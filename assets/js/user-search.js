@@ -142,7 +142,7 @@ async function loadSearchFollowsFallback() {
   }
 
   const { data, error } = await supabaseClient
-    .from("followers")
+    .from("thread_follows")
     .select("follower_id, following_id, created_at");
 
   if (error) {
