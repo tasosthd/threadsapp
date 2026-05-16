@@ -4685,3 +4685,74 @@ html[data-theme="dark"] .notifications-modal {
   color: var(--cyan-dark) !important;
   font-weight: 900 !important;
 }
+
+/* =========================
+   Split auth pages
+========================= */
+
+.auth-switch-link {
+  display: block;
+  margin: -2px 0 8px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  text-decoration: none;
+}
+
+.auth-switch-link strong {
+  color: var(--cyan-dark);
+  font-weight: 900;
+}
+
+.auth-switch-link:hover {
+  color: var(--cyan-dark);
+}
+
+.auth-page-shell {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 28px 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.auth-page-card {
+  width: min(100%, 460px);
+  padding: 24px;
+}
+
+.auth-page-brand {
+  margin-bottom: 22px;
+  text-decoration: none;
+}
+
+.auth-page-copy {
+  margin-bottom: 18px;
+}
+
+.auth-page-copy h2 {
+  margin: 7px 0 8px;
+  font-size: clamp(2rem, 8vw, 3.1rem);
+  line-height: 0.95;
+  letter-spacing: -0.08em;
+}
+
+.auth-page-copy p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.auth-page-form {
+  gap: 11px;
+}
+
+@media (max-width: 520px) {
+  .auth-page-card {
+    border-radius: 28px;
+    padding: 20px;
+  }
+}
