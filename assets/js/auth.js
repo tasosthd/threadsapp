@@ -8,13 +8,13 @@ let currentProfile = null;
 function getUserMeta(user) {
   const meta = user?.user_metadata || {};
   const username = meta.username ? cleanUsername(meta.username) : "";
-  const safeName = username || meta.full_name || meta.name || "User";
+  const fullName = String(meta.full_name || meta.name || "").trim();
 
   return {
-    name: safeName,
+    name: fullName || username || "User",
     username,
     email: user?.email || "",
-    avatar: meta.avatar_url || meta.picture || fallbackAvatar(safeName)
+    avatar: meta.avatar_url || meta.picture || fallbackAvatar(fullName || username || user?.email || "User")
   };
 }
 
@@ -33,6 +33,8 @@ async function upsertProfile() {
       ? cleanUsername(meta.email.split("@")[0])
       : `user_${currentUser.id.slice(0, 8)}`;
 
+  const defaultFullName = meta.name || defaultUsername || "Loomyva User";
+
   const { data: existingProfile, error: selectError } = await supabaseClient
     .from("profiles")
     .select("*")
@@ -47,7 +49,7 @@ async function upsertProfile() {
   const profilePayload = {
     id: currentUser.id,
     email: meta.email,
-    full_name: existingProfile?.full_name || meta.name || defaultUsername,
+    full_name: existingProfile?.full_name || defaultFullName,
     username: existingProfile?.username || defaultUsername,
 
     /*
@@ -96,41 +98,17 @@ function updateSharedAuthUI() {
   if (!userBox) return;
 
   if (!currentUser) {
-    if (loginBtn) {
-      loginBtn.classList.remove("hidden");
-    }
-
-    if (googleLoginBtn) {
-      googleLoginBtn.classList.remove("hidden");
-    }
-
-    if (emailAuthForm) {
-      emailAuthForm.classList.remove("hidden");
-    }
-
-    if (authDivider) {
-      authDivider.classList.remove("hidden");
-    }
+    if (loginBtn) loginBtn.classList.remove("hidden");
+    if (googleLoginBtn) googleLoginBtn.classList.remove("hidden");
+    if (emailAuthForm) emailAuthForm.classList.remove("hidden");
+    if (authDivider) authDivider.classList.remove("hidden");
 
     userBox.classList.add("hidden");
 
-    if (userAvatar) {
-      userAvatar.src = "";
-    }
-
-    if (userName) {
-      userName.textContent = "User";
-    }
-
-    /* Never reveal the user's email in the sidebar. */
-    if (userEmail) {
-      userEmail.textContent = "";
-      userEmail.setAttribute("aria-hidden", "true");
-    }
-
-    if (logoutBtn) {
-      logoutBtn.disabled = false;
-    }
+    if (userAvatar) userAvatar.src = "";
+    if (userName) userName.textContent = "User";
+    if (userEmail) userEmail.textContent = "@username";
+    if (logoutBtn) logoutBtn.disabled = false;
 
     return;
   }
@@ -140,50 +118,40 @@ function updateSharedAuthUI() {
   const avatar =
     currentProfile?.avatar_url ||
     meta.avatar ||
-    fallbackAvatar(currentProfile?.username || meta.username || "User");
+    fallbackAvatar(meta.name || meta.username || "User");
+
+  const name =
+    currentProfile?.full_name ||
+    meta.name ||
+    currentProfile?.username ||
+    meta.username ||
+    "User";
 
   const username =
     currentProfile?.username ||
     meta.username ||
-    "user";
+    "";
 
-  const displayName = username.startsWith("@") ? username : `@${username}`;
-
-  if (loginBtn) {
-    loginBtn.classList.add("hidden");
-  }
-
-  if (googleLoginBtn) {
-    googleLoginBtn.classList.add("hidden");
-  }
-
-  if (emailAuthForm) {
-    emailAuthForm.classList.add("hidden");
-  }
-
-  if (authDivider) {
-    authDivider.classList.add("hidden");
-  }
+  if (loginBtn) loginBtn.classList.add("hidden");
+  if (googleLoginBtn) googleLoginBtn.classList.add("hidden");
+  if (emailAuthForm) emailAuthForm.classList.add("hidden");
+  if (authDivider) authDivider.classList.add("hidden");
 
   userBox.classList.remove("hidden");
 
-  if (userAvatar) {
-    userAvatar.src = avatar;
-  }
+  if (userAvatar) userAvatar.src = avatar;
+  if (userName) userName.textContent = name;
 
-  if (userName) {
-    userName.textContent = displayName;
-  }
-
-  /* Never reveal the user's email in the sidebar. */
+  /*
+    Privacy move:
+    Never show the user's email in the UI.
+    Show @username instead.
+  */
   if (userEmail) {
-    userEmail.textContent = "";
-    userEmail.setAttribute("aria-hidden", "true");
+    userEmail.textContent = username ? `@${username}` : "";
   }
 
-  if (logoutBtn) {
-    logoutBtn.disabled = false;
-  }
+  if (logoutBtn) logoutBtn.disabled = false;
 }
 
 /* =========================
@@ -192,15 +160,17 @@ function updateSharedAuthUI() {
 
 function getEmailAuthFields() {
   const emailInput = document.getElementById("authEmail");
+  const fullNameInput = document.getElementById("authFullName");
   const usernameInput = document.getElementById("authUsername");
   const passwordInput = document.getElementById("authPassword");
 
   const email = emailInput ? emailInput.value.trim() : "";
+  const fullName = fullNameInput ? fullNameInput.value.trim().replace(/\s+/g, " ") : "";
   const rawUsername = usernameInput ? usernameInput.value.trim() : "";
   const username = rawUsername ? cleanUsername(rawUsername) : "";
   const password = passwordInput ? passwordInput.value : "";
 
-  return { email, username, password };
+  return { email, fullName, username, password };
 }
 
 function validateEmailAuth(email, password) {
@@ -222,7 +192,17 @@ function validateEmailAuth(email, password) {
   return true;
 }
 
-function validateSignupUsername(username) {
+function validateSignupProfileFields(fullName, username) {
+  if (!fullName || fullName.length < 2) {
+    setStatus("Please enter your full name before creating an account.", "error");
+    return false;
+  }
+
+  if (fullName.length > 60) {
+    setStatus("Full name must be 60 characters or less.", "error");
+    return false;
+  }
+
   if (!username) {
     setStatus("Please choose a username before creating an account.", "error");
     return false;
@@ -297,10 +277,10 @@ async function signInWithEmailPassword(event) {
 async function signUpWithEmailPassword() {
   setStatus("");
 
-  const { email, username, password } = getEmailAuthFields();
+  const { email, fullName, username, password } = getEmailAuthFields();
 
   if (!validateEmailAuth(email, password)) return;
-  if (!validateSignupUsername(username)) return;
+  if (!validateSignupProfileFields(fullName, username)) return;
 
   const emailSignupBtn = document.getElementById("emailSignupBtn");
 
@@ -330,9 +310,9 @@ async function signUpWithEmailPassword() {
     options: {
       emailRedirectTo: `${window.location.origin}/profile/`,
       data: {
-        username,
-        full_name: username,
-        name: username
+        full_name: fullName,
+        name: fullName,
+        username
       }
     }
   });
@@ -357,7 +337,7 @@ async function signUpWithEmailPassword() {
     return;
   }
 
-  setStatus("Account created. Check your inbox to confirm your account, then log in.", "success");
+  setStatus("Account created. Check your email to confirm your account, then log in.", "success");
 }
 
 /* =========================
@@ -367,14 +347,6 @@ async function signUpWithEmailPassword() {
 async function signInWithGoogle() {
   setStatus("");
 
-  /*
-    Redirect user to profile page after Google login.
-
-    Works for:
-    - https://loomyva.com/profile/
-    - https://threadsapp-nu.vercel.app/profile/
-    - local testing too, if added in Supabase Redirect URLs
-  */
   const redirectTo = `${window.location.origin}/profile/`;
 
   const googleLoginBtn = document.getElementById("googleLoginBtn");
@@ -538,27 +510,14 @@ function setupAuthButtons() {
   const emailLoginBtn = document.getElementById("emailLoginBtn");
   const emailSignupBtn = document.getElementById("emailSignupBtn");
 
-  /*
-    Old Google button support:
-    If your old HTML still has id="loginBtn",
-    this keeps it working as Google login.
-  */
   if (loginBtn) {
     loginBtn.addEventListener("click", signInWithGoogle);
   }
 
-  /*
-    New Google button:
-    Better name for the secondary Google option.
-  */
   if (googleLoginBtn) {
     googleLoginBtn.addEventListener("click", signInWithGoogle);
   }
 
-  /*
-    Main email/password login form.
-    Pressing Enter inside the password field will log in.
-  */
   if (emailAuthForm) {
     emailAuthForm.addEventListener("submit", signInWithEmailPassword);
   } else if (emailLoginBtn) {
