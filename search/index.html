@@ -24,7 +24,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=username-private-auth-1" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=username-fullname-auth-1" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -109,6 +109,15 @@
 
           <input
             type="text"
+            id="authFullName"
+            class="sidebar-auth-input"
+            placeholder="Full name"
+            autocomplete="name"
+            maxlength="60"
+          />
+
+          <input
+            type="text"
             id="authUsername"
             class="sidebar-auth-input"
             placeholder="Username for signup"
@@ -160,7 +169,7 @@
 
           <div class="sidebar-account-meta">
             <strong id="userName">User</strong>
-            <span id="userEmail" aria-hidden="true"></span>
+            <span id="userEmail">email</span>
           </div>
 
           <button id="logoutBtn" class="sidebar-logout-btn" type="button" aria-label="Logout">
@@ -272,7 +281,7 @@
   <script src="/assets/js/config.js"></script>
   <script src="/assets/js/language.js?v=language-1"></script>
   <script src="/assets/js/ui.js?v=split-search-1"></script>
-  <script src="/assets/js/auth.js?v=username-private-auth-1"></script>
+  <script src="/assets/js/auth.js?v=username-fullname-auth-1"></script>
   <script src="/assets/js/notifications.js?v=notifications-system-2"></script>
   <script src="/assets/js/follows.js?v=search-follow-full-1"></script>
   <script src="/assets/js/user-search.js?v=search-follow-full-1"></script>
