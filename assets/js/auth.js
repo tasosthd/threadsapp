@@ -80,6 +80,8 @@ function updateSharedAuthUI() {
   const loginBtn = document.getElementById("loginBtn");
   const googleLoginBtn = document.getElementById("googleLoginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
+  const emailAuthForm = document.getElementById("emailAuthForm");
+  const authDivider = document.querySelector(".auth-divider");
 
   const userBox = document.getElementById("userBox");
   const userAvatar = document.getElementById("userAvatar");
@@ -95,6 +97,14 @@ function updateSharedAuthUI() {
 
     if (googleLoginBtn) {
       googleLoginBtn.classList.remove("hidden");
+    }
+
+    if (emailAuthForm) {
+      emailAuthForm.classList.remove("hidden");
+    }
+
+    if (authDivider) {
+      authDivider.classList.remove("hidden");
     }
 
     userBox.classList.add("hidden");
@@ -141,6 +151,14 @@ function updateSharedAuthUI() {
 
   if (googleLoginBtn) {
     googleLoginBtn.classList.add("hidden");
+  }
+
+  if (emailAuthForm) {
+    emailAuthForm.classList.add("hidden");
+  }
+
+  if (authDivider) {
+    authDivider.classList.add("hidden");
   }
 
   userBox.classList.remove("hidden");
@@ -277,22 +295,17 @@ async function signUpWithEmailPassword() {
   currentUser = data.user || null;
 
   /*
-    If Supabase email confirmation is OFF:
-    user is logged in instantly.
-
-    If Supabase email confirmation is ON:
-    user may need to confirm email first.
+    If email confirmation is OFF, Supabase returns a session and the user can enter immediately.
+    If email confirmation is ON, Supabase returns a user but no session, so they must confirm email first.
   */
-  if (currentUser) {
+  if (data.session && currentUser) {
     await upsertProfile();
-
     setStatus("Account created successfully.", "success");
-
     window.location.href = "/profile/";
     return;
   }
 
-  setStatus("Account created. Check your email to confirm your account.", "success");
+  setStatus("Account created. Check your email to confirm your account, then log in.", "success");
 }
 
 /* =========================
@@ -470,13 +483,7 @@ function setupAuthButtons() {
   */
   if (emailAuthForm) {
     emailAuthForm.addEventListener("submit", signInWithEmailPassword);
-  }
-
-  /*
-    Extra support if the login button exists outside the form,
-    or if browser behavior is weird.
-  */
-  if (emailLoginBtn) {
+  } else if (emailLoginBtn) {
     emailLoginBtn.addEventListener("click", signInWithEmailPassword);
   }
 
