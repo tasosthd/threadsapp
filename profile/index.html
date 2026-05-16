@@ -94,7 +94,39 @@
       </div>
 
       <div class="sidebar-auth">
-        <button id="loginBtn" class="btn primary-btn" type="button">
+        <form id="emailAuthForm" class="sidebar-email-auth">
+          <input
+            type="email"
+            id="authEmail"
+            class="sidebar-auth-input"
+            placeholder="Email"
+            autocomplete="email"
+            required
+          />
+
+          <input
+            type="password"
+            id="authPassword"
+            class="sidebar-auth-input"
+            placeholder="Password"
+            autocomplete="current-password"
+            required
+          />
+
+          <button id="emailLoginBtn" class="btn primary-btn" type="submit">
+            Log in
+          </button>
+
+          <button id="emailSignupBtn" class="btn ghost-btn" type="button">
+            Create account
+          </button>
+        </form>
+
+        <div class="auth-divider">
+          <span>or</span>
+        </div>
+
+        <button id="googleLoginBtn" class="btn primary-btn" type="button">
           <span data-i18n="loginGoogle">Continue with Google</span>
         </button>
 
@@ -267,7 +299,7 @@
   <script src="/assets/js/config.js"></script>
   <script src="/assets/js/language.js?v=language-1"></script>
   <script src="/assets/js/ui.js?v=notifications-system-1"></script>
-  <script src="/assets/js/auth.js?v=notifications-system-1"></script>
+  <script src="/assets/js/auth.js?v=email-auth-2"></script>
   <script src="/assets/js/notifications.js?v=notifications-system-1"></script>
   <script src="/assets/js/profile.js?v=notifications-system-1"></script>
 
