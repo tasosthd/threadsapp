@@ -178,7 +178,7 @@ async function followUserFromSearch(targetUserId, button) {
   try {
     /*
       If your existing follows.js exposes toggleFollowUser(userId),
-      we use it. Otherwise we directly insert into public.followers.
+      we use it. Otherwise we directly insert into public.thread_follows.
     */
     if (typeof toggleFollowUser === "function") {
       await toggleFollowUser(targetUserId);
@@ -225,7 +225,7 @@ async function unfollowUserFromSearch(targetUserId, button) {
   try {
     /*
       If your existing follows.js exposes toggleFollowUser(userId),
-      we use it. Otherwise we directly delete from public.followers.
+      we use it. Otherwise we directly delete from public.thread_follows.
     */
     if (typeof toggleFollowUser === "function") {
       await toggleFollowUser(targetUserId);
