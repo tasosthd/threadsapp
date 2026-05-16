@@ -324,6 +324,18 @@ function renderUserSearchResults() {
       const isOwnProfile = currentUser && currentUser.id === userId;
       const alreadyFollowing = isSearchFollowingUser(userId);
 
+      const postLabel =
+        postCount === 1
+          ? (typeof t === "function" ? t("post") : "post")
+          : (typeof t === "function" ? t("posts") : "posts");
+
+      const followerLabel =
+        followerCount === 1
+          ? (typeof t === "function" ? t("follower") : "follower")
+          : (typeof t === "function" ? t("followers") : "followers");
+
+      const followingLabel = typeof t === "function" ? t("following") : "following";
+
       const followButton = isOwnProfile
         ? `<span class="user-search-you">${typeof t === "function" ? t("you") : "You"}</span>`
         : currentUser
@@ -359,7 +371,7 @@ function renderUserSearchResults() {
               <p>${escapeHTML(bio)}</p>
 
               <small>
-                ${postCount} ${postCount === 1 ? (typeof t === "function" ? t("post") : "post") : (typeof t === "function" ? t("posts") : "posts")} · ${followerCount} ${followerCount === 1 ? (typeof t === "function" ? t("follower") : "follower") : (typeof t === "function" ? t("followers") : "followers")} · ${followingCount} ${followingCount === 1 ? (typeof t === "function" ? t("followingSingular") : "following") : (typeof t === "function" ? t("following") : "following")}
+                ${postCount} ${postLabel} · ${followerCount} ${followerLabel} · ${followingCount} ${followingLabel}
               </small>
             </div>
           </button>
