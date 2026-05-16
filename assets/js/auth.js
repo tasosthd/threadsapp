@@ -7,11 +7,13 @@ let currentProfile = null;
 
 function getUserMeta(user) {
   const meta = user?.user_metadata || {};
+  const username = meta.username ? cleanUsername(meta.username) : "";
 
   return {
-    name: meta.full_name || meta.name || user?.email || "User",
+    name: username || meta.full_name || meta.name || "User",
+    username,
     email: user?.email || "",
-    avatar: meta.avatar_url || meta.picture || fallbackAvatar(user?.email || "User")
+    avatar: meta.avatar_url || meta.picture || fallbackAvatar(username || user?.email || "User")
   };
 }
 
@@ -24,9 +26,11 @@ async function upsertProfile() {
 
   const meta = getUserMeta(currentUser);
 
-  const defaultUsername = meta.email
-    ? cleanUsername(meta.email.split("@")[0])
-    : `user_${currentUser.id.slice(0, 8)}`;
+  const defaultUsername = meta.username
+    ? cleanUsername(meta.username)
+    : meta.email
+      ? cleanUsername(meta.email.split("@")[0])
+      : `user_${currentUser.id.slice(0, 8)}`;
 
   const { data: existingProfile, error: selectError } = await supabaseClient
     .from("profiles")
@@ -39,11 +43,24 @@ async function upsertProfile() {
     return;
   }
 
+  const username = existingProfile?.username || defaultUsername;
+
+  /*
+    If an older email-created profile saved the email as full_name,
+    prefer the username so the sidebar does not show the full email as the main name.
+  */
+  const existingFullNameLooksLikeEmail =
+    existingProfile?.full_name && existingProfile.full_name.includes("@");
+
+  const fullName = existingFullNameLooksLikeEmail
+    ? username
+    : existingProfile?.full_name || meta.name || username;
+
   const profilePayload = {
     id: currentUser.id,
     email: meta.email,
-    full_name: meta.name,
-    username: existingProfile?.username || defaultUsername,
+    full_name: fullName,
+    username,
 
     /*
       Important:
@@ -133,10 +150,16 @@ function updateSharedAuthUI() {
   const avatar =
     currentProfile?.avatar_url ||
     meta.avatar ||
-    fallbackAvatar(meta.email || "User");
+    fallbackAvatar(meta.username || meta.email || "User");
 
+  /*
+    Main display name should be the username first.
+    The email can still appear underneath as account info.
+  */
   const name =
+    currentProfile?.username ||
     currentProfile?.full_name ||
+    meta.username ||
     meta.name ||
     "User";
 
@@ -186,12 +209,16 @@ function updateSharedAuthUI() {
 
 function getEmailAuthFields() {
   const emailInput = document.getElementById("authEmail");
+  const usernameInput = document.getElementById("authUsername");
   const passwordInput = document.getElementById("authPassword");
 
   const email = emailInput ? emailInput.value.trim() : "";
+  const rawUsername = usernameInput ? usernameInput.value.trim() : "";
   const password = passwordInput ? passwordInput.value : "";
 
-  return { email, password };
+  const username = rawUsername ? cleanUsername(rawUsername) : "";
+
+  return { email, username, password };
 }
 
 function validateEmailAuth(email, password) {
@@ -207,6 +234,25 @@ function validateEmailAuth(email, password) {
 
   if (password.length < 6) {
     setStatus("Password must be at least 6 characters.", "error");
+    return false;
+  }
+
+  return true;
+}
+
+function validateSignupUsername(username) {
+  if (!username) {
+    setStatus("Please choose a username before creating an account.", "error");
+    return false;
+  }
+
+  if (username.length < 3) {
+    setStatus("Username must be at least 3 characters.", "error");
+    return false;
+  }
+
+  if (username.length > 28) {
+    setStatus("Username must be 28 characters or less.", "error");
     return false;
   }
 
@@ -269,19 +315,47 @@ async function signInWithEmailPassword(event) {
 async function signUpWithEmailPassword() {
   setStatus("");
 
-  const { email, password } = getEmailAuthFields();
+  const { email, username, password } = getEmailAuthFields();
 
   if (!validateEmailAuth(email, password)) return;
+  if (!validateSignupUsername(username)) return;
 
   const emailSignupBtn = document.getElementById("emailSignupBtn");
 
   setButtonLoading(emailSignupBtn, true, "Creating account...", "Create account");
 
+  /*
+    Check if the username is already taken before creating the auth user.
+    This depends on your profiles SELECT policy being public/readable.
+  */
+  const { data: usernameExists, error: usernameCheckError } = await supabaseClient
+    .from("profiles")
+    .select("id")
+    .eq("username", username)
+    .maybeSingle();
+
+  if (usernameCheckError) {
+    setButtonLoading(emailSignupBtn, false, "Creating account...", "Create account");
+    setStatus(usernameCheckError.message, "error");
+    return;
+  }
+
+  if (usernameExists) {
+    setButtonLoading(emailSignupBtn, false, "Creating account...", "Create account");
+    setStatus("This username is already taken. Try another one.", "error");
+    return;
+  }
+
   const { data, error } = await supabaseClient.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${window.location.origin}/profile/`
+      emailRedirectTo: `${window.location.origin}/profile/`,
+      data: {
+        username,
+        full_name: username,
+        name: username
+      }
     }
   });
 
@@ -297,6 +371,7 @@ async function signUpWithEmailPassword() {
   /*
     If email confirmation is OFF, Supabase returns a session and the user can enter immediately.
     If email confirmation is ON, Supabase returns a user but no session, so they must confirm email first.
+    The chosen username is saved in user_metadata and will be written to profiles after confirmation/login.
   */
   if (data.session && currentUser) {
     await upsertProfile();
