@@ -70,6 +70,7 @@ function renderProfileEditor() {
   const profileEditorAvatar = document.getElementById("profileEditorAvatar");
   const profileEditorName = document.getElementById("profileEditorName");
   const profileEditorEmail = document.getElementById("profileEditorEmail");
+  const profileFullNameInput = document.getElementById("profileFullNameInput");
   const profileUsernameInput = document.getElementById("profileUsernameInput");
   const profileBioInput = document.getElementById("profileBioInput");
 
@@ -90,10 +91,10 @@ function renderProfileEditor() {
     meta.name ||
     "Loomyva User";
 
-  const email =
-    profileData?.email ||
-    currentProfile?.email ||
-    meta.email ||
+  const username =
+    profileData?.username ||
+    currentProfile?.username ||
+    meta.username ||
     "";
 
   if (profileEditorAvatar) {
@@ -105,7 +106,11 @@ function renderProfileEditor() {
   }
 
   if (profileEditorEmail) {
-    profileEditorEmail.textContent = email;
+    profileEditorEmail.textContent = username ? `@${username}` : "";
+  }
+
+  if (profileFullNameInput) {
+    profileFullNameInput.value = name;
   }
 
   if (profileUsernameInput) {
@@ -1480,13 +1485,20 @@ async function saveProfileFromProfilePage() {
     return;
   }
 
+  const profileFullNameInput = document.getElementById("profileFullNameInput");
   const profileUsernameInput = document.getElementById("profileUsernameInput");
   const profileBioInput = document.getElementById("profileBioInput");
   const saveProfilePageBtn = document.getElementById("saveProfilePageBtn");
   const profileEditorAvatar = document.getElementById("profileEditorAvatar");
 
+  const fullName = String(profileFullNameInput?.value || "").trim().replace(/\s+/g, " ").slice(0, 60);
   const username = cleanUsername(profileUsernameInput?.value || "");
   const bio = String(profileBioInput?.value || "").trim().slice(0, 160);
+
+  if (!fullName || fullName.length < 2) {
+    setStatus("Full name needs at least 2 characters.", "error");
+    return;
+  }
 
   if (!username || username.length < 3) {
     setStatus("Username needs at least 3 characters.", "error");
@@ -1510,6 +1522,7 @@ async function saveProfileFromProfilePage() {
     );
 
   const updatePayload = {
+    full_name: fullName,
     username,
     bio,
     updated_at: new Date().toISOString()
