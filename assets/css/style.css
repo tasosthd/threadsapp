@@ -357,8 +357,105 @@ html[data-theme="dark"] .app-sidebar {
   margin-bottom: 18px;
 }
 
-.sidebar-auth #loginBtn {
+/* =========================
+   Email authentication
+========================= */
+
+.sidebar-email-auth {
+  display: grid;
+  gap: 10px;
   width: 100%;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top left, rgba(0, 188, 231, 0.1), transparent 44%),
+    var(--soft-card);
+  box-shadow: 0 16px 36px rgba(0, 70, 90, 0.08);
+}
+
+html[data-theme="dark"] .sidebar-email-auth {
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+}
+
+.sidebar-auth-input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--line);
+  outline: 0;
+  border-radius: 18px;
+  padding: 12px 14px;
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.sidebar-auth-input::placeholder {
+  color: var(--placeholder);
+}
+
+.sidebar-auth-input:hover {
+  border-color: rgba(0, 188, 231, 0.28);
+}
+
+.sidebar-auth-input:focus {
+  border-color: rgba(0, 188, 231, 0.62);
+  background: var(--soft-card-2);
+  box-shadow: 0 0 0 4px rgba(0, 188, 231, 0.12);
+  transform: translateY(-1px);
+}
+
+.sidebar-email-auth .btn {
+  width: 100%;
+  min-height: 46px;
+}
+
+.sidebar-email-auth .ghost-btn {
+  color: var(--cyan-dark);
+  border: 1px solid rgba(0, 188, 231, 0.22);
+  background: var(--soft-card-2);
+}
+
+.sidebar-email-auth .ghost-btn:hover {
+  color: #fff;
+  border-color: rgba(0, 188, 231, 0.28);
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 14px 30px rgba(0, 188, 231, 0.2);
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+#googleLoginBtn {
+  width: 100%;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Premium sidebar account row */
@@ -911,11 +1008,15 @@ input::placeholder {
 }
 
 .status-msg {
-  display: none !important;
+  display: block;
   min-height: 22px;
   color: var(--muted);
   font-size: 14px;
   font-weight: 700;
+}
+
+.status-msg:empty {
+  display: none;
 }
 
 .status-msg.success {
@@ -4158,4 +4259,23 @@ html[data-theme="dark"] .notifications-modal {
 .language-toggle-btn span:last-child {
   font-size: 12px;
   font-weight: 900;
+}
+
+
+@media (max-width: 560px) {
+  .sidebar-email-auth {
+    padding: 12px;
+    border-radius: 24px;
+  }
+
+  .sidebar-auth-input {
+    min-height: 50px;
+    border-radius: 17px;
+    font-size: 14px;
+  }
+
+  .sidebar-email-auth .btn,
+  #googleLoginBtn {
+    min-height: 48px;
+  }
 }
