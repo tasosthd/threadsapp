@@ -29,10 +29,17 @@ function unlockBodyScroll() {
   }
 }
 
-function isInteractiveTouchTarget(target) {
-  return Boolean(target?.closest?.("input, textarea, select, button, a, .thread-modal, .app-sidebar"));
-}
+function isInteractiveTouchTarget(target, sidebarIsOpen = false) {
+  /*
+    When sidebar is open, we MUST allow touch gestures on .app-sidebar
+    so the user can swipe left on the sidebar itself to close it.
+  */
+  const selector = sidebarIsOpen
+    ? "input, textarea, select, button, a, .thread-modal"
+    : "input, textarea, select, button, a, .thread-modal, .app-sidebar";
 
+  return Boolean(target?.closest?.(selector));
+}
 let selectedThreadImageFile = null;
 
 /* =========================
