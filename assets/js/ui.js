@@ -110,6 +110,7 @@ function setStatus(message, type = "") {
 
   if (!statusMsg) return;
 
+
   const normalizedMessage = String(message || "");
 
   if (normalizedMessage.toLowerCase().includes("load failed")) {
@@ -304,6 +305,37 @@ function setupSidebar() {
   });
 }
 
+  /* =========================
+     MOBILE SWIPE SIDEBAR
+     Menu closes by swiping LEFT from anywhere on the screen.
+     Opening is still controlled by the hamburger button.
+  ========================= */
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let sidebarGestureDone = false;
+
+  document.addEventListener(
+    "touchstart",
+    (event) => {
+      if (!event.touches || event.touches.length !== 1) return;
+
+      const appSidebar = document.getElementById("appSidebar");
+      const sidebarIsOpen = appSidebar?.classList.contains("active");
+
+      /*
+        Only track global swipe gestures while the menu is open.
+        This prevents accidental right-swipe opening from the page.
+      */
+      if (!sidebarIsOpen) return;
+
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+      sidebarGestureDone = false;
+    },
+    { passive: true }
+  );
+
   document.addEventListener(
     "touchmove",
     (event) => {
@@ -321,7 +353,16 @@ function setupSidebar() {
       const swipeDistanceX = currentX - touchStartX;
       const swipeDistanceY = Math.abs(currentY - touchStartY);
 
-      if (window.innerWidth <= 900 && swipeDistanceY < 56 && swipeDistanceX < -64) {
+      const isMobileWidth = window.innerWidth <= 900;
+      const mostlyHorizontal = swipeDistanceY < 56;
+      const swipedLeftEnough = swipeDistanceX < -64;
+
+      /*
+        Exclusive behavior:
+        Any swipe LEFT from anywhere closes the menu.
+        Right swipes do nothing.
+      */
+      if (isMobileWidth && mostlyHorizontal && swipedLeftEnough) {
         sidebarGestureDone = true;
         closeSidebar();
       }
@@ -331,37 +372,14 @@ function setupSidebar() {
 
   document.addEventListener(
     "touchend",
-    (event) => {
-      if (!event.changedTouches || event.changedTouches.length !== 1) return;
-      if (sidebarGestureDone) return;
-
-      const appSidebar = document.getElementById("appSidebar");
-      const sidebarIsOpen = appSidebar?.classList.contains("active");
-
-      if (!sidebarIsOpen) return;
-
-      const touchEndX = event.changedTouches[0].clientX;
-      const touchEndY = event.changedTouches[0].clientY;
-
-      const swipeDistanceX = touchEndX - touchStartX;
-      const swipeDistanceY = Math.abs(touchEndY - touchStartY);
-
-      if (window.innerWidth <= 900 && swipeDistanceY < 76 && swipeDistanceX < -74) {
-        sidebarGestureDone = true;
-        closeSidebar();
-      }
-
+    () => {
+      sidebarGestureDone = false;
       touchStartX = 0;
       touchStartY = 0;
     },
     { passive: true }
   );
 
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeSidebar();
-    }
-  });
 }
 
 /* =========================
