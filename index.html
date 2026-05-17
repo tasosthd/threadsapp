@@ -327,17 +327,34 @@
   </script>
 
   <script>
+    // iOS Safari fix: remove the old Service Worker/PWA cache.
+    // The previous sw.js fetch handler caused "FetchEvent.respondWith... Load failed" on iPhone.
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker
-          .register("/sw.js")
-          .then(function () {
-            console.log("Loomyva service worker registered");
+        navigator.serviceWorker.getRegistrations()
+          .then(function (registrations) {
+            registrations.forEach(function (registration) {
+              registration.unregister();
+            });
           })
           .catch(function (error) {
-            console.error("Service worker registration failed:", error);
+            console.warn("Service worker cleanup failed:", error);
           });
       });
+    }
+
+    if ("caches" in window) {
+      caches.keys()
+        .then(function (cacheNames) {
+          cacheNames.forEach(function (cacheName) {
+            if (cacheName.indexOf("loomyva") !== -1) {
+              caches.delete(cacheName);
+            }
+          });
+        })
+        .catch(function (error) {
+          console.warn("Cache cleanup failed:", error);
+        });
     }
   </script>
 </body>
