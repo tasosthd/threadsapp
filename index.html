@@ -8,13 +8,10 @@
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="style.css?v=12">
-<script src="app.js?v=12"></script>
   <!-- Favicons -->
   <link rel="icon" type="image/png" href="/assets/img/index.png" />
   <link rel="shortcut icon" type="image/png" href="/assets/img/index.png" />
   <link rel="apple-touch-icon" href="/assets/img/index.png" />
-  <link rel="manifest" href="/manifest.json" />
 
   <meta name="theme-color" content="#050816" />
 
@@ -25,7 +22,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=login-page-1" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=ios-sw-off-3" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -305,14 +302,14 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="/assets/js/config.js"></script>
-  <script src="/assets/js/language.js?v=language-1"></script>
-  <script src="/assets/js/ui.js?v=theme-toggle-2"></script>
-  <script src="/assets/js/auth.js?v=login-page-1"></script>
-  <script src="/assets/js/notifications.js?v=notifications-system-2"></script>
-  <script src="/assets/js/comments.js"></script>
-  <script src="/assets/js/follows.js"></script>
-  <script src="/assets/js/feed.js"></script>
+  <script src="/assets/js/config.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/language.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/ui.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/auth.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/notifications.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/comments.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/follows.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/feed.js?v=ios-sw-off-3"></script>
 
   <script>
     async function bootFeedPage() {
@@ -326,36 +323,29 @@
     bootFeedPage();
   </script>
 
-  <script>
-    // iOS Safari fix: remove the old Service Worker/PWA cache.
-    // The previous sw.js fetch handler caused "FetchEvent.respondWith... Load failed" on iPhone.
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.getRegistrations()
-          .then(function (registrations) {
-            registrations.forEach(function (registration) {
-              registration.unregister();
-            });
-          })
-          .catch(function (error) {
-            console.warn("Service worker cleanup failed:", error);
-          });
-      });
-    }
 
-    if ("caches" in window) {
-      caches.keys()
-        .then(function (cacheNames) {
-          cacheNames.forEach(function (cacheName) {
-            if (cacheName.indexOf("loomyva") !== -1) {
-              caches.delete(cacheName);
-            }
-          });
-        })
-        .catch(function (error) {
-          console.warn("Cache cleanup failed:", error);
+  <!-- iOS Safari/PWA cleanup: remove old service worker registrations -->
+  <script>
+    (function () {
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.getRegistrations()
+            .then(function (registrations) {
+              return Promise.all(registrations.map(function (registration) {
+                return registration.unregister();
+              }));
+            })
+            .then(function () {
+              if (window.caches && caches.keys) {
+                return caches.keys().then(function (keys) {
+                  return Promise.all(keys.map(function (key) { return caches.delete(key); }));
+                });
+              }
+            })
+            .catch(function () {});
         });
-    }
+      }
+    })();
   </script>
 </body>
 </html>
