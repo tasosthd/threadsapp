@@ -1,3 +1,38 @@
+/* =========================
+   iOS SAFARI VIEWPORT FIX
+========================= */
+
+function setAppHeightVar() {
+  const height = window.visualViewport?.height || window.innerHeight;
+  document.documentElement.style.setProperty("--app-height", `${height}px`);
+}
+
+setAppHeightVar();
+window.addEventListener("resize", setAppHeightVar, { passive: true });
+window.addEventListener("orientationchange", () => {
+  setTimeout(setAppHeightVar, 250);
+});
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", setAppHeightVar, { passive: true });
+}
+
+function lockBodyScroll() {
+  document.body.classList.add("body-locked");
+}
+
+function unlockBodyScroll() {
+  const anyModalOpen = document.querySelector(".modal-backdrop.active, .sidebar-backdrop.active");
+
+  if (!anyModalOpen) {
+    document.body.classList.remove("body-locked");
+  }
+}
+
+function isInteractiveTouchTarget(target) {
+  return Boolean(target?.closest?.("input, textarea, select, button, a, .thread-modal, .app-sidebar"));
+}
+
 let selectedThreadImageFile = null;
 
 /* =========================
@@ -162,7 +197,7 @@ function openSidebar() {
   sidebarBackdrop.classList.add("active");
 
   appSidebar.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
+  lockBodyScroll();
 
   updateThemeButtons();
 }
@@ -177,7 +212,7 @@ function closeSidebar() {
   sidebarBackdrop.classList.remove("active");
 
   appSidebar.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
+  unlockBodyScroll();
 }
 
 function setupSidebar() {
@@ -227,6 +262,7 @@ function setupSidebar() {
     "touchstart",
     (event) => {
       if (!event.touches || event.touches.length !== 1) return;
+      if (isInteractiveTouchTarget(event.target)) return;
 
       touchStartX = event.touches[0].clientX;
       touchStartY = event.touches[0].clientY;
@@ -452,7 +488,7 @@ function openThreadModal() {
 
   modalBackdrop.classList.add("active");
   modalBackdrop.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
+  lockBodyScroll();
 
   setTimeout(() => {
     if (modalTextarea) {
@@ -468,7 +504,7 @@ function closeThreadModal() {
 
   modalBackdrop.classList.remove("active");
   modalBackdrop.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
+  unlockBodyScroll();
 
   resetThreadImagePicker();
 }
