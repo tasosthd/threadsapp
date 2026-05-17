@@ -1373,6 +1373,40 @@ async function loadProfileFollowStats() {
   renderProfileStats();
 }
 
+
+/* =========================
+   IOS SAFE SUPABASE REQUEST
+========================= */
+
+async function runIOSSafeRequest(request, fallback = null) {
+  try {
+    const response = await request;
+
+    if (response?.error) {
+      console.warn("Supabase response error:", response.error);
+      return {
+        data: fallback,
+        count: response.count || 0,
+        error: response.error
+      };
+    }
+
+    return response;
+  } catch (error) {
+    console.warn("iOS/Safari request failed safely:", error);
+
+    return {
+      data: fallback,
+      count: 0,
+      error
+    };
+  }
+}
+
+function isIOSLoadFailedError(error) {
+  return String(error?.message || error || "").toLowerCase().includes("load failed");
+}
+
 /* =========================
    LOAD PROFILE DATA
 ========================= */
@@ -1393,98 +1427,55 @@ async function loadProfilePageData() {
     return;
   }
 
-  const profileRequest = supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq("id", currentUser.id)
-    .maybeSingle();
+  setStatus("");
 
-  const threadsRequest = supabaseClient
-    .from("threads")
-    .select("*")
-    .eq("user_id", currentUser.id)
-    .order("created_at", { ascending: false });
+  const profileResponse = await runIOSSafeRequest(
+    supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id", currentUser.id)
+      .maybeSingle(),
+    null
+  );
 
-  const likesRequest = supabaseClient
-    .from("thread_likes")
-    .select("*");
+  const threadsResponse = await runIOSSafeRequest(
+    supabaseClient
+      .from("threads")
+      .select("*")
+      .eq("user_id", currentUser.id)
+      .order("created_at", { ascending: false }),
+    []
+  );
 
-  const followersRequest = supabaseClient
-    .from("thread_follows")
-    .select("*", { count: "exact", head: true })
-    .eq("following_id", currentUser.id);
+  const likesResponse = await runIOSSafeRequest(
+    supabaseClient
+      .from("thread_likes")
+      .select("*"),
+    []
+  );
 
-  const followingRequest = supabaseClient
-    .from("thread_follows")
-    .select("*", { count: "exact", head: true })
-    .eq("follower_id", currentUser.id);
+  const followersResponse = await runIOSSafeRequest(
+    supabaseClient
+      .from("thread_follows")
+      .select("*", { count: "exact", head: true })
+      .eq("following_id", currentUser.id),
+    []
+  );
 
-  let profileResponse;
-  let threadsResponse;
-  let likesResponse;
-  let followersResponse;
-  let followingResponse;
-
-  try {
-    [
-      profileResponse,
-      threadsResponse,
-      likesResponse,
-      followersResponse,
-      followingResponse
-    ] = await Promise.all([
-      profileRequest,
-      threadsRequest,
-      likesRequest,
-      followersRequest,
-      followingRequest
-    ]);
-  } catch (err) {
-    console.error("iOS profile fetch failure:", err);
-
-    setStatus(
-      "iPhone network fetch failed. Please refresh the page.",
-      "error"
-    );
-
-    profileThreads = [];
-    profileLikes = [];
-    renderProfilePosts();
-
-    return;
-  }
-
-  if (profileResponse.error) {
-    setStatus(profileResponse.error.message, "error");
-    return;
-  }
-
-  if (threadsResponse.error) {
-    setStatus(threadsResponse.error.message, "error");
-    return;
-  }
-
-  if (likesResponse.error) {
-    setStatus(likesResponse.error.message, "error");
-    return;
-  }
-
-  if (followersResponse.error) {
-    setStatus(followersResponse.error.message, "error");
-    return;
-  }
-
-  if (followingResponse.error) {
-    setStatus(followingResponse.error.message, "error");
-    return;
-  }
+  const followingResponse = await runIOSSafeRequest(
+    supabaseClient
+      .from("thread_follows")
+      .select("*", { count: "exact", head: true })
+      .eq("follower_id", currentUser.id),
+    []
+  );
 
   profileData = profileResponse.data || null;
   currentProfile = profileData || currentProfile;
   latestUploadedAvatarUrl = profileData?.avatar_url || latestUploadedAvatarUrl;
 
-  profileThreads = threadsResponse.data || [];
-  profileLikes = likesResponse.data || [];
+  profileThreads = Array.isArray(threadsResponse.data) ? threadsResponse.data : [];
+  profileLikes = Array.isArray(likesResponse.data) ? likesResponse.data : [];
   profileFollowersCount = followersResponse.count || 0;
   profileFollowingCount = followingResponse.count || 0;
 
@@ -1493,7 +1484,18 @@ async function loadProfilePageData() {
   renderProfilePosts();
   updateSharedAuthUI();
 
-  setStatus("");
+  const realError =
+    profileResponse.error ||
+    threadsResponse.error ||
+    likesResponse.error ||
+    followersResponse.error ||
+    followingResponse.error;
+
+  if (realError && !isIOSLoadFailedError(realError)) {
+    setStatus(realError.message || "Could not fully load profile data.", "error");
+  } else {
+    setStatus("");
+  }
 }
 
 /* =========================
@@ -1978,8 +1980,18 @@ async function initProfilePage() {
 
   setBottomNavActive("profile");
 
-  await restoreSession();
-  await loadProfilePageData();
+  try {
+    await restoreSession();
+    await loadProfilePageData();
+  } catch (error) {
+    console.warn("Profile init recovered:", error);
+    profileThreads = [];
+    profileLikes = [];
+    renderProfileEditor();
+    renderProfileStats();
+    renderProfilePosts();
+    setStatus("");
+  }
 
   window.addEventListener("loomyva:language-change", () => {
     renderProfileStats();
