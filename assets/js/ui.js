@@ -292,7 +292,22 @@ function setupSidebar() {
     },
     { passive: true }
   );
+document.addEventListener(
+  "touchstart",
+  (event) => {
+    if (!event.touches || event.touches.length !== 1) return;
 
+    const appSidebar = document.getElementById("appSidebar");
+    const sidebarIsOpen = appSidebar?.classList.contains("active");
+
+    if (isInteractiveTouchTarget(event.target, sidebarIsOpen)) return;
+
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+    sidebarGestureDone = false;
+  },
+  { passive: true }
+);
   document.addEventListener(
     "touchmove",
     (event) => {
