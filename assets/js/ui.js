@@ -235,17 +235,9 @@ function setupSidebar() {
   const sidebarBackdrop = document.getElementById("sidebarBackdrop");
   const sidebarComposeBtn = document.getElementById("sidebarComposeBtn");
 
-  if (sidebarOpenBtn) {
-    sidebarOpenBtn.addEventListener("click", openSidebar);
-  }
-
-  if (sidebarCloseBtn) {
-    sidebarCloseBtn.addEventListener("click", closeSidebar);
-  }
-
-  if (sidebarBackdrop) {
-    sidebarBackdrop.addEventListener("click", closeSidebar);
-  }
+  if (sidebarOpenBtn) sidebarOpenBtn.addEventListener("click", openSidebar);
+  if (sidebarCloseBtn) sidebarCloseBtn.addEventListener("click", closeSidebar);
+  if (sidebarBackdrop) sidebarBackdrop.addEventListener("click", closeSidebar);
 
   if (sidebarComposeBtn) {
     sidebarComposeBtn.addEventListener("click", () => {
@@ -256,9 +248,7 @@ function setupSidebar() {
         return;
       }
 
-      if (typeof openThreadModal === "function") {
-        openThreadModal();
-      }
+      if (typeof openThreadModal === "function") openThreadModal();
     });
   }
 
@@ -266,22 +256,53 @@ function setupSidebar() {
   let touchStartY = 0;
   let sidebarGestureDone = false;
 
-  document.addEventListener(
-    "touchstart",
-    (event) => {
-      if (!event.touches || event.touches.length !== 1) return;
+  document.addEventListener("touchstart", (event) => {
+    if (!event.touches || event.touches.length !== 1) return;
+    if (isInteractiveTouchTarget(event.target)) return;
 
-      const appSidebar = document.getElementById("appSidebar");
-      const sidebarIsOpen = appSidebar?.classList.contains("active");
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+    sidebarGestureDone = false;
+  }, { passive: true });
 
-      if (!sidebarIsOpen) return;
+  document.addEventListener("touchmove", (event) => {
+    if (!event.touches || event.touches.length !== 1) return;
+    if (sidebarGestureDone) return;
 
-      touchStartX = event.touches[0].clientX;
-      touchStartY = event.touches[0].clientY;
-      sidebarGestureDone = false;
-    },
-    { passive: true }
-  );
+    const appSidebar = document.getElementById("appSidebar");
+    const sidebarIsOpen = appSidebar?.classList.contains("active");
+
+    const currentX = event.touches[0].clientX;
+    const currentY = event.touches[0].clientY;
+
+    const swipeDistanceX = currentX - touchStartX;
+    const swipeDistanceY = Math.abs(currentY - touchStartY);
+
+    const isMobileWidth = window.innerWidth <= 900;
+    const mostlyHorizontal = swipeDistanceY < 56;
+
+    if (isMobileWidth && !sidebarIsOpen && mostlyHorizontal && swipeDistanceX > 64) {
+      sidebarGestureDone = true;
+      openSidebar();
+      return;
+    }
+
+    if (isMobileWidth && sidebarIsOpen && mostlyHorizontal && swipeDistanceX < -64) {
+      sidebarGestureDone = true;
+      closeSidebar();
+    }
+  }, { passive: true });
+
+  document.addEventListener("touchend", () => {
+    sidebarGestureDone = false;
+    touchStartX = 0;
+    touchStartY = 0;
+  }, { passive: true });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeSidebar();
+  });
+}
 
   document.addEventListener(
     "touchmove",
