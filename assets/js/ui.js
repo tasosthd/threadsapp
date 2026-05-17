@@ -110,6 +110,15 @@ function setStatus(message, type = "") {
 
   if (!statusMsg) return;
 
+
+  const normalizedMessage = String(message || "");
+
+  if (normalizedMessage.toLowerCase().includes("load failed")) {
+    console.warn("Suppressed iOS Safari Load failed message:", message);
+    message = "";
+    type = "";
+  }
+
   statusMsg.textContent = message || "";
   statusMsg.className = "status-msg";
 
