@@ -110,7 +110,6 @@ function setStatus(message, type = "") {
 
   if (!statusMsg) return;
 
-
   const normalizedMessage = String(message || "");
 
   if (normalizedMessage.toLowerCase().includes("load failed")) {
@@ -263,12 +262,6 @@ function setupSidebar() {
     });
   }
 
-  /* =========================
-     MOBILE SWIPE SIDEBAR
-     Closed: swipe right from left/middle area → open
-     Open: swipe left → close
-  ========================= */
-
   let touchStartX = 0;
   let touchStartY = 0;
   let sidebarGestureDone = false;
@@ -277,7 +270,11 @@ function setupSidebar() {
     "touchstart",
     (event) => {
       if (!event.touches || event.touches.length !== 1) return;
-      if (isInteractiveTouchTarget(event.target)) return;
+
+      const appSidebar = document.getElementById("appSidebar");
+      const sidebarIsOpen = appSidebar?.classList.contains("active");
+
+      if (!sidebarIsOpen) return;
 
       touchStartX = event.touches[0].clientX;
       touchStartY = event.touches[0].clientY;
@@ -295,43 +292,15 @@ function setupSidebar() {
       const appSidebar = document.getElementById("appSidebar");
       const sidebarIsOpen = appSidebar?.classList.contains("active");
 
+      if (!sidebarIsOpen) return;
+
       const currentX = event.touches[0].clientX;
       const currentY = event.touches[0].clientY;
 
       const swipeDistanceX = currentX - touchStartX;
       const swipeDistanceY = Math.abs(currentY - touchStartY);
 
-      const isMobileWidth = window.innerWidth <= 900;
-      const mostlyHorizontal = swipeDistanceY < 58;
-
-      /*
-        This is the key upgrade:
-        User can start the swipe from the left 75% of the screen.
-        So it works from left side, middle, and slightly right area.
-      */
-      const startedFromOpenZone = touchStartX <= window.innerWidth * 0.75;
-
-      const swipedRightEnough = swipeDistanceX > 68;
-      const swipedLeftEnough = swipeDistanceX < -68;
-
-      if (
-        isMobileWidth &&
-        !sidebarIsOpen &&
-        startedFromOpenZone &&
-        swipedRightEnough &&
-        mostlyHorizontal
-      ) {
-        sidebarGestureDone = true;
-        openSidebar();
-        return;
-      }
-
-      if (
-        isMobileWidth &&
-        sidebarIsOpen &&
-        swipedLeftEnough &&
-        mostlyHorizontal
-      ) {
+      if (window.innerWidth <= 900 && swipeDistanceY < 56 && swipeDistanceX < -64) {
         sidebarGestureDone = true;
         closeSidebar();
       }
@@ -348,44 +317,21 @@ function setupSidebar() {
       const appSidebar = document.getElementById("appSidebar");
       const sidebarIsOpen = appSidebar?.classList.contains("active");
 
+      if (!sidebarIsOpen) return;
+
       const touchEndX = event.changedTouches[0].clientX;
       const touchEndY = event.changedTouches[0].clientY;
 
       const swipeDistanceX = touchEndX - touchStartX;
       const swipeDistanceY = Math.abs(touchEndY - touchStartY);
 
-      const isMobileWidth = window.innerWidth <= 900;
-      const mostlyHorizontal = swipeDistanceY < 76;
-
-      /*
-        Same open zone for touchend fallback.
-      */
-      const startedFromOpenZone = touchStartX <= window.innerWidth * 0.75;
-
-      const swipedRightEnough = swipeDistanceX > 74;
-      const swipedLeftEnough = swipeDistanceX < -74;
-
-      if (
-        isMobileWidth &&
-        !sidebarIsOpen &&
-        startedFromOpenZone &&
-        swipedRightEnough &&
-        mostlyHorizontal
-      ) {
-        sidebarGestureDone = true;
-        openSidebar();
-        return;
-      }
-
-      if (
-        isMobileWidth &&
-        sidebarIsOpen &&
-        swipedLeftEnough &&
-        mostlyHorizontal
-      ) {
+      if (window.innerWidth <= 900 && swipeDistanceY < 76 && swipeDistanceX < -74) {
         sidebarGestureDone = true;
         closeSidebar();
       }
+
+      touchStartX = 0;
+      touchStartY = 0;
     },
     { passive: true }
   );
