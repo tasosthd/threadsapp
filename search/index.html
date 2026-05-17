@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <title>Loomyva Search</title>
-<link rel="stylesheet" href="style.css?v=12">
-<script src="app.js?v=12"></script>
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -14,7 +12,6 @@
   <link rel="icon" type="image/png" href="/assets/img/index.png" />
   <link rel="shortcut icon" type="image/png" href="/assets/img/index.png" />
   <link rel="apple-touch-icon" href="/assets/img/index.png" />
-  <link rel="manifest" href="/manifest.json" />
 
   <meta name="theme-color" content="#050816" />
 
@@ -25,7 +22,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=username-fullname-auth-1" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=ios-sw-off-3" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -279,13 +276,13 @@
   </script>
 
   <!-- App Scripts -->
-  <script src="/assets/js/config.js"></script>
-  <script src="/assets/js/language.js?v=language-1"></script>
-  <script src="/assets/js/ui.js?v=split-search-1"></script>
-  <script src="/assets/js/auth.js?v=username-fullname-auth-1"></script>
-  <script src="/assets/js/notifications.js?v=notifications-system-2"></script>
-  <script src="/assets/js/follows.js?v=search-follow-full-1"></script>
-  <script src="/assets/js/user-search.js?v=search-follow-full-1"></script>
+  <script src="/assets/js/config.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/language.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/ui.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/auth.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/notifications.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/follows.js?v=ios-sw-off-3"></script>
+  <script src="/assets/js/user-search.js?v=ios-sw-off-3"></script>
 
   <script>
     async function bootSearchPage() {
@@ -297,6 +294,30 @@
     }
 
     bootSearchPage();
+  </script>
+
+  <!-- iOS Safari/PWA cleanup: remove old service worker registrations -->
+  <script>
+    (function () {
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.getRegistrations()
+            .then(function (registrations) {
+              return Promise.all(registrations.map(function (registration) {
+                return registration.unregister();
+              }));
+            })
+            .then(function () {
+              if (window.caches && caches.keys) {
+                return caches.keys().then(function (keys) {
+                  return Promise.all(keys.map(function (key) { return caches.delete(key); }));
+                });
+              }
+            })
+            .catch(function () {});
+        });
+      }
+    })();
   </script>
 </body>
 </html>
