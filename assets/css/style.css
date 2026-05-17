@@ -4873,8 +4873,13 @@ html[data-theme="dark"] .notifications-modal {
   }
 
   .profile-editor-head {
+    flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
+    gap: 10px;
+  }
+
+  .profile-editor-info {
+    width: 100%;
   }
 
   .profile-avatar-control img {
@@ -4889,15 +4894,19 @@ html[data-theme="dark"] .notifications-modal {
   }
 
   .profile-inline-stats {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: auto;
+    max-width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 56px);
+    justify-content: start;
     gap: 6px;
-    margin-bottom: 14px;
+    margin: 4px 0 18px;
   }
 
   .profile-inline-stat {
-    min-height: 66px;
-    padding: 10px 4px;
-    border-radius: 18px;
+    min-height: 58px;
+    padding: 9px 4px;
+    border-radius: 16px;
   }
 
   .profile-inline-stat strong {
@@ -4905,8 +4914,9 @@ html[data-theme="dark"] .notifications-modal {
   }
 
   .profile-inline-stat span {
-    font-size: 9.5px;
+    font-size: 9px;
     line-height: 1.1;
+    white-space: nowrap;
   }
 
   .profile-editor-head h2 {
@@ -4916,7 +4926,7 @@ html[data-theme="dark"] .notifications-modal {
 
 @media (max-width: 390px) {
   .profile-editor-head {
-    gap: 10px;
+    gap: 9px;
   }
 
   .profile-avatar-control img {
@@ -4925,8 +4935,13 @@ html[data-theme="dark"] .notifications-modal {
     border-radius: 24px;
   }
 
+  .profile-inline-stats {
+    grid-template-columns: repeat(4, 54px);
+    gap: 5px;
+  }
+
   .profile-inline-stat {
-    min-height: 60px;
+    min-height: 58px;
     padding-inline: 3px;
   }
 
@@ -4935,6 +4950,6 @@ html[data-theme="dark"] .notifications-modal {
   }
 
   .profile-inline-stat span {
-    font-size: 8.5px;
+    font-size: 8px;
   }
 }
