@@ -202,6 +202,12 @@ function openSidebar() {
 
   if (!appSidebar || !sidebarBackdrop) return;
 
+  if (typeof refreshSharedAuthUIFromSession === "function") {
+    refreshSharedAuthUIFromSession();
+  } else if (typeof updateSharedAuthUI === "function") {
+    updateSharedAuthUI();
+  }
+
   appSidebar.classList.add("active");
   sidebarBackdrop.classList.add("active");
 
