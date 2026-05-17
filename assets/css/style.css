@@ -5272,3 +5272,37 @@ html[data-theme="dark"] .notifications-modal {
     margin-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+
+/* =========================
+   iOS Safari deep profile fix
+========================= */
+@supports (-webkit-touch-callout: none) {
+  html,
+  body {
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  body {
+    padding-bottom: calc(160px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .bottom-nav {
+    bottom: calc(18px + env(safe-area-inset-bottom)) !important;
+    z-index: 99999 !important;
+  }
+
+  main,
+  .profile-page,
+  .profile-container,
+  .profile-card,
+  .profile-actions,
+  #profilePostsList {
+    padding-bottom: calc(180px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .status-msg:empty {
+    display: none !important;
+  }
+}
