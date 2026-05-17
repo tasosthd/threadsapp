@@ -5274,9 +5274,39 @@ html[data-theme="dark"] .notifications-modal {
 }
 
 
+
+
 /* =========================
-   iOS Safari deep profile fix
+   Profile blank-space fix
 ========================= */
+.profile-card,
+.profile-editor,
+.profile-form,
+.profile-preview,
+.profile-main,
+.profile-container {
+  min-height: 0 !important;
+}
+
+.profile-bio,
+#profileBio,
+.profile-preview-bio {
+  margin-bottom: 14px !important;
+}
+
+.profile-actions {
+  margin-bottom: 24px !important;
+  padding-bottom: 0 !important;
+}
+
+#profilePostsList,
+.profile-posts-list,
+.profile-posts,
+.profile-section {
+  padding-bottom: 24px !important;
+}
+
+/* iPhone safe area: only protect the bottom of the page/nav, not every profile block */
 @supports (-webkit-touch-callout: none) {
   html,
   body {
@@ -5285,7 +5315,7 @@ html[data-theme="dark"] .notifications-modal {
   }
 
   body {
-    padding-bottom: calc(160px + env(safe-area-inset-bottom)) !important;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
   }
 
   .bottom-nav {
@@ -5295,14 +5325,13 @@ html[data-theme="dark"] .notifications-modal {
 
   main,
   .profile-page,
-  .profile-container,
+  .profile-container {
+    padding-bottom: calc(90px + env(safe-area-inset-bottom)) !important;
+  }
+
   .profile-card,
   .profile-actions,
   #profilePostsList {
-    padding-bottom: calc(180px + env(safe-area-inset-bottom)) !important;
-  }
-
-  .status-msg:empty {
-    display: none !important;
+    padding-bottom: 24px !important;
   }
 }
