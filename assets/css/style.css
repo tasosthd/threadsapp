@@ -5241,3 +5241,34 @@ html[data-theme="dark"] .notifications-modal {
     font-size: 12px;
   }
 }
+
+
+/* Final iOS Safari viewport + bottom navigation guard */
+@supports (-webkit-touch-callout: none) {
+  html, body {
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+  }
+
+  body {
+    padding-bottom: calc(160px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .app-shell,
+  main,
+  .feed-layout,
+  .profile-page-grid,
+  .search-page-grid {
+    padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .bottom-nav {
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .profile-actions,
+  .create-actions,
+  .post-actions {
+    margin-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+  }
+}
