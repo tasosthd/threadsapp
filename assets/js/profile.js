@@ -1419,19 +1419,40 @@ async function loadProfilePageData() {
     .select("*", { count: "exact", head: true })
     .eq("follower_id", currentUser.id);
 
-  const [
-    profileResponse,
-    threadsResponse,
-    likesResponse,
-    followersResponse,
-    followingResponse
-  ] = await Promise.all([
-    profileRequest,
-    threadsRequest,
-    likesRequest,
-    followersRequest,
-    followingRequest
-  ]);
+  let profileResponse;
+  let threadsResponse;
+  let likesResponse;
+  let followersResponse;
+  let followingResponse;
+
+  try {
+    [
+      profileResponse,
+      threadsResponse,
+      likesResponse,
+      followersResponse,
+      followingResponse
+    ] = await Promise.all([
+      profileRequest,
+      threadsRequest,
+      likesRequest,
+      followersRequest,
+      followingRequest
+    ]);
+  } catch (err) {
+    console.error("iOS profile fetch failure:", err);
+
+    setStatus(
+      "iPhone network fetch failed. Please refresh the page.",
+      "error"
+    );
+
+    profileThreads = [];
+    profileLikes = [];
+    renderProfilePosts();
+
+    return;
+  }
 
   if (profileResponse.error) {
     setStatus(profileResponse.error.message, "error");
