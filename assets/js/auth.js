@@ -84,32 +84,32 @@ async function upsertProfile() {
 ========================= */
 
 function updateSharedAuthUI() {
-  const loginBtn = document.getElementById("loginBtn");
-  const googleLoginBtn = document.getElementById("googleLoginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const emailAuthForm = document.getElementById("emailAuthForm");
-  const authDivider = document.querySelector(".auth-divider");
+  const loginButtons = Array.from(document.querySelectorAll("#loginBtn, [data-auth-login]"));
+  const googleLoginButtons = Array.from(document.querySelectorAll("#googleLoginBtn, [data-google-login]"));
+  const logoutButtons = Array.from(document.querySelectorAll("#logoutBtn, [data-logout]"));
+  const emailAuthForms = Array.from(document.querySelectorAll("#emailAuthForm, [data-auth-form]"));
+  const authDividers = Array.from(document.querySelectorAll(".auth-divider"));
 
-  const userBox = document.getElementById("userBox");
-  const userAvatar = document.getElementById("userAvatar");
-  const userName = document.getElementById("userName");
-  const userEmail = document.getElementById("userEmail");
+  const userBoxes = Array.from(document.querySelectorAll("#userBox, [data-user-box]"));
+  const userAvatars = Array.from(document.querySelectorAll("#userAvatar, [data-user-avatar]"));
+  const userNames = Array.from(document.querySelectorAll("#userName, [data-user-name]"));
+  const userEmails = Array.from(document.querySelectorAll("#userEmail, [data-user-email]"));
 
-  if (!userBox) return;
+  const showLoggedOutUI = () => {
+    loginButtons.forEach((el) => el.classList.remove("hidden"));
+    googleLoginButtons.forEach((el) => el.classList.remove("hidden"));
+    emailAuthForms.forEach((el) => el.classList.remove("hidden"));
+    authDividers.forEach((el) => el.classList.remove("hidden"));
+
+    userBoxes.forEach((el) => el.classList.add("hidden"));
+    userAvatars.forEach((el) => { el.src = ""; });
+    userNames.forEach((el) => { el.textContent = "User"; });
+    userEmails.forEach((el) => { el.textContent = "@username"; });
+    logoutButtons.forEach((el) => { el.disabled = false; });
+  };
 
   if (!currentUser) {
-    if (loginBtn) loginBtn.classList.remove("hidden");
-    if (googleLoginBtn) googleLoginBtn.classList.remove("hidden");
-    if (emailAuthForm) emailAuthForm.classList.remove("hidden");
-    if (authDivider) authDivider.classList.remove("hidden");
-
-    userBox.classList.add("hidden");
-
-    if (userAvatar) userAvatar.src = "";
-    if (userName) userName.textContent = "User";
-    if (userEmail) userEmail.textContent = "@username";
-    if (logoutBtn) logoutBtn.disabled = false;
-
+    showLoggedOutUI();
     return;
   }
 
@@ -132,26 +132,54 @@ function updateSharedAuthUI() {
     meta.username ||
     "";
 
-  if (loginBtn) loginBtn.classList.add("hidden");
-  if (googleLoginBtn) googleLoginBtn.classList.add("hidden");
-  if (emailAuthForm) emailAuthForm.classList.add("hidden");
-  if (authDivider) authDivider.classList.add("hidden");
+  loginButtons.forEach((el) => el.classList.add("hidden"));
+  googleLoginButtons.forEach((el) => el.classList.add("hidden"));
+  emailAuthForms.forEach((el) => el.classList.add("hidden"));
+  authDividers.forEach((el) => el.classList.add("hidden"));
 
-  userBox.classList.remove("hidden");
+  userBoxes.forEach((el) => el.classList.remove("hidden"));
+  userAvatars.forEach((el) => { el.src = avatar; });
+  userNames.forEach((el) => { el.textContent = name; });
+  userEmails.forEach((el) => {
+    el.textContent = username ? `@${username}` : "";
+  });
+  logoutButtons.forEach((el) => { el.disabled = false; });
+}
 
-  if (userAvatar) userAvatar.src = avatar;
-  if (userName) userName.textContent = name;
 
-  /*
-    Privacy move:
-    Never show the user's email in the UI.
-    Show @username instead.
-  */
-  if (userEmail) {
-    userEmail.textContent = username ? `@${username}` : "";
+/* =========================
+   SAFE AUTH UI REFRESH
+========================= */
+
+async function refreshSharedAuthUIFromSession() {
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error) {
+      console.warn("Could not refresh sidebar auth session:", error);
+      updateSharedAuthUI();
+      return;
+    }
+
+    currentUser = data.session?.user || null;
+
+    if (currentUser && !currentProfile) {
+      const { data: profileData, error: profileError } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+      if (!profileError && profileData) {
+        currentProfile = profileData;
+      }
+    }
+
+    updateSharedAuthUI();
+  } catch (error) {
+    console.warn("Sidebar auth refresh recovered:", error);
+    updateSharedAuthUI();
   }
-
-  if (logoutBtn) logoutBtn.disabled = false;
 }
 
 /* =========================
@@ -448,7 +476,13 @@ async function restoreSession() {
   currentUser = data.session?.user || null;
 
   if (currentUser) {
-    await upsertProfile();
+    try {
+      await upsertProfile();
+    } catch (profileError) {
+      console.warn("Profile upsert recovered during restore:", profileError);
+    }
+
+    updateSharedAuthUI();
 
     if (isAuthPage()) {
       window.location.href = "/profile/";
