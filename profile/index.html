@@ -217,30 +217,6 @@
         </p>
       </section>
 
-      <section class="glass-card stats-card profile-stats-card profile-main-stats-card">
-        <div>
-          <strong id="profilePostCount">0</strong>
-          <span data-i18n="yourPosts">Your posts</span>
-        </div>
-
-        <div>
-          <strong id="profileLikeCount">0</strong>
-          <span data-i18n="totalLikes">Total likes</span>
-        </div>
-      </section>
-
-      <section class="glass-card stats-card profile-social-stats-card">
-        <div>
-          <strong id="profileFollowerCount">0</strong>
-          <span data-i18n="followers">Followers</span>
-        </div>
-
-        <div>
-          <strong id="profileFollowingCount">0</strong>
-          <span data-i18n="following">Following</span>
-        </div>
-      </section>
-
       <section class="profile-editor-card">
         <div class="profile-editor-head">
           <div class="profile-avatar-control">
@@ -260,7 +236,29 @@
             />
           </div>
 
-          <div>
+          <div class="profile-editor-info">
+            <div class="profile-inline-stats" aria-label="Profile stats">
+              <div class="profile-inline-stat">
+                <strong id="profilePostCount">0</strong>
+                <span data-i18n="yourPosts">Posts</span>
+              </div>
+
+              <div class="profile-inline-stat">
+                <strong id="profileLikeCount">0</strong>
+                <span data-i18n="totalLikes">Likes</span>
+              </div>
+
+              <div class="profile-inline-stat profile-clickable-stat">
+                <strong id="profileFollowerCount">0</strong>
+                <span data-i18n="followers">Followers</span>
+              </div>
+
+              <div class="profile-inline-stat profile-clickable-stat">
+                <strong id="profileFollowingCount">0</strong>
+                <span data-i18n="following">Following</span>
+              </div>
+            </div>
+
             <span class="eyebrow" data-i18n="yourAccount">Your account</span>
             <h2 id="profileEditorName">Loomyva User</h2>
             <p id="profileEditorEmail" class="profile-editor-username">@username</p>
