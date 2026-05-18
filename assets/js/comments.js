@@ -61,7 +61,9 @@ function renderCommentsModalContent() {
   if (!commentsList || !activeCommentThreadId) return;
 
   const thread = threads.find((item) => item.id === activeCommentThreadId);
-  const threadComments = getThreadComments(activeCommentThreadId);
+  const threadComments = typeof filterBlockedComments === "function"
+    ? filterBlockedComments(getThreadComments(activeCommentThreadId))
+    : getThreadComments(activeCommentThreadId);
 
   if (commentsTitle) {
     commentsTitle.textContent = `Replies · ${threadComments.length}`;
@@ -79,20 +81,17 @@ function renderCommentsModalContent() {
 
   const profile = getProfileByUserId(thread.user_id);
 
-  const avatar =
-    profile?.avatar_url ||
-    thread.user_avatar ||
-    fallbackAvatar(thread.user_email || "User");
-
   const name =
     profile?.full_name ||
     thread.user_name ||
     "User";
 
-  const username =
-    profile?.username
-      ? `@${profile.username}`
-      : thread.user_email || "";
+  const avatar =
+    profile?.avatar_url ||
+    thread.user_avatar ||
+    fallbackAvatar(name || "User");
+
+  const username = profile?.username ? `@${profile.username}` : "@user";
 
   const originalThreadHTML = `
     <article class="comment-original-thread">
@@ -186,6 +185,15 @@ async function createComment() {
   if (!currentUser) {
     setStatus("Sign in first to reply.", "error");
     signInWithGoogle();
+    return;
+  }
+
+  const targetThread = Array.isArray(threads)
+    ? threads.find((thread) => thread.id === activeCommentThreadId)
+    : null;
+
+  if (targetThread && typeof canInteractWithUser === "function" && !canInteractWithUser(targetThread.user_id)) {
+    setStatus("You cannot reply to a blocked user.", "error");
     return;
   }
 
