@@ -109,6 +109,10 @@ function getPageName() {
     return "search";
   }
 
+  if (path === "/notifications/" || path === "/notifications") {
+    return "inbox";
+  }
+
   return "home";
 }
 
@@ -202,6 +206,10 @@ function goSearchPage() {
 
 function goProfilePage() {
   window.location.href = "/profile/";
+}
+
+function goInboxPage() {
+  window.location.href = "/notifications/";
 }
 
 /* =========================
@@ -491,16 +499,20 @@ function setupBottomNav() {
 
   if (bottomInboxBtn) {
     bottomInboxBtn.addEventListener("click", () => {
-      if (typeof openNotificationsModal === "function") {
-        openNotificationsModal();
+      if (pageName === "inbox") {
+        const notificationsPanel = document.querySelector(".notifications-page-card");
+
+        if (notificationsPanel) {
+          notificationsPanel.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }
+
         return;
       }
 
-      const topNotificationsBtn = document.querySelector("[data-open-notifications]");
-
-      if (topNotificationsBtn) {
-        topNotificationsBtn.click();
-      }
+      goInboxPage();
     });
   }
 
@@ -730,7 +742,7 @@ function renderBottomNav() {
         <span data-i18n="navCreate">${typeof t === "function" ? t("navCreate") : "Create"}</span>
       </button>
 
-      <button id="bottomInboxBtn" class="bottom-nav-btn bottom-nav-inbox-btn" type="button" data-open-notifications aria-label="Open inbox">
+      <button id="bottomInboxBtn" class="bottom-nav-btn bottom-nav-inbox-btn" type="button" aria-label="Open inbox">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 3.2V18h16V7.2l-7.38 5.53a1 1 0 0 1-1.2 0L4 7.2Zm1.6-1.2 6.4 4.8L18.4 6H5.6Z"></path>
         </svg>
