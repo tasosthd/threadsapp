@@ -55,7 +55,7 @@
 
           <div>
             <h1>Loomyva</h1>
-            <p><span data-i18n="appSubtitleHome">Post ideas. Sync everywhere.</span></p>
+            <p><span data-i18n="appSubtitleInbox">Your clean activity inbox.</span></p>
           </div>
         </a>
 
@@ -64,6 +64,7 @@
           type="button"
           data-open-notifications
           aria-label="Open notifications"
+          data-i18n-aria-label="closeNotifications"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 1 0-14 0v5l-2 2v1h18v-1l-2-2Z"></path>
@@ -203,28 +204,28 @@
 
     <main class="notifications-page-main">
       <section class="notifications-page-hero glass-card">
-        <span class="eyebrow">Activity</span>
-        <h2>Inbox</h2>
-        <p>All your follows, likes, and comments in one clean page.</p>
+        <span class="eyebrow" data-i18n="activity">Activity</span>
+        <h2 data-i18n="inbox">Inbox</h2>
+        <p data-i18n="inboxHeroText">All your follows, likes, and comments in one clean page.</p>
       </section>
 
       <section class="notifications-page-card glass-card">
         <div class="notifications-page-head">
           <div>
-            <span class="eyebrow">Notifications</span>
-            <h3>Latest activity</h3>
-            <p>Stay on top of every signal from your network.</p>
+            <span class="eyebrow" data-i18n="notifications">Notifications</span>
+            <h3 data-i18n="latestActivity">Latest activity</h3>
+            <p data-i18n="latestActivityText">Stay on top of every signal from your network.</p>
           </div>
 
-          <button id="markAllNotificationsReadBtn" class="btn ghost-btn" type="button">
+          <button id="markAllNotificationsReadBtn" class="btn ghost-btn" type="button" data-i18n="markAllAsRead">
             Mark all as read
           </button>
         </div>
 
         <div id="notificationsList" class="notifications-list notifications-page-list">
           <div class="notifications-empty">
-            <strong>Loading...</strong>
-            <span>Getting your latest activity.</span>
+            <strong data-i18n="loading">Loading...</strong>
+            <span data-i18n="loadingActivity">Getting your latest activity.</span>
           </div>
         </div>
       </section>
