@@ -5632,6 +5632,166 @@ html[data-theme="dark"] .notifications-modal {
 }
 
 
+
+
+/* Three-dot moderation menu */
+.thread-more-btn,
+.profile-more-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--soft-card);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.thread-more-btn:hover,
+.profile-more-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 119, 204, 0.32);
+  background: var(--card);
+}
+
+.thread-more-btn span,
+.profile-more-btn span {
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: -1px;
+  transform: translateY(-2px);
+}
+
+.moderation-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.42);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.moderation-menu-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.moderation-menu-modal {
+  width: min(460px, 100%);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  padding: 20px;
+  transform: translateY(18px) scale(0.98);
+  transition: transform 0.2s ease;
+}
+
+.moderation-menu-backdrop.active .moderation-menu-modal {
+  transform: translateY(0) scale(1);
+}
+
+.moderation-menu-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.moderation-menu-header h2 {
+  margin: 4px 0 0;
+  font-size: 1.35rem;
+  letter-spacing: -0.04em;
+}
+
+.moderation-menu-close {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--soft-card);
+  color: var(--text);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.moderation-menu-copy {
+  margin: 14px 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.moderation-reason-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.moderation-reason-input {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--soft-card);
+  color: var(--text);
+  padding: 12px 14px;
+  font: inherit;
+  outline: none;
+}
+
+.moderation-reason-input:focus {
+  border-color: rgba(0, 119, 204, 0.55);
+}
+
+.moderation-menu-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.moderation-menu-action {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--soft-card);
+  color: var(--text);
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.moderation-menu-action:hover {
+  transform: translateY(-1px);
+  background: var(--card);
+}
+
+.moderation-menu-action.danger {
+  border-color: rgba(204, 34, 34, 0.25);
+  background: rgba(204, 34, 34, 0.08);
+  color: var(--danger);
+}
+
+@media (min-width: 641px) {
+  .moderation-menu-backdrop {
+    align-items: center;
+  }
+}
+
 /* =========================
    Blocked users controls
 ========================= */
