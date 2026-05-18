@@ -119,14 +119,14 @@ async function getNotificationActorSnapshot(actorId) {
 
   if (cachedProfile) {
     return {
-      actor_name: cachedProfile.full_name || cachedProfile.username || cachedProfile.email || "Someone",
+      actor_name: cachedProfile.full_name || cachedProfile.username || "Someone",
       actor_avatar: cachedProfile.avatar_url || null
     };
   }
 
   const { data, error } = await supabaseClient
     .from("profiles")
-    .select("id, full_name, username, email, avatar_url")
+    .select("id, full_name, username, avatar_url")
     .eq("id", actorId)
     .maybeSingle();
 
@@ -138,7 +138,7 @@ async function getNotificationActorSnapshot(actorId) {
   }
 
   return {
-    actor_name: data.full_name || data.username || data.email || "Someone",
+    actor_name: data.full_name || data.username || "Someone",
     actor_avatar: data.avatar_url || null
   };
 }
