@@ -5626,3 +5626,45 @@ html[data-theme="dark"] .notifications-modal {
   font-size: 0.78rem;
   font-weight: 800;
 }
+
+
+/* App Store safety moderation UI */
+.thread-secondary-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.moderation-action {
+  border-color: rgba(236, 75, 75, 0.22) !important;
+  color: var(--danger) !important;
+}
+
+.danger-soft {
+  background: rgba(236, 75, 75, 0.08) !important;
+}
+
+.public-profile-follow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .thread-actions {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .thread-secondary-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .thread-secondary-actions .mini-action,
+  .public-profile-follow .btn {
+    min-height: 40px;
+  }
+}
