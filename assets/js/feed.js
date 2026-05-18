@@ -316,20 +316,15 @@ function renderThreads() {
       const moderationActions = currentUser && !isOwner
         ? `
           <button
-            class="mini-action moderation-action"
-            data-report-post-id="${escapeHTML(thread.id)}"
-            data-report-user-id="${escapeHTML(thread.user_id)}"
+            class="thread-more-btn"
+            data-open-moderation-menu="true"
+            data-moderation-post-id="${escapeHTML(thread.id)}"
+            data-moderation-user-id="${escapeHTML(thread.user_id)}"
+            data-moderation-context="post"
             type="button"
+            aria-label="${typeof t === "function" ? t("moreActions") : "More actions"}"
           >
-            ${typeof t === "function" ? t("reportPost") : "Report Post"}
-          </button>
-
-          <button
-            class="mini-action moderation-action danger-soft"
-            data-block-user-id="${escapeHTML(thread.user_id)}"
-            type="button"
-          >
-            ${typeof t === "function" ? t("blockUser") : "Block User"}
+            <span aria-hidden="true">â¢â¢â¢</span>
           </button>
         `
         : "";
@@ -341,7 +336,7 @@ function renderThreads() {
               <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
               <div>
                 <strong>${escapeHTML(name)}</strong>
-                <span>${escapeHTML(username)} · ${escapeHTML(date)}</span>
+                <span>${escapeHTML(username)} Â· ${escapeHTML(date)}</span>
               </div>
             </button>
 
@@ -635,19 +630,14 @@ function updatePublicProfileUI() {
         </button>
 
         <button
-          class="btn ghost-btn moderation-action"
+          class="profile-more-btn"
+          data-open-moderation-menu="true"
+          data-moderation-user-id="${escapeHTML(viewedProfileId)}"
+          data-moderation-context="profile"
           type="button"
-          data-report-user-id="${escapeHTML(viewedProfileId)}"
+          aria-label="${typeof t === "function" ? t("moreActions") : "More actions"}"
         >
-          ${typeof t === "function" ? t("reportUser") : "Report User"}
-        </button>
-
-        <button
-          class="btn ghost-btn moderation-action danger-soft"
-          type="button"
-          data-block-user-id="${escapeHTML(viewedProfileId)}"
-        >
-          ${typeof t === "function" ? t("blockUser") : "Block User"}
+          <span aria-hidden="true">â¢â¢â¢</span>
         </button>
       `;
     }
@@ -755,7 +745,7 @@ async function uploadThreadFromModal() {
   updateFilterUI();
   setBottomNavActive("home");
 
-  setStatus(typeof t === "function" ? t("threadUploaded") : "Thread uploaded 🚀", "success");
+  setStatus(typeof t === "function" ? t("threadUploaded") : "Thread uploaded ð", "success");
 
   await loadFeed();
 }
@@ -805,7 +795,7 @@ async function likeThread(id) {
       await createLikeNotification(id);
     }
 
-    setStatus(typeof t === "function" ? t("liked") : "Liked 🚀", "success");
+    setStatus(typeof t === "function" ? t("liked") : "Liked ð", "success");
   }
 
   await loadFeed();
