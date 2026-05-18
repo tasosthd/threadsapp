@@ -321,7 +321,7 @@ function renderThreads() {
             data-report-user-id="${escapeHTML(thread.user_id)}"
             type="button"
           >
-            Report Post
+            ${typeof t === "function" ? t("reportPost") : "Report Post"}
           </button>
 
           <button
@@ -329,7 +329,7 @@ function renderThreads() {
             data-block-user-id="${escapeHTML(thread.user_id)}"
             type="button"
           >
-            Block User
+            ${typeof t === "function" ? t("blockUser") : "Block User"}
           </button>
         `
         : "";
@@ -639,7 +639,7 @@ function updatePublicProfileUI() {
           type="button"
           data-report-user-id="${escapeHTML(viewedProfileId)}"
         >
-          Report User
+          ${typeof t === "function" ? t("reportUser") : "Report User"}
         </button>
 
         <button
@@ -647,7 +647,7 @@ function updatePublicProfileUI() {
           type="button"
           data-block-user-id="${escapeHTML(viewedProfileId)}"
         >
-          Block User
+          ${typeof t === "function" ? t("blockUser") : "Block User"}
         </button>
       `;
     }
