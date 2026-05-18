@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Terms of Service | Loomyva</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="icon" type="image/png" href="/assets/img/index.png" />
   <link rel="shortcut icon" type="image/png" href="/assets/img/index.png" />
   <link rel="apple-touch-icon" href="/assets/img/index.png" />
   <meta name="theme-color" content="#050816" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/css/style.css?v=appstore-mod-1" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=legal-lang-1" />
   <script>
     (function () {
       const savedTheme = localStorage.getItem("loomyva-theme") || "light";
@@ -21,60 +22,262 @@
   <div class="bg-orb orb-one"></div>
   <div class="bg-orb orb-two"></div>
 
-  <main class="legal-page-shell">
-    <section class="glass-card legal-page-card">
-      <a class="brand auth-page-brand" href="/" aria-label="Loomyva home">
-        <img src="/assets/img/index.png" alt="Loomyva logo" class="brand-logo" />
-        <div>
-          <h1>Loomyva</h1>
-          <p>Simple legal terms.</p>
+  <div class="app-shell">
+    <header class="topbar app-topbar">
+      <div class="topbar-left">
+        <button id="sidebarOpenBtn" class="hamburger-btn" type="button" aria-label="Open menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <a class="brand compact-brand" href="/" aria-label="Loomyva home">
+          <img
+            src="/assets/img/index.png"
+            alt="Loomyva logo"
+            class="brand-logo"
+          />
+
+          <div>
+            <h1>Loomyva</h1>
+            <p><span data-i18n="appSubtitleLegal">Simple, clear rules.</span></p>
+          </div>
+        </a>
+
+        <button
+          class="topbar-notification-btn"
+          type="button"
+          data-open-notifications
+          aria-label="Open notifications"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 1 0-14 0v5l-2 2v1h18v-1l-2-2Z"></path>
+          </svg>
+
+          <span id="notificationsBadge" class="notification-badge hidden">0</span>
+        </button>
+      </div>
+    </header>
+
+    <aside id="appSidebar" class="app-sidebar" aria-hidden="true">
+      <div class="sidebar-head">
+        <div class="brand sidebar-brand">
+          <img
+            src="/assets/img/index.png"
+            alt="Loomyva logo"
+            class="brand-logo"
+          />
+
+          <div>
+            <h1>Loomyva</h1>
+            <p><span data-i18n="creatorMenu">Your creator menu.</span></p>
+          </div>
         </div>
-      </a>
 
-      <span class="eyebrow">Legal</span>
-      <h1>Terms of Service</h1>
-      <p class="legal-updated">Last updated: May 18, 2026</p>
-
-      <div class="legal-section">
-        <h2>1. Agreement</h2>
-        <p>By creating an account or using Loomyva, you agree to these Terms of Service.</p>
+        <button id="sidebarCloseBtn" class="sidebar-close-btn" type="button" aria-label="Close menu">
+          ×
+        </button>
       </div>
 
-      <div class="legal-section">
-        <h2>2. Your account</h2>
-        <p>You are responsible for your account, your login details, and the activity that happens from your account.</p>
+      <div class="sidebar-auth">
+        <form id="emailAuthForm" class="sidebar-email-auth">
+          <input
+            type="email"
+            id="authEmail"
+            class="sidebar-auth-input"
+            placeholder="Email"
+            autocomplete="email"
+            required
+          />
+
+          <div class="password-field-wrap">
+            <input
+              type="password"
+              id="authPassword"
+              class="sidebar-auth-input password-input"
+              placeholder="Password"
+              autocomplete="current-password"
+              required
+            />
+
+            <button
+              id="togglePasswordBtn"
+              class="password-toggle-btn"
+              type="button"
+              aria-label="Show password"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5c5.5 0 9.5 5.1 10.8 6.9a.9.9 0 0 1 0 1.1C21.5 14.9 17.5 20 12 20S2.5 14.9 1.2 13a.9.9 0 0 1 0-1.1C2.5 10.1 6.5 5 12 5Zm0 2C7.9 7 4.7 10.4 3.3 12.5 4.7 14.6 7.9 18 12 18s7.3-3.4 8.7-5.5C19.3 10.4 16.1 7 12 7Zm0 2.2a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6Zm0 2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <a class="auth-switch-link" href="/create-account/">
+            Are you a new user? <strong>Create Account</strong>
+          </a>
+
+          <button id="emailLoginBtn" class="btn primary-btn" type="submit">
+            Log in
+          </button>
+        </form>
+
+        <div class="auth-divider">
+          <span>or</span>
+        </div>
+
+        <button id="googleLoginBtn" class="btn primary-btn" type="button">
+          <span data-i18n="loginGoogle">Continue with Google</span>
+        </button>
+
+        <div id="userBox" class="sidebar-account-row hidden">
+          <img id="userAvatar" class="sidebar-account-avatar" src="" alt="User avatar" />
+
+          <div class="sidebar-account-meta">
+            <strong id="userName">User</strong>
+            <span id="userEmail">email</span>
+          </div>
+
+          <button id="logoutBtn" class="sidebar-logout-btn" type="button" aria-label="Logout">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M10 3a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V5H5v14h4v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6Zm6.3 5.3a1 1 0 0 1 1.4 0l3 3a1 1 0 0 1 0 1.4l-3 3a1 1 0 1 1-1.4-1.4l1.3-1.3H10a1 1 0 1 1 0-2h7.6l-1.3-1.3a1 1 0 0 1 0-1.4Z"></path>
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <div class="legal-section">
-        <h2>3. User content</h2>
-        <p>You own the content you post on Loomyva. You also agree not to post content that is illegal, abusive, spam, hateful, threatening, or violates another person’s rights.</p>
+      <div class="sidebar-theme-box">
+        <div class="sidebar-theme-head">
+          <span data-i18n="appearance">Appearance</span>
+          <small data-i18n="chooseVibe">Choose your vibe</small>
+        </div>
+
+        <div class="theme-toggle-group" role="group" aria-label="Choose theme">
+          <button id="lightThemeBtn" class="theme-toggle-btn active" type="button" aria-label="Use light mode">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Zm0 4a1 1 0 0 1-1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 1-1 1Zm0-18a1 1 0 0 1-1-1V2a1 1 0 1 1 2 0v1a1 1 0 0 1-1 1Zm10 8a1 1 0 0 1-1 1h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1ZM4 12a1 1 0 0 1-1 1H2a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1Zm14.95 6.95a1 1 0 0 1-1.41 0l-.71-.71a1 1 0 0 1 1.41-1.41l.71.71a1 1 0 0 1 0 1.41ZM7.17 7.17a1 1 0 0 1-1.41 0l-.71-.71A1 1 0 0 1 6.46 5.05l.71.71a1 1 0 0 1 0 1.41Zm11.78-2.12a1 1 0 0 1 0 1.41l-.71.71a1 1 0 1 1-1.41-1.41l.71-.71a1 1 0 0 1 1.41 0ZM7.17 16.83a1 1 0 0 1 0 1.41l-.71.71a1 1 0 0 1-1.41-1.41l.71-.71a1 1 0 0 1 1.41 0Z"></path>
+            </svg>
+            <span data-i18n="light">Light</span>
+          </button>
+
+          <button id="darkThemeBtn" class="theme-toggle-btn" type="button" aria-label="Use dark mode">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21 14.7A8.7 8.7 0 0 1 9.3 3a1 1 0 0 0-1.18-1.45A10.7 10.7 0 1 0 22.45 15.88 1 1 0 0 0 21 14.7Z"></path>
+            </svg>
+            <span data-i18n="dark">Dark</span>
+          </button>
+        </div>
       </div>
 
-      <div class="legal-section">
-        <h2>4. Platform rules</h2>
-        <p>We may remove content, limit access, or suspend accounts if someone abuses the platform or breaks these terms.</p>
-      </div>
+      <nav class="sidebar-links">
+        <a href="/" data-i18n="navHome">Home</a>
+        <a href="/search/" data-i18n="navSearch">Search</a>
+        <a href="/profile/" data-i18n="navProfile">Profile</a>
 
-      <div class="legal-section">
-        <h2>5. Service availability</h2>
-        <p>Loomyva is provided “as is”. We try to keep the app reliable, but we do not guarantee that it will always be available, error-free, or uninterrupted.</p>
-      </div>
+        <button class="sidebar-notifications-link" type="button" data-open-notifications>
+          <span data-i18n="notifications">Notifications</span>
+          <span id="sidebarNotificationsBadge" class="sidebar-notification-badge hidden">0</span>
+        </button>
 
-      <div class="legal-section">
-        <h2>6. Changes</h2>
-        <p>We may update these terms when needed. Continued use of Loomyva after updates means you accept the new terms.</p>
-      </div>
+        <button id="sidebarComposeBtn" type="button" data-i18n="createThread">
+          Create thread
+        </button>
 
-      <div class="legal-section">
-        <h2>7. Contact</h2>
-        <p>For questions about these terms, contact the Loomyva team through the app or official Loomyva contact channels.</p>
-      </div>
+        <div class="sidebar-legal-links" aria-label="Legal links">
+          <a class="sidebar-legal-link" href="/terms/" data-i18n="terms">Terms</a>
+          <a class="sidebar-legal-link" href="/privacy/" data-i18n="privacy">Privacy</a>
+        </div>
+      </nav>
+    </aside>
 
-      <div class="legal-page-actions">
-        <a class="btn primary-btn" href="/">Back to Loomyva</a>
-        <a class="btn ghost-btn" href="/privacy/">Privacy Policy</a>
-      </div>
-    </section>
-  </main>
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+    <main class="legal-page-shell app-legal-page-shell">
+      <section class="glass-card legal-page-card">
+        <a class="brand auth-page-brand" href="/" aria-label="Loomyva home">
+          <img src="/assets/img/index.png" alt="Loomyva logo" class="brand-logo" />
+          <div>
+            <h1>Loomyva</h1>
+            <p data-i18n="termsSubtitle"></p>
+          </div>
+        </a>
+
+        <span class="eyebrow" data-i18n="legal"></span>
+        <h1 data-i18n="termsTitle"></h1>
+        <p class="legal-updated" data-i18n="legalUpdated"></p>
+
+        <div class="legal-section">
+          <h2 data-i18n="termsAgreementTitle"></h2>
+          <p data-i18n="termsAgreementText"></p>
+        </div>
+        <div class="legal-section">
+          <h2 data-i18n="termsAccountTitle"></h2>
+          <p data-i18n="termsAccountText"></p>
+        </div>
+        <div class="legal-section">
+          <h2 data-i18n="termsContentTitle"></h2>
+          <p data-i18n="termsContentText"></p>
+        </div>
+        <div class="legal-section">
+          <h2 data-i18n="termsRulesTitle"></h2>
+          <p data-i18n="termsRulesText"></p>
+        </div>
+        <div class="legal-section">
+          <h2 data-i18n="termsAvailabilityTitle"></h2>
+          <p data-i18n="termsAvailabilityText"></p>
+        </div>
+        <div class="legal-section">
+          <h2 data-i18n="termsChangesTitle"></h2>
+          <p data-i18n="termsChangesText"></p>
+        </div>
+        <div class="legal-section">
+          <h2 data-i18n="termsContactTitle"></h2>
+          <p data-i18n="termsContactText"></p>
+        </div>
+
+        <div class="legal-page-actions">
+          <a class="btn primary-btn" href="/" data-i18n="backToLoomyva"></a>
+          <a class="btn ghost-btn" href="/privacy/" data-i18n="privacyTitle"></a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/assets/js/config.js?v=legal-lang-1"></script>
+  <script src="/assets/js/language.js?v=legal-lang-1"></script>
+  <script src="/assets/js/ui.js?v=legal-lang-1"></script>
+  <script src="/assets/js/auth.js?v=legal-lang-1"></script>
+  <script src="/assets/js/notifications.js?v=legal-lang-1"></script>
+  <script>
+    mountSharedUI({ includeModal: false });
+    setupAuthButtons();
+    restoreSession();
+    listenForAuthChanges();
+    if (typeof initNotificationsSystem === "function") {
+      initNotificationsSystem();
+    }
+  </script>
+
+  <script>
+    (function () {
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.getRegistrations()
+            .then(function (registrations) {
+              return Promise.all(registrations.map(function (registration) {
+                return registration.unregister();
+              }));
+            })
+            .then(function () {
+              if (window.caches && caches.keys) {
+                return caches.keys().then(function (keys) {
+                  return Promise.all(keys.map(function (key) { return caches.delete(key); }));
+                });
+              }
+            })
+            .catch(function () {});
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
