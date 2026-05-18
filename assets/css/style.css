@@ -5763,3 +5763,23 @@ html[data-theme="dark"] .notifications-modal {
     font-size: 14px;
   }
 }
+/* =========================
+   FINAL FIX: Phone sidebar legal links visible
+========================= */
+@media (max-width: 560px) {
+  .app-sidebar {
+    height: calc(var(--app-height) - 24px - var(--safe-top) - var(--safe-bottom)) !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    padding-bottom: calc(130px + var(--safe-bottom)) !important;
+  }
+
+  .sidebar-head {
+    margin-bottom: 10px !important;
+  }
+
+  .sidebar-legal-links {
+    margin-bottom: calc(90px + var(--safe-bottom)) !important;
+    padding-bottom: calc(40px + var(--safe-bottom)) !important;
+  }
+}
