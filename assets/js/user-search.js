@@ -56,7 +56,11 @@ function getSearchableProfiles() {
 
   const seen = new Set();
 
-  return profiles
+  const safeProfiles = typeof filterBlockedProfiles === "function"
+    ? filterBlockedProfiles(profiles)
+    : profiles;
+
+  return safeProfiles
     .filter((profile) => profile && profile.id && !seen.has(profile.id) && seen.add(profile.id))
     .sort((a, b) => {
       const aFollowers = getSearchFollowerCount(a.id);
@@ -171,6 +175,11 @@ async function followUserFromSearch(targetUserId, button) {
   }
 
   if (currentUser.id === targetUserId) return;
+
+  if (typeof canInteractWithUser === "function" && !canInteractWithUser(targetUserId)) {
+    setStatus("You cannot follow or interact with a blocked user.", "error");
+    return;
+  }
 
   searchFollowActionBusy = true;
   setSearchFollowButtonLoading(button, true);
@@ -600,11 +609,17 @@ async function initSearchPage() {
   setBottomNavActive("search");
 
   await restoreSession();
+  if (typeof loadModerationData === "function") {
+    await loadModerationData();
+  }
   initUserSearch();
   await loadUserSearchData();
 
   listenForAuthChanges({
     onSignedIn: async () => {
+      if (typeof loadModerationData === "function") {
+        await loadModerationData();
+      }
       await loadUserSearchData();
 
       if (typeof initNotificationsSystem === "function") {
@@ -613,6 +628,9 @@ async function initSearchPage() {
     },
     onSignedOut: async () => {
       currentProfile = null;
+      if (typeof loadModerationData === "function") {
+        await loadModerationData();
+      }
       await loadUserSearchData();
 
       if (typeof resetNotificationsSystem === "function") {
