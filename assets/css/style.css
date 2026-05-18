@@ -5523,3 +5523,10 @@ html[data-theme="dark"] .notifications-modal {
   width: 25px;
   height: 25px;
 }
+/* Hide all text spans inside bottom nav */
+.mobile-bottom-nav a span,
+.mobile-bottom-nav button span,
+.bottom-nav a span,
+.bottom-nav button span {
+  display: none !important;
+}
