@@ -21,6 +21,21 @@ const LOOMYVA_I18N = {
     navInbox: "Inbox",
     navProfile: "Profile",
     notifications: "Notifications",
+    activity: "Activity",
+    inbox: "Inbox",
+    appSubtitleInbox: "Your clean activity inbox.",
+    inboxHeroText: "All your follows, likes, and comments in one clean page.",
+    latestActivity: "Latest activity",
+    latestActivityText: "Stay on top of every signal from your network.",
+    markAllAsRead: "Mark all as read",
+    loading: "Loading...",
+    loadingActivity: "Getting your latest activity.",
+    signInFirst: "Sign in first.",
+    notificationsWillAppear: "Your notifications will appear here.",
+    noNotificationsYet: "No notifications yet.",
+    noNotificationsText: "When people follow, like, or comment, you’ll see it here.",
+    closeNotifications: "Close notifications",
+    notificationsModalText: "Follows, likes, and comments in one clean inbox.",
     createThread: "Create thread",
     founderFeed: "Founder feed",
     privateSocialEngine: "Your private social engine.",
@@ -111,6 +126,21 @@ const LOOMYVA_I18N = {
     navInbox: "Inbox",
     navProfile: "Προφίλ",
     notifications: "Ειδοποιήσεις",
+    activity: "Δραστηριότητα",
+    inbox: "Inbox",
+    appSubtitleInbox: "Το καθαρό inbox της δραστηριότητάς σου.",
+    inboxHeroText: "Όλα τα follows, likes και comments σου σε μία καθαρή σελίδα.",
+    latestActivity: "Τελευταία δραστηριότητα",
+    latestActivityText: "Μείνε ενημερωμένος για κάθε σήμα από το δίκτυό σου.",
+    markAllAsRead: "Σήμανση όλων ως αναγνωσμένα",
+    loading: "Φόρτωση...",
+    loadingActivity: "Φέρνουμε την τελευταία σου δραστηριότητα.",
+    signInFirst: "Συνδέσου πρώτα.",
+    notificationsWillAppear: "Οι ειδοποιήσεις σου θα εμφανίζονται εδώ.",
+    noNotificationsYet: "Δεν υπάρχουν ειδοποιήσεις ακόμα.",
+    noNotificationsText: "Όταν κάποιος σε ακολουθήσει, κάνει like ή σχολιάσει, θα το δεις εδώ.",
+    closeNotifications: "Κλείσιμο ειδοποιήσεων",
+    notificationsModalText: "Follows, likes και comments σε ένα καθαρό inbox.",
     createThread: "Νέο thread",
     founderFeed: "Founder feed",
     privateSocialEngine: "Το προσωπικό σου social engine.",
@@ -234,7 +264,9 @@ function applyLanguage(lang = getSavedLanguage()) {
     ? `Loomyva ${t("navSearch")}`
     : page === "profile"
       ? `Loomyva ${t("navProfile")}`
-      : "Loomyva";
+      : page === "inbox"
+        ? `${t("inbox")} · Loomyva`
+        : "Loomyva";
 
   updateLanguageButtons(safeLang);
 }
