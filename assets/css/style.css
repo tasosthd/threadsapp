@@ -5637,8 +5637,8 @@ html[data-theme="dark"] .notifications-modal {
 /* Three-dot moderation menu */
 .thread-more-btn,
 .profile-more-btn {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--soft-card);
@@ -5647,6 +5647,9 @@ html[data-theme="dark"] .notifications-modal {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  flex: 0 0 auto;
+  -webkit-appearance: none;
+  appearance: none;
   transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
@@ -5657,12 +5660,21 @@ html[data-theme="dark"] .notifications-modal {
   background: var(--card);
 }
 
-.thread-more-btn span,
-.profile-more-btn span {
-  font-size: 18px;
-  line-height: 1;
-  letter-spacing: -1px;
-  transform: translateY(-2px);
+.thread-more-btn:active,
+.profile-more-btn:active {
+  transform: scale(0.96);
+}
+
+.thread-more-btn .more-dots-icon,
+.profile-more-btn .more-dots-icon {
+  width: 21px;
+  height: 21px;
+  display: block;
+}
+
+.thread-more-btn .more-dots-icon circle,
+.profile-more-btn .more-dots-icon circle {
+  fill: currentColor;
 }
 
 .moderation-menu-backdrop {
