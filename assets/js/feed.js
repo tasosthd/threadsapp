@@ -91,7 +91,7 @@ async function loadFeed() {
 
   const profilesRequest = supabaseClient
     .from("profiles")
-    .select("*");
+    .select("id, full_name, username, avatar_url, bio, created_at, updated_at");
 
   const [threadsResponse, likesResponse, profilesResponse] = await Promise.all([
     threadsRequest,
@@ -120,6 +120,10 @@ async function loadFeed() {
 
   if (typeof loadComments === "function") {
     await loadComments();
+  }
+
+  if (typeof loadModerationData === "function") {
+    await loadModerationData();
   }
 
   if (typeof loadFollows === "function") {
@@ -162,8 +166,12 @@ function renderFeedStats() {
   const totalThreads = document.getElementById("totalThreads");
   const myThreads = document.getElementById("myThreads");
 
+  const visibleCountThreads = typeof filterBlockedThreads === "function"
+    ? filterBlockedThreads(threads)
+    : threads;
+
   if (totalThreads) {
-    totalThreads.textContent = threads.length;
+    totalThreads.textContent = visibleCountThreads.length;
   }
 
   if (myThreads) {
@@ -176,12 +184,20 @@ function renderFeedStats() {
 }
 
 function getVisibleThreads() {
+  const safeThreads = typeof filterBlockedThreads === "function"
+    ? filterBlockedThreads(threads)
+    : threads;
+
   if (viewedProfileId) {
-    return threads.filter((thread) => thread.user_id === viewedProfileId);
+    if (typeof isModerationHiddenUser === "function" && isModerationHiddenUser(viewedProfileId)) {
+      return [];
+    }
+
+    return safeThreads.filter((thread) => thread.user_id === viewedProfileId);
   }
 
   if (activeFilter === "mine" && currentUser) {
-    return threads.filter((thread) => thread.user_id === currentUser.id);
+    return safeThreads.filter((thread) => thread.user_id === currentUser.id);
   }
 
   if (activeFilter === "following" && currentUser) {
@@ -191,10 +207,10 @@ function getVisibleThreads() {
 
     const followingIds = getFollowingIdsForCurrentUser();
 
-    return threads.filter((thread) => followingIds.includes(thread.user_id));
+    return safeThreads.filter((thread) => followingIds.includes(thread.user_id));
   }
 
-  return threads;
+  return safeThreads;
 }
 
 function renderThreads() {
@@ -234,25 +250,22 @@ function renderThreads() {
 
       const profile = getProfileByUserId(thread.user_id);
 
-      const avatar =
-        profile?.avatar_url ||
-        thread.user_avatar ||
-        fallbackAvatar(thread.user_email || "User");
-
       const name =
         profile?.full_name ||
         thread.user_name ||
         "User";
 
-      const username =
-        profile?.username
-          ? `@${profile.username}`
-          : thread.user_email || "";
+      const avatar =
+        profile?.avatar_url ||
+        thread.user_avatar ||
+        fallbackAvatar(name || "User");
+
+      const username = profile?.username ? `@${profile.username}` : "@user";
 
       const content = escapeHTML(thread.content || "");
       const date = formatDate(thread.created_at);
 
-      const canFollowUser = currentUser && thread.user_id !== currentUser.id;
+      const canFollowUser = currentUser && thread.user_id !== currentUser.id && (typeof canInteractWithUser !== "function" || canInteractWithUser(thread.user_id));
 
       const alreadyFollowing =
         typeof isFollowingUser === "function"
@@ -296,6 +309,27 @@ function renderThreads() {
             type="button"
           >
             ${typeof t === "function" ? t("delete") : "Delete"}
+          </button>
+        `
+        : "";
+
+      const moderationActions = currentUser && !isOwner
+        ? `
+          <button
+            class="mini-action moderation-action"
+            data-report-post-id="${escapeHTML(thread.id)}"
+            data-report-user-id="${escapeHTML(thread.user_id)}"
+            type="button"
+          >
+            Report Post
+          </button>
+
+          <button
+            class="mini-action moderation-action danger-soft"
+            data-block-user-id="${escapeHTML(thread.user_id)}"
+            type="button"
+          >
+            Block User
           </button>
         `
         : "";
@@ -344,7 +378,10 @@ function renderThreads() {
               </button>
             </div>
 
-            ${deleteButton}
+            <div class="thread-secondary-actions">
+              ${deleteButton}
+              ${moderationActions}
+            </div>
           </div>
         </article>
       `;
@@ -387,6 +424,10 @@ function bindThreadActions() {
 
   if (typeof bindFollowButtons === "function") {
     bindFollowButtons();
+  }
+
+  if (typeof bindModerationButtons === "function") {
+    bindModerationButtons();
   }
 }
 
@@ -498,8 +539,14 @@ function updatePublicProfileUI() {
     return;
   }
 
+  if (typeof isModerationHiddenUser === "function" && isModerationHiddenUser(viewedProfileId)) {
+    publicProfileView.classList.add("hidden");
+    return;
+  }
+
   const profile = getProfileByUserId(viewedProfileId);
-  const userThreads = threads.filter((thread) => thread.user_id === viewedProfileId);
+  const userThreads = (typeof filterBlockedThreads === "function" ? filterBlockedThreads(threads) : threads)
+    .filter((thread) => thread.user_id === viewedProfileId);
 
   if (!profile && !userThreads.length) {
     publicProfileView.classList.add("hidden");
@@ -508,20 +555,17 @@ function updatePublicProfileUI() {
 
   const fallbackThread = userThreads[0] || {};
 
-  const avatar =
-    profile?.avatar_url ||
-    fallbackThread.user_avatar ||
-    fallbackAvatar(fallbackThread.user_email || "User");
-
   const name =
     profile?.full_name ||
     fallbackThread.user_name ||
     "Loomyva User";
 
-  const username =
-    profile?.username
-      ? `@${profile.username}`
-      : fallbackThread.user_email || "@user";
+  const avatar =
+    profile?.avatar_url ||
+    fallbackThread.user_avatar ||
+    fallbackAvatar(name || "User");
+
+  const username = profile?.username ? `@${profile.username}` : "@user";
 
   const bio = profile?.bio || (typeof t === "function" ? t("noBioYet") : "No bio yet. This founder is moving in silence.");
 
@@ -573,6 +617,8 @@ function updatePublicProfileUI() {
   if (publicProfileFollowWrap) {
     if (!currentUser || viewedProfileId === currentUser.id) {
       publicProfileFollowWrap.innerHTML = "";
+    } else if (typeof isModerationHiddenUser === "function" && isModerationHiddenUser(viewedProfileId)) {
+      publicProfileFollowWrap.innerHTML = "";
     } else {
       const alreadyFollowing =
         typeof isFollowingUser === "function"
@@ -587,6 +633,22 @@ function updatePublicProfileUI() {
         >
           ${alreadyFollowing ? (typeof t === "function" ? t("following") : "Following") : (typeof t === "function" ? t("follow") : "Follow")}
         </button>
+
+        <button
+          class="btn ghost-btn moderation-action"
+          type="button"
+          data-report-user-id="${escapeHTML(viewedProfileId)}"
+        >
+          Report User
+        </button>
+
+        <button
+          class="btn ghost-btn moderation-action danger-soft"
+          type="button"
+          data-block-user-id="${escapeHTML(viewedProfileId)}"
+        >
+          Block User
+        </button>
       `;
     }
   }
@@ -595,6 +657,10 @@ function updatePublicProfileUI() {
 
   if (typeof bindFollowButtons === "function") {
     bindFollowButtons();
+  }
+
+  if (typeof bindModerationButtons === "function") {
+    bindModerationButtons();
   }
 }
 
@@ -697,6 +763,13 @@ async function uploadThreadFromModal() {
 async function likeThread(id) {
   if (!currentUser) {
     setStatus(typeof t === "function" ? t("signInLike") : "Sign in to like threads.", "error");
+    return;
+  }
+
+  const targetThread = threads.find((thread) => thread.id === id);
+
+  if (targetThread && typeof canInteractWithUser === "function" && !canInteractWithUser(targetThread.user_id)) {
+    setStatus("You cannot interact with a blocked user.", "error");
     return;
   }
 
@@ -870,6 +943,9 @@ async function initFeedPage() {
   }
 
   await restoreSession();
+  if (typeof loadModerationData === "function") {
+    await loadModerationData();
+  }
   await loadFeed();
 
   window.addEventListener("loomyva:language-change", () => {
@@ -899,6 +975,9 @@ async function initFeedPage() {
 
   listenForAuthChanges({
     onSignedIn: async () => {
+      if (typeof loadModerationData === "function") {
+        await loadModerationData();
+      }
       await loadFeed();
 
       if (typeof initNotificationsSystem === "function") {
@@ -907,6 +986,9 @@ async function initFeedPage() {
     },
     onSignedOut: async () => {
       currentProfile = null;
+      if (typeof loadModerationData === "function") {
+        await loadModerationData();
+      }
       activeFilter = "all";
       viewedProfileId = null;
 
