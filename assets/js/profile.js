@@ -231,7 +231,7 @@ function renderProfilePosts() {
               <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
               <div>
                 <strong>${escapeHTML(name)}</strong>
-                <span>${escapeHTML(username)} · ${escapeHTML(date)}</span>
+                <span>${escapeHTML(username)} Â· ${escapeHTML(date)}</span>
               </div>
             </div>
           </div>
@@ -329,7 +329,7 @@ async function followUserFromProfile(targetUserId) {
     await createFollowNotification(targetUserId);
   }
 
-  setStatus(typeof t === "function" ? t("followed") : "Followed creator 🚀", "success");
+  setStatus(typeof t === "function" ? t("followed") : "Followed creator ð", "success");
   return true;
 }
 
@@ -524,7 +524,7 @@ function renderFollowingRows(followRows, followedProfiles) {
     followingModalList.innerHTML = `
       <div class="following-modal-empty">
         <strong>No following yet.</strong>
-        <span>Follow creators from the feed and they’ll appear here.</span>
+        <span>Follow creators from the feed and theyâll appear here.</span>
       </div>
     `;
     return;
@@ -1549,7 +1549,11 @@ async function loadProfileUserModal(userId) {
         type="button"
         aria-label="${typeof t === "function" ? t("moreActions") : "More actions"}"
       >
-        <span aria-hidden="true">•••</span>
+        <svg class="more-dots-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="5" r="2.1"></circle>
+              <circle cx="12" cy="12" r="2.1"></circle>
+              <circle cx="12" cy="19" r="2.1"></circle>
+            </svg>
       </button>
     `;
 
