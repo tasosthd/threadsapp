@@ -5955,3 +5955,126 @@ html[data-theme="dark"] .notifications-modal {
     padding-bottom: calc(40px + var(--safe-bottom)) !important;
   }
 }
+
+/* =========================
+   FINAL FIX: Centered scrollable modals above bottom nav
+========================= */
+.modal-backdrop,
+.following-modal-backdrop,
+.followers-modal-backdrop,
+.profile-user-modal-backdrop,
+.notifications-modal-backdrop,
+.moderation-menu-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1000000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: calc(14px + var(--safe-top)) calc(14px + var(--safe-right)) calc(118px + var(--safe-bottom)) calc(14px + var(--safe-left)) !important;
+  overflow: hidden !important;
+}
+
+.modal-backdrop.active,
+.following-modal-backdrop.active,
+.followers-modal-backdrop.active,
+.profile-user-modal-backdrop.active,
+.notifications-modal-backdrop.active,
+.moderation-menu-backdrop.active {
+  pointer-events: auto !important;
+}
+
+.thread-modal,
+.delete-post-modal,
+.following-modal,
+.followers-modal,
+.profile-user-modal,
+.notifications-modal,
+.moderation-menu-modal {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: min(620px, 100%) !important;
+  height: auto !important;
+  max-height: calc(var(--app-height) - 160px - var(--safe-top) - var(--safe-bottom)) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  transform: translateY(10px) scale(0.98) !important;
+}
+
+.modal-backdrop.active .thread-modal,
+.modal-backdrop.active .delete-post-modal,
+.following-modal-backdrop.active .following-modal,
+.followers-modal-backdrop.active .followers-modal,
+.profile-user-modal-backdrop.active .profile-user-modal,
+.notifications-modal-backdrop.active .notifications-modal,
+.moderation-menu-backdrop.active .moderation-menu-modal {
+  transform: translateY(0) scale(1) !important;
+}
+
+.thread-modal,
+.profile-user-modal,
+.notifications-modal,
+.moderation-menu-modal {
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding-bottom: calc(22px + var(--safe-bottom)) !important;
+}
+
+.following-modal-head,
+.followers-modal-head {
+  flex: 0 0 auto !important;
+}
+
+.following-modal-list,
+.followers-modal-list {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding-bottom: calc(42px + var(--safe-bottom)) !important;
+}
+
+.notifications-list,
+.profile-user-modal-posts,
+.comments-list,
+#commentsList,
+#blockedUsersList,
+.blocked-users-list {
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding-bottom: calc(34px + var(--safe-bottom)) !important;
+}
+
+@media (max-width: 560px) {
+  .modal-backdrop,
+  .following-modal-backdrop,
+  .followers-modal-backdrop,
+  .profile-user-modal-backdrop,
+  .notifications-modal-backdrop,
+  .moderation-menu-backdrop {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: calc(12px + var(--safe-top)) calc(10px + var(--safe-right)) calc(116px + var(--safe-bottom)) calc(10px + var(--safe-left)) !important;
+  }
+
+  .thread-modal,
+  .delete-post-modal,
+  .following-modal,
+  .followers-modal,
+  .profile-user-modal,
+  .notifications-modal,
+  .moderation-menu-modal {
+    width: 100% !important;
+    max-height: calc(var(--app-height) - 150px - var(--safe-top) - var(--safe-bottom)) !important;
+    border-radius: 18px !important;
+  }
+}
