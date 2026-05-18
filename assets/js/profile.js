@@ -1542,19 +1542,14 @@ async function loadProfileUserModal(userId) {
       </button>
 
       <button
-        class="btn ghost-btn moderation-action"
+        class="profile-more-btn"
+        data-open-moderation-menu="true"
+        data-moderation-user-id="${escapeHTML(userId)}"
+        data-moderation-context="profile"
         type="button"
-        data-report-user-id="${escapeHTML(userId)}"
+        aria-label="${typeof t === "function" ? t("moreActions") : "More actions"}"
       >
-        ${typeof t === "function" ? t("reportUser") : "Report User"}
-      </button>
-
-      <button
-        class="btn ghost-btn moderation-action danger-soft"
-        type="button"
-        data-block-user-id="${escapeHTML(userId)}"
-      >
-        ${typeof t === "function" ? t("blockUser") : "Block User"}
+        <span aria-hidden="true">•••</span>
       </button>
     `;
 
