@@ -170,6 +170,7 @@ function setBottomNavActive(section) {
   const bottomHomeBtn = document.getElementById("bottomHomeBtn");
   const bottomSearchBtn = document.getElementById("bottomSearchBtn");
   const bottomComposeBtn = document.getElementById("bottomComposeBtn");
+  const bottomInboxBtn = document.getElementById("bottomInboxBtn");
   const bottomProfileBtn = document.getElementById("bottomProfileBtn");
 
   if (!bottomHomeBtn || !bottomProfileBtn) return;
@@ -182,6 +183,10 @@ function setBottomNavActive(section) {
 
   if (bottomComposeBtn) {
     bottomComposeBtn.classList.toggle("active", section === "compose");
+  }
+
+  if (bottomInboxBtn) {
+    bottomInboxBtn.classList.toggle("active", section === "inbox");
   }
 
   bottomProfileBtn.classList.toggle("active", section === "profile");
@@ -429,6 +434,7 @@ function setupBottomNav() {
   const bottomHomeBtn = document.getElementById("bottomHomeBtn");
   const bottomSearchBtn = document.getElementById("bottomSearchBtn");
   const bottomComposeBtn = document.getElementById("bottomComposeBtn");
+  const bottomInboxBtn = document.getElementById("bottomInboxBtn");
   const bottomProfileBtn = document.getElementById("bottomProfileBtn");
 
   setBottomNavActive(pageName);
@@ -479,6 +485,21 @@ function setupBottomNav() {
 
       if (typeof openThreadModal === "function") {
         openThreadModal();
+      }
+    });
+  }
+
+  if (bottomInboxBtn) {
+    bottomInboxBtn.addEventListener("click", () => {
+      if (typeof openNotificationsModal === "function") {
+        openNotificationsModal();
+        return;
+      }
+
+      const topNotificationsBtn = document.querySelector("[data-open-notifications]");
+
+      if (topNotificationsBtn) {
+        topNotificationsBtn.click();
       }
     });
   }
@@ -707,6 +728,14 @@ function renderBottomNav() {
           <path d="M12 5a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H6a1 1 0 1 1 0-2h5V6a1 1 0 0 1 1-1Z"></path>
         </svg>
         <span data-i18n="navCreate">${typeof t === "function" ? t("navCreate") : "Create"}</span>
+      </button>
+
+      <button id="bottomInboxBtn" class="bottom-nav-btn bottom-nav-inbox-btn" type="button" data-open-notifications aria-label="Open inbox">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 3.2V18h16V7.2l-7.38 5.53a1 1 0 0 1-1.2 0L4 7.2Zm1.6-1.2 6.4 4.8L18.4 6H5.6Z"></path>
+        </svg>
+        <span data-i18n="navInbox">${typeof t === "function" ? t("navInbox") : "Inbox"}</span>
+        <span id="bottomNotificationsBadge" class="bottom-nav-badge hidden">0</span>
       </button>
 
       <button id="bottomProfileBtn" class="bottom-nav-btn" type="button">
