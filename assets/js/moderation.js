@@ -117,7 +117,7 @@ async function reportPost(threadId, reportedUserId) {
 
   if (error) {
     setStatus(error.message, "error");
-    return;
+    return false;
   }
 
   setStatus("Report sent. Thanks for keeping Loomyva safe.", "success");
@@ -176,8 +176,8 @@ async function blockUser(userId) {
 }
 
 async function unblockUser(userId) {
-  if (!requireModerationLogin()) return;
-  if (!userId || userId === currentUser.id) return;
+  if (!requireModerationLogin()) return false;
+  if (!userId || userId === currentUser.id) return false;
 
   const { error } = await supabaseClient
     .from("user_blocks")
@@ -187,7 +187,7 @@ async function unblockUser(userId) {
 
   if (error) {
     setStatus(error.message, "error");
-    return;
+    return false;
   }
 
   setStatus("User unblocked.", "success");
@@ -196,6 +196,14 @@ async function unblockUser(userId) {
   if (typeof loadFollows === "function") await loadFollows();
   if (typeof renderThreads === "function") renderThreads();
   if (typeof renderUserSearchResults === "function") renderUserSearchResults();
+  if (typeof loadBlockedUsersList === "function") {
+    const blockedUsersModalBackdrop = document.getElementById("blockedUsersModalBackdrop");
+    if (blockedUsersModalBackdrop?.classList.contains("active")) {
+      await loadBlockedUsersList();
+    }
+  }
+
+  return true;
 }
 
 function bindModerationButtons() {
