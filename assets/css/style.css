@@ -5391,3 +5391,111 @@ html[data-theme="dark"] .notifications-modal {
     padding: 0 4px;
   }
 }
+
+/* =========================
+   Notifications page
+========================= */
+.notifications-page-body {
+  min-height: 100vh;
+}
+
+.notifications-page-main {
+  width: min(920px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 calc(120px + env(safe-area-inset-bottom));
+}
+
+.notifications-page-hero {
+  margin-bottom: 18px;
+  padding: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(0, 188, 231, 0.12), transparent 42%),
+    var(--card-bg);
+}
+
+.notifications-page-hero h2 {
+  margin-top: 8px;
+  font-size: clamp(38px, 8vw, 72px);
+  line-height: 0.92;
+  letter-spacing: -0.075em;
+}
+
+.notifications-page-hero p {
+  max-width: 560px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.65;
+}
+
+.notifications-page-card {
+  overflow: hidden;
+  padding: 0;
+}
+
+.notifications-page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 24px 24px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.notifications-page-head h3 {
+  margin-top: 6px;
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.notifications-page-head p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.notifications-page-head .btn {
+  min-height: 42px;
+  padding: 9px 16px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.notifications-page-list {
+  max-height: none;
+  overflow: visible;
+  padding: 18px 20px 22px;
+}
+
+.notifications-page-list .notification-card {
+  border-radius: 26px;
+}
+
+@media (max-width: 700px) {
+  .notifications-page-main {
+    width: min(100% - 22px, 920px);
+    padding-top: 18px;
+  }
+
+  .notifications-page-hero {
+    padding: 24px 20px;
+    border-radius: 30px;
+  }
+
+  .notifications-page-head {
+    flex-direction: column;
+    padding: 22px 18px 16px;
+  }
+
+  .notifications-page-head .btn {
+    width: 100%;
+  }
+
+  .notifications-page-list {
+    padding: 14px 14px 18px;
+  }
+}
