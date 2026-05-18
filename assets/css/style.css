@@ -5668,3 +5668,68 @@ html[data-theme="dark"] .notifications-modal {
     min-height: 40px;
   }
 }
+
+
+/* =========================
+   Blocked users controls
+========================= */
+
+.blocked-users-btn {
+  border-color: rgba(236, 75, 75, 0.14);
+}
+
+.blocked-users-modal .blocked-user-row {
+  align-items: center;
+}
+
+.blocked-user-info {
+  cursor: default;
+}
+
+.blocked-user-info:hover img,
+.blocked-user-info:focus-visible img {
+  transform: none;
+  box-shadow: none;
+}
+
+.blocked-user-info:hover .following-person-info strong,
+.blocked-user-info:focus-visible .following-person-info strong {
+  color: var(--text);
+}
+
+.blocked-user-unblock-btn {
+  flex: 0 0 auto;
+  min-width: 104px;
+  padding: 9px 14px;
+  border: 1px solid rgba(75, 139, 255, 0.18);
+  border-radius: 12px;
+  background: var(--soft-card);
+  color: var(--cyan-dark);
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: none;
+}
+
+.blocked-user-unblock-btn:hover {
+  color: #fff;
+  border-color: rgba(75, 139, 255, 0.28);
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  box-shadow: 0 12px 24px rgba(75, 139, 255, 0.18);
+}
+
+.blocked-user-unblock-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .blocked-user-row {
+    gap: 10px;
+  }
+
+  .blocked-user-unblock-btn {
+    min-width: 92px;
+    padding: 9px 12px;
+  }
+}
