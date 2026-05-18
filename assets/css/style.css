@@ -1873,10 +1873,10 @@ html[data-theme="dark"] .thread-modal {
   bottom: 18px;
   z-index: 200;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   align-items: center;
-  gap: 8px;
-  width: min(470px, calc(100% - 28px));
+  gap: 6px;
+  width: min(560px, calc(100% - 28px));
   padding: 10px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -1895,6 +1895,7 @@ html[data-theme="dark"] .bottom-nav {
 .bottom-nav-main {
   border: 0;
   outline: 0;
+  position: relative;
   display: grid;
   place-items: center;
   gap: 4px;
@@ -1913,6 +1914,30 @@ html[data-theme="dark"] .bottom-nav {
   width: 21px;
   height: 21px;
   fill: currentColor;
+}
+
+
+.bottom-nav-badge {
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 2px solid var(--soft-card-2);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff4d6d, #ff8a3d);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 8px 18px rgba(255, 77, 109, 0.28);
+}
+
+.bottom-nav-badge.hidden {
+  display: none;
 }
 
 .bottom-nav-btn.active,
@@ -5333,5 +5358,36 @@ html[data-theme="dark"] .notifications-modal {
   .profile-actions,
   #profilePostsList {
     padding-bottom: 24px !important;
+  }
+}
+
+
+/* Inbox item added to bottom nav */
+@media (max-width: 560px) {
+  .bottom-nav {
+    width: min(540px, calc(100% - 18px));
+    gap: 4px;
+    padding: 8px;
+  }
+
+  .bottom-nav-btn,
+  .bottom-nav-main {
+    height: 50px;
+    font-size: 10px;
+  }
+
+  .bottom-nav-btn svg,
+  .bottom-nav-main svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .bottom-nav-badge {
+    top: 2px;
+    right: 6px;
+    min-width: 16px;
+    height: 16px;
+    font-size: 8px;
+    padding: 0 4px;
   }
 }
