@@ -41,12 +41,11 @@ function getProfileTotalLikes() {
 }
 
 function getSafeProfileName(profile, fallbackId = "User") {
-  return profile?.full_name || profile?.username || profile?.email || fallbackId || "Loomyva User";
+  return profile?.full_name || profile?.username || fallbackId || "Loomyva User";
 }
 
 function getSafeUsername(profile) {
   if (profile?.username) return `@${profile.username}`;
-  if (profile?.email) return profile.email;
   return "Loomyva creator";
 }
 
@@ -184,25 +183,25 @@ function renderProfilePosts() {
 
   profilePostsList.innerHTML = profileThreads
     .map((thread) => {
-      const avatar =
-        latestUploadedAvatarUrl ||
-        profileData?.avatar_url ||
-        currentProfile?.avatar_url ||
-        thread.user_avatar ||
-        fallbackAvatar(thread.user_email || "User");
-
       const name =
         profileData?.full_name ||
         currentProfile?.full_name ||
         thread.user_name ||
         "Loomyva User";
 
+      const avatar =
+        latestUploadedAvatarUrl ||
+        profileData?.avatar_url ||
+        currentProfile?.avatar_url ||
+        thread.user_avatar ||
+        fallbackAvatar(name || "User");
+
       const username =
         profileData?.username
           ? `@${profileData.username}`
           : currentProfile?.username
             ? `@${currentProfile.username}`
-            : thread.user_email || "";
+            : "@user";
 
       const content = escapeHTML(thread.content || "");
       const date = formatDate(thread.created_at);
@@ -300,6 +299,11 @@ async function followUserFromProfile(targetUserId) {
   }
 
   if (!targetUserId || targetUserId === currentUser.id) {
+    return false;
+  }
+
+  if (typeof canInteractWithUser === "function" && !canInteractWithUser(targetUserId)) {
+    setStatus("You cannot follow or interact with a blocked user.", "error");
     return false;
   }
 
@@ -511,7 +515,11 @@ function renderFollowingRows(followRows, followedProfiles) {
 
   if (!followingModalList) return;
 
-  if (!followRows.length) {
+  const visibleFollowRows = (followRows || []).filter((follow) => {
+    return !(typeof isModerationHiddenUser === "function" && isModerationHiddenUser(follow.following_id));
+  });
+
+  if (!visibleFollowRows.length) {
     followingModalList.innerHTML = `
       <div class="following-modal-empty">
         <strong>No following yet.</strong>
@@ -523,7 +531,7 @@ function renderFollowingRows(followRows, followedProfiles) {
 
   const profileById = new Map((followedProfiles || []).map((profile) => [profile.id, profile]));
 
-  followingModalList.innerHTML = followRows
+  followingModalList.innerHTML = visibleFollowRows
     .map((follow) => {
       const profile = profileById.get(follow.following_id) || null;
       const name = getSafeProfileName(profile, follow.following_id);
@@ -629,7 +637,7 @@ async function loadProfileFollowingList() {
 
   const { data: followedProfiles, error: profilesError } = await supabaseClient
     .from("profiles")
-    .select("id, full_name, username, email, avatar_url, bio")
+    .select("id, full_name, username, avatar_url, bio")
     .in("id", followedIds);
 
   if (profilesError) {
@@ -814,7 +822,7 @@ async function loadProfileFollowersList() {
 
   const { data: followerProfiles, error: profilesError } = await supabaseClient
     .from("profiles")
-    .select("id, full_name, username, email, avatar_url, bio")
+    .select("id, full_name, username, avatar_url, bio")
     .in("id", followerIds);
 
   if (profilesError) {
@@ -835,9 +843,23 @@ function renderFollowerRows(followRows, followerProfiles) {
 
   if (!followersModalList) return;
 
+  const visibleFollowRows = (followRows || []).filter((follow) => {
+    return !(typeof isModerationHiddenUser === "function" && isModerationHiddenUser(follow.follower_id));
+  });
+
+  if (!visibleFollowRows.length) {
+    followersModalList.innerHTML = `
+      <div class="followers-modal-empty">
+        <strong>No followers to show.</strong>
+        <span>Blocked users are hidden from this list.</span>
+      </div>
+    `;
+    return;
+  }
+
   const profileById = new Map((followerProfiles || []).map((profile) => [profile.id, profile]));
 
-  followersModalList.innerHTML = followRows
+  followersModalList.innerHTML = visibleFollowRows
     .map((follow) => {
       const profile = profileById.get(follow.follower_id) || null;
       const name = getSafeProfileName(profile, follow.follower_id);
@@ -996,6 +1018,11 @@ function setupProfileUserModal() {
 
 function openProfileUserModal(userId) {
   if (!userId) return;
+
+  if (typeof isModerationHiddenUser === "function" && isModerationHiddenUser(userId)) {
+    setStatus("This profile is hidden because of a block.", "error");
+    return;
+  }
 
   profileViewingModalUserId = userId;
 
@@ -1190,11 +1217,21 @@ async function loadProfileUserModal(userId) {
 
   if (!profileUserModalBody || !userId) return;
 
+  if (typeof isModerationHiddenUser === "function" && isModerationHiddenUser(userId)) {
+    profileUserModalBody.innerHTML = `
+      <div class="profile-user-modal-empty">
+        <strong>Profile hidden.</strong>
+        <span>This profile is hidden because of a block.</span>
+      </div>
+    `;
+    return;
+  }
+
   profileUserModalBody.innerHTML = `<div class="profile-user-modal-state">Loading profile...</div>`;
 
   const { data: profile, error: profileError } = await supabaseClient
     .from("profiles")
-    .select("id, full_name, username, email, avatar_url, bio")
+    .select("id, full_name, username, avatar_url, bio")
     .eq("id", userId)
     .maybeSingle();
 
@@ -1271,6 +1308,22 @@ async function loadProfileUserModal(userId) {
       >
         ${following ? (typeof t === "function" ? t("unfollowed").replace(".", "") : "Unfollow") : (typeof t === "function" ? t("follow") : "Follow")}
       </button>
+
+      <button
+        class="btn ghost-btn moderation-action"
+        type="button"
+        data-report-user-id="${escapeHTML(userId)}"
+      >
+        Report User
+      </button>
+
+      <button
+        class="btn ghost-btn moderation-action danger-soft"
+        type="button"
+        data-block-user-id="${escapeHTML(userId)}"
+      >
+        Block User
+      </button>
     `;
 
   profileUserModalBody.innerHTML = `
@@ -1321,6 +1374,10 @@ async function loadProfileUserModal(userId) {
     profileUserModalFollowBtn.addEventListener("click", async () => {
       await toggleFollowFromProfileModal(profileUserModalFollowBtn.dataset.profileModalFollowUserId);
     });
+  }
+
+  if (typeof bindModerationButtons === "function") {
+    bindModerationButtons();
   }
 }
 
@@ -1982,6 +2039,9 @@ async function initProfilePage() {
 
   try {
     await restoreSession();
+    if (typeof loadModerationData === "function") {
+      await loadModerationData();
+    }
     await loadProfilePageData();
   } catch (error) {
     console.warn("Profile init recovered:", error);
@@ -2005,6 +2065,9 @@ async function initProfilePage() {
 
   listenForAuthChanges({
     onSignedIn: async () => {
+      if (typeof loadModerationData === "function") {
+        await loadModerationData();
+      }
       await loadProfilePageData();
       subscribeToProfileRealtime();
 
@@ -2014,6 +2077,9 @@ async function initProfilePage() {
     },
     onSignedOut: async () => {
       profileData = null;
+      if (typeof loadModerationData === "function") {
+        await loadModerationData();
+      }
       profileThreads = [];
       profileLikes = [];
       profileFollowersCount = 0;
