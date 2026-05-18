@@ -5815,76 +5815,75 @@ html[data-theme="dark"] .notifications-modal {
     font-size: 22px;
   }
 }
-
 /* =========================================================
-   STYLE REFRESH: Solid Premium UI
-   Replaces the old glassmorphism feel with a cleaner,
-   sharper, app-store-ready social SaaS aesthetic.
-   Keeps existing HTML/classes untouched.
+   CLEAN SAAS + BENTO UI REFRESH
+   Replaces glassmorphism blur with solid, premium product UI.
+   Keep this section at the END of style.css.
 ========================================================= */
 
 :root {
-  --bg: #f7f8fb;
-  --bg-2: #eef2f7;
-  --text: #101828;
-  --muted: #667085;
+  --bg: #f6f8fb;
+  --bg-2: #eef3f8;
+  --text: #0f172a;
+  --muted: #64748b;
   --card: #ffffff;
   --card-strong: #ffffff;
-  --line: #e4e7ec;
+  --line: #e2e8f0;
   --cyan: #2563eb;
   --cyan-dark: #1d4ed8;
   --blue: #111827;
-  --danger: #e11d48;
-  --success: #039855;
-  --shadow: 0 14px 38px rgba(16, 24, 40, 0.08);
+  --danger: #ef4444;
+  --success: #16a34a;
+  --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
 
   --topbar-bg: #ffffff;
   --sidebar-bg: #ffffff;
-  --soft-card: #f9fafb;
-  --soft-card-2: #f2f4f7;
+  --soft-card: #f8fafc;
+  --soft-card-2: #ffffff;
   --input-bg: #ffffff;
-  --thread-text: #1f2937;
+  --thread-text: #1e293b;
   --modal-bg: #ffffff;
-  --image-soft-bg: #f8fafc;
-  --placeholder: #98a2b3;
-  --hamburger-bg: #ffffff;
-  --hamburger-line: #101828;
-  --backdrop: rgba(15, 23, 42, 0.48);
+  --image-soft-bg: #f1f5f9;
+  --placeholder: #94a3b8;
+  --hamburger-bg: #f8fafc;
+  --hamburger-line: #0f172a;
+  --backdrop: rgba(15, 23, 42, 0.42);
 }
 
 html[data-theme="dark"] {
-  --bg: #09090b;
-  --bg-2: #111827;
-  --text: #f9fafb;
-  --muted: #a1a1aa;
-  --card: #18181b;
-  --card-strong: #18181b;
-  --line: rgba(255, 255, 255, 0.1);
-  --cyan: #3b82f6;
-  --cyan-dark: #60a5fa;
-  --blue: #8b5cf6;
+  --bg: #080b12;
+  --bg-2: #0f172a;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --card: #111827;
+  --card-strong: #151f32;
+  --line: rgba(148, 163, 184, 0.18);
+  --cyan: #60a5fa;
+  --cyan-dark: #93c5fd;
+  --blue: #2563eb;
   --danger: #fb7185;
-  --success: #34d399;
-  --shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+  --success: #4ade80;
+  --shadow: 0 22px 55px rgba(0, 0, 0, 0.34);
 
-  --topbar-bg: #111113;
-  --sidebar-bg: #111113;
-  --soft-card: #1f1f23;
-  --soft-card-2: #27272a;
-  --input-bg: #0f0f12;
-  --thread-text: #f4f4f5;
-  --modal-bg: #111113;
-  --image-soft-bg: #18181b;
-  --placeholder: #71717a;
-  --hamburger-bg: #18181b;
-  --hamburger-line: #f9fafb;
-  --backdrop: rgba(0, 0, 0, 0.62);
+  --topbar-bg: #111827;
+  --sidebar-bg: #111827;
+  --soft-card: #0f172a;
+  --soft-card-2: #172033;
+  --input-bg: #0b1220;
+  --thread-text: #e5eefb;
+  --modal-bg: #111827;
+  --image-soft-bg: #0f172a;
+  --placeholder: #64748b;
+  --hamburger-bg: #172033;
+  --hamburger-line: #f8fafc;
+  --backdrop: rgba(0, 0, 0, 0.64);
 }
 
 body,
 html[data-theme="dark"] body {
   background:
-    linear-gradient(180deg, var(--bg), var(--bg-2)) !important;
+    linear-gradient(180deg, var(--bg), var(--bg-2));
+  color: var(--text);
 }
 
 .bg-orb,
@@ -5898,174 +5897,29 @@ html[data-theme="dark"] body {
 .sidebar-backdrop,
 .modal-backdrop,
 .thread-modal,
-.bottom-nav,
-.modal-footer,
 .glass-card,
 .composer,
 .thread-card,
 .public-profile-card,
 .profile-editor-card,
+.bottom-nav,
 .following-modal,
-.followers-modal,
-.sidebar-email-auth,
-.sidebar-theme-box,
-.sidebar-account-row,
-.comment-original-thread,
+.blocked-users-modal,
 .delete-post-modal,
-.image-upload-label {
-  backdrop-filter: none !important;
+.modal-footer {
   -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.app-shell {
+  width: min(1160px, calc(100% - 32px));
 }
 
 .topbar {
-  border-radius: 22px !important;
-  border: 1px solid var(--line) !important;
-  background: var(--topbar-bg) !important;
-  box-shadow: 0 10px 28px rgba(16, 24, 40, 0.06) !important;
-}
-
-.hamburger-btn,
-.sidebar-close-btn,
-.modal-close,
-.following-modal-close,
-.followers-modal-close {
-  border-radius: 14px !important;
-  background: var(--soft-card) !important;
-  box-shadow: none !important;
-}
-
-.app-sidebar {
-  border-radius: 24px !important;
-  background: var(--sidebar-bg) !important;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.2) !important;
-}
-
-.glass-card,
-.composer,
-.thread-card,
-.public-profile-card,
-.profile-editor-card,
-.following-modal,
-.followers-modal,
-.thread-modal {
-  border-radius: 22px !important;
-  background: var(--card) !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: var(--shadow) !important;
-}
-
-.thread-card {
-  padding: 20px !important;
-}
-
-.thread-card:hover,
-.glass-card:hover,
-.public-profile-card:hover,
-.profile-editor-card:hover {
-  border-color: rgba(37, 99, 235, 0.24) !important;
-  box-shadow: 0 18px 46px rgba(16, 24, 40, 0.1) !important;
-}
-
-.sidebar-email-auth,
-.sidebar-theme-box,
-.sidebar-account-row,
-.comment-original-thread,
-.image-preview-wrap,
-.comment-card,
-.stats-card div,
-.public-profile-stat,
-.pill,
-.mini-action,
-.user-box,
-.sidebar-links a,
-.sidebar-links button {
-  background: var(--soft-card) !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: none !important;
-}
-
-.input-field,
-.bio-field,
-.modal-textarea,
-.sidebar-auth-input,
-.comment-textarea {
-  border-radius: 14px !important;
-  background: var(--input-bg) !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: none !important;
-}
-
-.input-field:focus,
-.bio-field:focus,
-.modal-textarea:focus,
-.sidebar-auth-input:focus,
-.comment-textarea:focus {
-  border-color: rgba(37, 99, 235, 0.55) !important;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1) !important;
-  transform: none !important;
-}
-
-.primary-btn,
-.pill.active,
-.theme-toggle-btn.active,
-.bottom-nav-btn.active,
-.bottom-nav-main.active,
-.feed-follow-btn,
-.follow-btn.primary-btn,
-.image-upload-icon,
-.avatar-upload-btn,
-.blocked-user-unblock-btn:hover,
-.sidebar-email-auth .ghost-btn:hover,
-.feed-follow-btn.following:hover {
-  background: linear-gradient(135deg, #2563eb, #111827) !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.22) !important;
-}
-
-.ghost-btn,
-.follow-btn.ghost-btn,
-.feed-follow-btn.following,
-.sidebar-email-auth .ghost-btn {
-  background: var(--soft-card) !important;
-  color: var(--text) !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: none !important;
-}
-
-.btn,
-.pill,
-.mini-action,
-.feed-follow-btn,
-.follow-btn,
-.following-unfollow-btn,
-.blocked-user-unblock-btn,
-.sidebar-links a,
-.sidebar-links button {
-  border-radius: 12px !important;
-}
-
-.btn:hover,
-.pill:hover,
-.mini-action:hover,
-.social-action-btn:hover,
-.bottom-nav-btn:hover,
-.bottom-nav-main:hover,
-.sidebar-links a:hover,
-.sidebar-links button:hover {
-  transform: translateY(-1px) !important;
-}
-
-.bottom-nav {
-  border-radius: 22px !important;
-  background: var(--topbar-bg) !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: 0 14px 42px rgba(16, 24, 40, 0.14) !important;
-}
-
-.bottom-nav-btn,
-.bottom-nav-main {
-  border-radius: 16px !important;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: var(--topbar-bg);
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
 }
 
 .brand h1,
@@ -6075,81 +5929,386 @@ html[data-theme="dark"] body {
 .profile-editor-head h2,
 .public-profile-main h3,
 .modal-head h2,
-.following-modal-head h2,
-.followers-modal-head h2 {
-  letter-spacing: -0.035em !important;
+.delete-modal-content h2,
+.following-modal-head h2 {
+  letter-spacing: -0.055em;
 }
 
-.eyebrow,
-.thread-user:hover strong,
-.sidebar-links a::after,
-.sidebar-links button::after,
-.public-profile-main p,
-.following-profile-open-area:hover .following-person-info strong,
-.following-profile-open-area:focus-visible .following-person-info strong,
-.social-action-btn:hover {
-  color: var(--cyan-dark) !important;
+.brand p,
+.profile-top p,
+.sidebar-account-meta span,
+.thread-user span,
+.following-person-info span,
+.field-label,
+.status-msg,
+#charCount,
+#modalCharCount,
+#commentCharCount {
+  color: var(--muted);
+}
+
+.hamburger-btn,
+.sidebar-close-btn,
+.modal-close,
+.following-modal-close,
+.sidebar-logout-btn {
+  border-radius: 16px;
+  background: var(--soft-card);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.hamburger-btn:hover,
+.sidebar-close-btn:hover,
+.modal-close:hover,
+.following-modal-close:hover {
+  transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, 0.35);
+  background: var(--soft-card-2);
+}
+
+.app-sidebar {
+  border-radius: 28px;
+  background: var(--sidebar-bg);
+  border: 1px solid var(--line);
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.18);
+}
+
+.sidebar-email-auth,
+.sidebar-account-row,
+.sidebar-theme-box,
+.user-box,
+.stats-card div,
+.image-preview-wrap,
+.comment-card,
+.comment-original-thread,
+.empty-state {
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.sidebar-email-auth,
+.sidebar-account-row,
+.sidebar-theme-box {
+  border-radius: 24px;
+}
+
+.sidebar-links a,
+.sidebar-links button {
+  border-radius: 18px;
+  background: var(--soft-card);
+  border: 1px solid var(--line);
+}
+
+.sidebar-links a:hover,
+.sidebar-links button:hover {
+  background: var(--card);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.main-grid {
+  grid-template-columns: 330px 1fr;
+  gap: 18px;
+}
+
+.glass-card,
+.composer,
+.thread-card,
+.public-profile-card,
+.profile-editor-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.glass-card,
+.thread-card,
+.public-profile-card,
+.profile-editor-card {
+  border-radius: 28px;
+}
+
+.composer {
+  border-radius: 28px;
+  padding: 20px;
+}
+
+.left-panel .glass-card,
+.feed-panel > .glass-card,
+.profile-page-panel > .glass-card {
+  min-height: 120px;
+}
+
+.intro-card,
+.roadmap-card,
+.profile-card,
+.stats-card div {
+  position: relative;
+  overflow: hidden;
+}
+
+.intro-card::before,
+.roadmap-card::before,
+.profile-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--cyan), rgba(37, 99, 235, 0));
+}
+
+.stats-card {
+  gap: 10px;
+}
+
+.stats-card div {
+  border-radius: 22px;
+  padding: 18px;
+}
+
+.stats-card strong {
+  font-size: 32px;
+}
+
+.input-field,
+.bio-field,
+.modal-textarea,
+.sidebar-auth-input,
+.comment-textarea {
+  border-radius: 16px;
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+}
+
+.input-field:focus,
+.bio-field:focus,
+.modal-textarea:focus,
+.sidebar-auth-input:focus,
+.comment-textarea:focus {
+  border-color: rgba(37, 99, 235, 0.55);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+  transform: none;
+}
+
+.btn,
+.pill,
+.mini-action,
+.feed-follow-btn,
+.following-unfollow-btn,
+.theme-toggle-btn,
+.public-profile-stat {
+  border-radius: 14px;
+  font-weight: 850;
+}
+
+.primary-btn,
+.pill.active,
+.theme-toggle-btn.active,
+.bottom-nav-btn.active,
+.bottom-nav-main.active,
+.follow-btn.primary-btn,
+.feed-follow-btn,
+.image-upload-icon,
+.avatar-upload-btn {
+  background: linear-gradient(135deg, #2563eb, #111827);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.22);
+}
+
+.ghost-btn,
+.pill,
+.mini-action,
+.follow-btn.ghost-btn,
+.feed-follow-btn.following,
+.public-profile-stat {
+  background: var(--soft-card);
+  border: 1px solid var(--line);
+  color: var(--text);
+  box-shadow: none;
+}
+
+.btn:hover,
+.pill:hover,
+.mini-action:hover,
+.public-profile-stat:hover,
+.theme-toggle-btn:hover,
+.social-action-btn:hover,
+.bottom-nav-btn:hover,
+.bottom-nav-main:hover {
+  transform: translateY(-1px);
+}
+
+.thread-card {
+  padding: 20px;
+}
+
+.thread-card:hover,
+.glass-card:hover,
+.public-profile-card:hover {
+  border-color: rgba(37, 99, 235, 0.24);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.11);
+}
+
+.thread-user img,
+.profile-top img,
+.sidebar-account-avatar,
+.following-profile-open-area img {
+  border: 1px solid var(--line);
+  background: var(--soft-card);
+  box-shadow: none;
+}
+
+.thread-content {
+  color: var(--thread-text);
 }
 
 .thread-image-wrap,
-.profile-thread-image-wrap {
-  border-radius: 18px !important;
-  border: 1px solid var(--line) !important;
-  background: var(--soft-card) !important;
-  box-shadow: none !important;
+.image-upload-label {
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: var(--image-soft-bg);
+  box-shadow: none;
 }
 
-.thread-image,
-.profile-thread-image,
-.image-preview-wrap img {
-  border-radius: 16px !important;
+.thread-image {
+  border-radius: 22px;
+}
+
+.image-upload-label:hover,
+.thread-image-wrap:hover {
+  border-color: rgba(37, 99, 235, 0.35);
+  background: var(--soft-card-2);
+}
+
+.social-action-btn {
+  color: var(--muted);
+}
+
+.social-action-btn:hover,
+.thread-user:hover strong,
+.following-profile-open-area:hover .following-person-info strong {
+  color: var(--cyan-dark);
+}
+
+.bottom-nav {
+  border-radius: 24px;
+  background: var(--topbar-bg);
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
+}
+
+.bottom-nav-btn,
+.bottom-nav-main {
+  border-radius: 16px;
+}
+
+.bottom-nav-badge {
+  border-color: var(--topbar-bg);
+}
+
+.modal-backdrop,
+.following-modal-backdrop {
+  background: var(--backdrop);
+}
+
+.thread-modal,
+.following-modal,
+.blocked-users-modal,
+.delete-post-modal {
+  border-radius: 28px;
+  background: var(--modal-bg);
+  border: 1px solid var(--line);
+  box-shadow: 0 28px 85px rgba(15, 23, 42, 0.24);
+}
+
+.modal-footer {
+  background: var(--modal-bg);
+}
+
+.following-modal-head,
+.blocked-users-modal-head {
+  border-bottom: 1px solid var(--line);
 }
 
 .following-person-card,
-.followers-person-card {
-  background: transparent !important;
-  border-bottom: 1px solid var(--line) !important;
+.blocked-user-card {
+  background: transparent;
+  border-bottom: 1px solid var(--line);
 }
 
-.following-profile-open-area img,
-.thread-user img,
-.public-profile-main img,
-.profile-top img {
-  border: 1px solid var(--line) !important;
-  box-shadow: none !important;
+.instagram-following-row:hover,
+.blocked-user-card:hover {
+  background: var(--soft-card);
 }
 
-.empty-state {
-  background: var(--soft-card) !important;
-  border: 1px dashed #cbd5e1 !important;
+.clickable-stat-card:hover,
+.clickable-stat-card:focus-visible {
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.10);
 }
 
-.delete-post-modal {
-  background: var(--modal-bg) !important;
-}
-
+.delete-modal-icon,
 .danger-btn,
-.following-unfollow-btn:hover,
-.sidebar-logout-btn:hover {
-  background: linear-gradient(135deg, #f43f5e, #be123c) !important;
-  color: #ffffff !important;
+.sidebar-logout-btn:hover,
+.following-unfollow-btn:hover {
+  background: linear-gradient(135deg, #fb7185, #ef4444);
+  color: #fff;
 }
 
-@media (max-width: 560px) {
-  .topbar,
-  .app-topbar {
-    border-radius: 20px !important;
-  }
-
-  .app-sidebar,
-  #followingModalBackdrop .following-modal,
-  #followersModalBackdrop .followers-modal,
-  .thread-modal {
-    border-radius: 22px !important;
+@media (min-width: 901px) {
+  .feed-panel,
+  .left-panel,
+  .profile-page-panel {
+    gap: 18px;
   }
 
   .bottom-nav {
-    border-radius: 20px !important;
-    padding: 8px !important;
+    width: min(440px, calc(100% - 40px));
+  }
+}
+
+@media (max-width: 900px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    border-radius: 22px;
+  }
+}
+
+@media (max-width: 560px) {
+  .app-shell {
+    width: min(100% - 18px, 1160px);
+  }
+
+  .topbar,
+  .bottom-nav {
+    border-radius: 22px;
+  }
+
+  .glass-card,
+  .composer,
+  .thread-card,
+  .public-profile-card,
+  .profile-editor-card,
+  .thread-modal,
+  .following-modal,
+  .blocked-users-modal {
+    border-radius: 24px;
+  }
+
+  .bottom-nav {
+    bottom: calc(14px + var(--safe-bottom));
+    padding: 8px;
+  }
+
+  .bottom-nav-btn,
+  .bottom-nav-main {
+    height: 50px;
+    border-radius: 15px;
   }
 }
