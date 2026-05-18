@@ -614,19 +614,19 @@ function renderBlockedUsersModalShell() {
       <section class="following-modal blocked-users-modal" role="dialog" aria-modal="true" aria-labelledby="blockedUsersModalTitle">
         <div class="following-modal-head blocked-users-modal-head">
           <div>
-            <span class="eyebrow">Safety controls</span>
-            <h2 id="blockedUsersModalTitle">Blocked users</h2>
-            <p>Manage people you blocked on Loomyva.</p>
+            <span class="eyebrow" data-i18n="safetyControls">${typeof t === "function" ? t("safetyControls") : "Safety controls"}</span>
+            <h2 id="blockedUsersModalTitle" data-i18n="blockedUsers">${typeof t === "function" ? t("blockedUsers") : "Blocked users"}</h2>
+            <p data-i18n="manageBlockedUsers">${typeof t === "function" ? t("manageBlockedUsers") : "Manage people you blocked on Loomyva."}</p>
           </div>
 
-          <button id="blockedUsersModalCloseBtn" class="following-modal-close" type="button" aria-label="Close blocked users list">
+          <button id="blockedUsersModalCloseBtn" class="following-modal-close" type="button" aria-label="${typeof t === "function" ? t("closeBlockedUsersList") : "Close blocked users list"}" data-i18n-aria-label="closeBlockedUsersList">
             <span></span>
             <span></span>
           </button>
         </div>
 
         <div id="blockedUsersModalList" class="following-modal-list blocked-users-modal-list">
-          <div class="following-modal-state">Loading blocked users...</div>
+          <div class="following-modal-state" data-i18n="loadingBlockedUsers">${typeof t === "function" ? t("loadingBlockedUsers") : "Loading blocked users..."}</div>
         </div>
       </section>
     </div>
@@ -656,7 +656,7 @@ function setupBlockedUsersModal() {
 
 function openBlockedUsersModal() {
   if (!currentUser) {
-    setStatus("Sign in first to manage blocked users.", "error");
+    setStatus(typeof t === "function" ? t("signInManageBlocked") : "Sign in first to manage blocked users.", "error");
     return;
   }
 
@@ -700,8 +700,8 @@ function renderBlockedUsersRows(blockRows, blockedProfiles) {
   if (!blockRows?.length) {
     blockedUsersModalList.innerHTML = `
       <div class="following-modal-empty blocked-users-empty">
-        <strong>No blocked users.</strong>
-        <span>When you block someone, they will appear here with an unblock button.</span>
+        <strong data-i18n="noBlockedUsers">${typeof t === "function" ? t("noBlockedUsers") : "No blocked users."}</strong>
+        <span data-i18n="noBlockedUsersText">${typeof t === "function" ? t("noBlockedUsersText") : "When you block someone, they will appear here with an unblock button."}</span>
       </div>
     `;
     return;
@@ -732,7 +732,7 @@ function renderBlockedUsersRows(blockRows, blockedProfiles) {
             type="button"
             data-profile-unblock-user-id="${escapeHTML(block.blocked_id)}"
           >
-            Unblock
+            ${typeof t === "function" ? t("unblock") : "Unblock"}
           </button>
         </article>
       `;
@@ -750,12 +750,12 @@ function bindBlockedUsersUnblockButtons() {
 
     button.addEventListener("click", async () => {
       const userId = button.dataset.profileUnblockUserId;
-      const confirmed = window.confirm("Unblock this user? You may see their posts and profile again.");
+      const confirmed = window.confirm(typeof t === "function" ? t("unblockConfirm") : "Unblock this user? You may see their posts and profile again.");
 
       if (!confirmed) return;
 
       button.disabled = true;
-      button.textContent = "Unblocking...";
+      button.textContent = typeof t === "function" ? t("unblocking") : "Unblocking...";
 
       if (typeof unblockUser === "function") {
         await unblockUser(userId);
@@ -781,7 +781,7 @@ async function loadBlockedUsersList() {
 
   if (!currentUser || !blockedUsersModalList) return;
 
-  blockedUsersModalList.innerHTML = `<div class="following-modal-state">Loading blocked users...</div>`;
+  blockedUsersModalList.innerHTML = `<div class="following-modal-state" data-i18n="loadingBlockedUsers">${typeof t === "function" ? t("loadingBlockedUsers") : "Loading blocked users..."}</div>`;
 
   const { data: blockRows, error: blocksError } = await supabaseClient
     .from("user_blocks")
@@ -1083,7 +1083,7 @@ function renderFollowerRows(followRows, followerProfiles) {
     followersModalList.innerHTML = `
       <div class="followers-modal-empty">
         <strong>No followers to show.</strong>
-        <span>Blocked users are hidden from this list.</span>
+        <span>${typeof t === "function" ? t("blockedUsersHidden") : "Blocked users are hidden from this list."}</span>
       </div>
     `;
     return;
@@ -1546,7 +1546,7 @@ async function loadProfileUserModal(userId) {
         type="button"
         data-report-user-id="${escapeHTML(userId)}"
       >
-        Report User
+        ${typeof t === "function" ? t("reportUser") : "Report User"}
       </button>
 
       <button
@@ -1554,7 +1554,7 @@ async function loadProfileUserModal(userId) {
         type="button"
         data-block-user-id="${escapeHTML(userId)}"
       >
-        Block User
+        ${typeof t === "function" ? t("blockUser") : "Block User"}
       </button>
     `;
 
