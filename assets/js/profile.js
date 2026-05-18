@@ -470,6 +470,7 @@ function setupFollowingModal() {
       closeFollowingModal();
       closeFollowersModal();
       closeProfileUserModal();
+      closeBlockedUsersModal();
     }
   });
 }
@@ -600,6 +601,237 @@ function bindFollowingUnfollowButtons() {
       await unfollowUserDirectlyFromFollowingModal(button.dataset.directUnfollowUserId);
     });
   });
+}
+
+
+/* =========================
+   BLOCKED USERS MODAL
+========================= */
+
+function renderBlockedUsersModalShell() {
+  return `
+    <div id="blockedUsersModalBackdrop" class="following-modal-backdrop blocked-users-modal-backdrop" aria-hidden="true">
+      <section class="following-modal blocked-users-modal" role="dialog" aria-modal="true" aria-labelledby="blockedUsersModalTitle">
+        <div class="following-modal-head blocked-users-modal-head">
+          <div>
+            <span class="eyebrow">Safety controls</span>
+            <h2 id="blockedUsersModalTitle">Blocked users</h2>
+            <p>Manage people you blocked on Loomyva.</p>
+          </div>
+
+          <button id="blockedUsersModalCloseBtn" class="following-modal-close" type="button" aria-label="Close blocked users list">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+
+        <div id="blockedUsersModalList" class="following-modal-list blocked-users-modal-list">
+          <div class="following-modal-state">Loading blocked users...</div>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function setupBlockedUsersModal() {
+  if (!document.getElementById("blockedUsersModalBackdrop")) {
+    document.body.insertAdjacentHTML("beforeend", renderBlockedUsersModalShell());
+  }
+
+  const blockedUsersModalBackdrop = document.getElementById("blockedUsersModalBackdrop");
+  const blockedUsersModalCloseBtn = document.getElementById("blockedUsersModalCloseBtn");
+
+  if (blockedUsersModalCloseBtn) {
+    blockedUsersModalCloseBtn.addEventListener("click", closeBlockedUsersModal);
+  }
+
+  if (blockedUsersModalBackdrop) {
+    blockedUsersModalBackdrop.addEventListener("click", (event) => {
+      if (event.target === blockedUsersModalBackdrop) {
+        closeBlockedUsersModal();
+      }
+    });
+  }
+}
+
+function openBlockedUsersModal() {
+  if (!currentUser) {
+    setStatus("Sign in first to manage blocked users.", "error");
+    return;
+  }
+
+  const blockedUsersModalBackdrop = document.getElementById("blockedUsersModalBackdrop");
+
+  if (!blockedUsersModalBackdrop) return;
+
+  blockedUsersModalBackdrop.classList.add("active");
+  blockedUsersModalBackdrop.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+
+  loadBlockedUsersList();
+}
+
+function closeBlockedUsersModal() {
+  const blockedUsersModalBackdrop = document.getElementById("blockedUsersModalBackdrop");
+
+  if (!blockedUsersModalBackdrop) return;
+
+  blockedUsersModalBackdrop.classList.remove("active");
+  blockedUsersModalBackdrop.setAttribute("aria-hidden", "true");
+
+  const followingModalBackdrop = document.getElementById("followingModalBackdrop");
+  const followersModalBackdrop = document.getElementById("followersModalBackdrop");
+  const profileUserModalBackdrop = document.getElementById("profileUserModalBackdrop");
+
+  if (
+    !followingModalBackdrop?.classList.contains("active") &&
+    !followersModalBackdrop?.classList.contains("active") &&
+    !profileUserModalBackdrop?.classList.contains("active")
+  ) {
+    document.body.style.overflow = "";
+  }
+}
+
+function renderBlockedUsersRows(blockRows, blockedProfiles) {
+  const blockedUsersModalList = document.getElementById("blockedUsersModalList");
+
+  if (!blockedUsersModalList) return;
+
+  if (!blockRows?.length) {
+    blockedUsersModalList.innerHTML = `
+      <div class="following-modal-empty blocked-users-empty">
+        <strong>No blocked users.</strong>
+        <span>When you block someone, they will appear here with an unblock button.</span>
+      </div>
+    `;
+    return;
+  }
+
+  const profileById = new Map((blockedProfiles || []).map((profile) => [profile.id, profile]));
+
+  blockedUsersModalList.innerHTML = blockRows
+    .map((block) => {
+      const profile = profileById.get(block.blocked_id) || null;
+      const name = getSafeProfileName(profile, block.blocked_id);
+      const username = getSafeUsername(profile);
+      const avatar = getSafeAvatar(profile, name);
+
+      return `
+        <article class="following-person-card instagram-following-row blocked-user-row">
+          <div class="following-profile-open-area blocked-user-info" aria-label="Blocked user ${escapeHTML(name)}">
+            <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" loading="lazy" />
+
+            <div class="following-person-info">
+              <strong>${escapeHTML(name)}</strong>
+              <span>${escapeHTML(username)}</span>
+            </div>
+          </div>
+
+          <button
+            class="mini-action blocked-user-unblock-btn"
+            type="button"
+            data-profile-unblock-user-id="${escapeHTML(block.blocked_id)}"
+          >
+            Unblock
+          </button>
+        </article>
+      `;
+    })
+    .join("");
+
+  bindBlockedUsersUnblockButtons();
+}
+
+function bindBlockedUsersUnblockButtons() {
+  document.querySelectorAll("[data-profile-unblock-user-id]").forEach((button) => {
+    if (button.dataset.profileUnblockReady === "true") return;
+
+    button.dataset.profileUnblockReady = "true";
+
+    button.addEventListener("click", async () => {
+      const userId = button.dataset.profileUnblockUserId;
+      const confirmed = window.confirm("Unblock this user? You may see their posts and profile again.");
+
+      if (!confirmed) return;
+
+      button.disabled = true;
+      button.textContent = "Unblocking...";
+
+      if (typeof unblockUser === "function") {
+        await unblockUser(userId);
+      } else {
+        const { error } = await supabaseClient
+          .from("user_blocks")
+          .delete()
+          .eq("blocker_id", currentUser.id)
+          .eq("blocked_id", userId);
+
+        if (error) {
+          setStatus(error.message, "error");
+        }
+      }
+
+      await loadBlockedUsersList();
+    });
+  });
+}
+
+async function loadBlockedUsersList() {
+  const blockedUsersModalList = document.getElementById("blockedUsersModalList");
+
+  if (!currentUser || !blockedUsersModalList) return;
+
+  blockedUsersModalList.innerHTML = `<div class="following-modal-state">Loading blocked users...</div>`;
+
+  const { data: blockRows, error: blocksError } = await supabaseClient
+    .from("user_blocks")
+    .select("blocked_id, created_at")
+    .eq("blocker_id", currentUser.id)
+    .order("created_at", { ascending: false });
+
+  if (blocksError) {
+    blockedUsersModalList.innerHTML = `
+      <div class="following-modal-empty error">
+        <strong>Could not load blocked users.</strong>
+        <span>${escapeHTML(blocksError.message)}</span>
+      </div>
+    `;
+    return;
+  }
+
+  const safeBlockRows = blockRows || [];
+  const blockedIds = [...new Set(safeBlockRows.map((block) => block.blocked_id).filter(Boolean))];
+
+  if (!blockedIds.length) {
+    renderBlockedUsersRows([], []);
+    return;
+  }
+
+  const { data: blockedProfiles, error: profilesError } = await supabaseClient
+    .from("profiles")
+    .select("id, full_name, username, avatar_url, bio")
+    .in("id", blockedIds);
+
+  if (profilesError) {
+    blockedUsersModalList.innerHTML = `
+      <div class="following-modal-empty error">
+        <strong>Could not load profiles.</strong>
+        <span>${escapeHTML(profilesError.message)}</span>
+      </div>
+    `;
+    return;
+  }
+
+  renderBlockedUsersRows(safeBlockRows, blockedProfiles || []);
+}
+
+function setupBlockedUsersButton() {
+  const blockedUsersBtn = document.getElementById("blockedUsersBtn");
+
+  if (!blockedUsersBtn || blockedUsersBtn.dataset.blockedUsersReady === "true") return;
+
+  blockedUsersBtn.dataset.blockedUsersReady = "true";
+  blockedUsersBtn.addEventListener("click", openBlockedUsersModal);
 }
 
 async function loadProfileFollowingList() {
@@ -2031,9 +2263,11 @@ async function initProfilePage() {
   setupFollowingModal();
   setupFollowersModal();
   setupProfileUserModal();
+  setupBlockedUsersModal();
 
   setupFollowingStatButton();
   setupFollowersStatButton();
+  setupBlockedUsersButton();
 
   setBottomNavActive("profile");
 
@@ -2094,6 +2328,7 @@ async function initProfilePage() {
       closeFollowingModal();
       closeFollowersModal();
       closeProfileUserModal();
+      closeBlockedUsersModal();
 
       unsubscribeProfileRealtime();
 
