@@ -324,7 +324,11 @@ function renderThreads() {
             type="button"
             aria-label="${typeof t === "function" ? t("moreActions") : "More actions"}"
           >
-            <span aria-hidden="true">â¢â¢â¢</span>
+            <svg class="more-dots-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="5" r="2.1"></circle>
+              <circle cx="12" cy="12" r="2.1"></circle>
+              <circle cx="12" cy="19" r="2.1"></circle>
+            </svg>
           </button>
         `
         : "";
@@ -637,7 +641,11 @@ function updatePublicProfileUI() {
           type="button"
           aria-label="${typeof t === "function" ? t("moreActions") : "More actions"}"
         >
-          <span aria-hidden="true">â¢â¢â¢</span>
+          <svg class="more-dots-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="5" r="2.1"></circle>
+              <circle cx="12" cy="12" r="2.1"></circle>
+              <circle cx="12" cy="19" r="2.1"></circle>
+            </svg>
         </button>
       `;
     }
