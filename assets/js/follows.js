@@ -55,6 +55,11 @@ async function toggleFollowUser(userId) {
     return;
   }
 
+  if (typeof canInteractWithUser === "function" && !canInteractWithUser(userId)) {
+    setStatus("You cannot follow or interact with a blocked user.", "error");
+    return;
+  }
+
   const alreadyFollowing = isFollowingUser(userId);
 
   if (alreadyFollowing) {
