@@ -309,10 +309,11 @@ async function loadNotifications() {
 function updateNotificationsBadge() {
   const badge = document.getElementById("notificationsBadge");
   const sidebarBadge = document.getElementById("sidebarNotificationsBadge");
+  const bottomBadge = document.getElementById("bottomNotificationsBadge");
 
   const unreadCount = notifications.filter((notification) => !notification.is_read).length;
 
-  [badge, sidebarBadge].forEach((element) => {
+  [badge, sidebarBadge, bottomBadge].forEach((element) => {
     if (!element) return;
 
     if (unreadCount <= 0) {
