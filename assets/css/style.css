@@ -5499,3 +5499,27 @@ html[data-theme="dark"] .notifications-modal {
     padding: 14px 14px 18px;
   }
 }
+/* Bottom navigation: icons only */
+.mobile-bottom-nav .bottom-nav-label,
+.mobile-bottom-nav .nav-label,
+.bottom-nav .bottom-nav-label,
+.bottom-nav .nav-label {
+  display: none !important;
+}
+
+/* Make icon-only buttons look cleaner */
+.mobile-bottom-nav .bottom-nav-item,
+.mobile-bottom-nav .bottom-nav-btn,
+.bottom-nav .bottom-nav-item,
+.bottom-nav .bottom-nav-btn {
+  gap: 0 !important;
+  min-width: 52px;
+  padding: 12px 14px !important;
+}
+
+/* Make icons slightly bigger */
+.mobile-bottom-nav svg,
+.bottom-nav svg {
+  width: 25px;
+  height: 25px;
+}
