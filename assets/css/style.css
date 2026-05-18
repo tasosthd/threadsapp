@@ -5733,3 +5733,71 @@ html[data-theme="dark"] .notifications-modal {
     padding: 9px 12px;
   }
 }
+
+/* =========================
+   Mobile followers/following drawer fix
+   Keeps bottom nav unchanged while making social lists scroll inside the panel.
+========================= */
+@media (max-width: 560px) {
+  #followingModalBackdrop,
+  #followersModalBackdrop {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  #followingModalBackdrop .following-modal,
+  #followersModalBackdrop .followers-modal {
+    position: fixed;
+    top: calc(8px + var(--safe-top));
+    left: calc(8px + var(--safe-left));
+    right: calc(8px + var(--safe-right));
+    bottom: calc(104px + var(--safe-bottom));
+    width: auto;
+    max-width: none;
+    height: auto;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 30px;
+    transform: translateX(-22px) scale(0.98);
+  }
+
+  #followingModalBackdrop.active .following-modal,
+  #followersModalBackdrop.active .followers-modal {
+    transform: translateX(0) scale(1);
+  }
+
+  #followingModalBackdrop .following-modal-head,
+  #followersModalBackdrop .followers-modal-head {
+    flex: 0 0 auto;
+    padding: 18px 16px 14px;
+  }
+
+  #followingModalBackdrop .following-modal-list,
+  #followersModalBackdrop .followers-modal-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 14px calc(30px + var(--safe-bottom));
+  }
+}
+
+@media (max-width: 390px) {
+  #followingModalBackdrop .following-modal,
+  #followersModalBackdrop .followers-modal {
+    bottom: calc(98px + var(--safe-bottom));
+    border-radius: 26px;
+  }
+
+  #followingModalBackdrop .following-modal-head h2,
+  #followersModalBackdrop .followers-modal-head h2 {
+    font-size: 22px;
+  }
+}
