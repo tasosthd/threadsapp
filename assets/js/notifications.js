@@ -559,6 +559,10 @@ function renderNotificationsModalShell() {
 }
 
 function setupNotificationsModal() {
+  if (document.body.classList.contains("notifications-page-body")) {
+    return;
+  }
+
   if (!document.getElementById("notificationsModalBackdrop")) {
     document.body.insertAdjacentHTML("beforeend", renderNotificationsModalShell());
   }
@@ -615,13 +619,29 @@ function closeNotificationsModal() {
 
 function setupNotificationButtons() {
   const buttons = document.querySelectorAll("[data-open-notifications]");
+  const isNotificationsPage = document.body.classList.contains("notifications-page-body");
 
   buttons.forEach((button) => {
     if (button.dataset.notificationsReady === "true") return;
 
     button.dataset.notificationsReady = "true";
 
-    button.addEventListener("click", openNotificationsModal);
+    button.addEventListener("click", () => {
+      if (isNotificationsPage) {
+        const notificationsPanel = document.querySelector(".notifications-page-card");
+
+        if (notificationsPanel) {
+          notificationsPanel.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }
+
+        return;
+      }
+
+      openNotificationsModal();
+    });
   });
 }
 
@@ -665,6 +685,13 @@ function subscribeToNotificationsRealtime() {
 async function initNotificationsSystem() {
   setupNotificationsModal();
   setupNotificationButtons();
+
+  const pageMarkAllNotificationsReadBtn = document.getElementById("markAllNotificationsReadBtn");
+
+  if (pageMarkAllNotificationsReadBtn && pageMarkAllNotificationsReadBtn.dataset.markAllReady !== "true") {
+    pageMarkAllNotificationsReadBtn.dataset.markAllReady = "true";
+    pageMarkAllNotificationsReadBtn.addEventListener("click", markAllNotificationsAsRead);
+  }
 
   if (currentUser) {
     await loadNotifications();
