@@ -5565,6 +5565,20 @@ html[data-theme="dark"] .notifications-modal {
   padding: 32px 16px;
 }
 
+
+.app-legal-page-shell {
+  width: min(100%, 980px);
+  margin: 24px auto 0;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom));
+}
+
+@media (max-width: 640px) {
+  .app-legal-page-shell {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 .legal-page-card {
   width: min(100%, 860px);
   margin: 0 auto;
