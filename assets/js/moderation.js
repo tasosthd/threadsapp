@@ -89,13 +89,13 @@ async function loadModerationData() {
 
 function requireModerationLogin() {
   if (currentUser) return true;
-  setStatus("Sign in first to use safety tools.", "error");
+  setStatus(typeof t === "function" ? t("signInSafetyTools") : "Sign in first to use safety tools.", "error");
   if (typeof openSidebar === "function") openSidebar();
   return false;
 }
 
 function getModerationReason(defaultReason = "App Store safety report") {
-  const reason = window.prompt("Optional: tell us why you are reporting this.", defaultReason);
+  const reason = window.prompt(typeof t === "function" ? t("reportReasonPrompt") : "Optional: tell us why you are reporting this.", defaultReason);
   if (reason === null) return null;
   return String(reason || defaultReason).trim().slice(0, 500);
 }
@@ -104,7 +104,7 @@ async function reportPost(threadId, reportedUserId) {
   if (!requireModerationLogin()) return;
   if (!threadId || !reportedUserId) return;
 
-  const reason = getModerationReason("Reported post");
+  const reason = getModerationReason(typeof t === "function" ? t("reportedPost") : "Reported post");
   if (reason === null) return;
 
   const { error } = await supabaseClient.from("content_reports").insert({
@@ -120,14 +120,14 @@ async function reportPost(threadId, reportedUserId) {
     return false;
   }
 
-  setStatus("Report sent. Thanks for keeping Loomyva safe.", "success");
+  setStatus(typeof t === "function" ? t("reportSentSafe") : "Report sent. Thanks for keeping Loomyva safe.", "success");
 }
 
 async function reportUser(userId) {
   if (!requireModerationLogin()) return;
   if (!userId || userId === currentUser.id) return;
 
-  const reason = getModerationReason("Reported user");
+  const reason = getModerationReason(typeof t === "function" ? t("reportedUser") : "Reported user");
   if (reason === null) return;
 
   const { error } = await supabaseClient.from("content_reports").insert({
@@ -142,14 +142,14 @@ async function reportUser(userId) {
     return;
   }
 
-  setStatus("User report sent.", "success");
+  setStatus(typeof t === "function" ? t("userReportSent") : "User report sent.", "success");
 }
 
 async function blockUser(userId) {
   if (!requireModerationLogin()) return;
   if (!userId || userId === currentUser.id) return;
 
-  const confirmed = window.confirm("Block this user? You will no longer see their posts or profile in search.");
+  const confirmed = window.confirm(typeof t === "function" ? t("blockConfirm") : "Block this user? You will no longer see their posts or profile in search.");
   if (!confirmed) return;
 
   moderationBusy = true;
@@ -166,7 +166,7 @@ async function blockUser(userId) {
     return;
   }
 
-  setStatus("User blocked.", "success");
+  setStatus(typeof t === "function" ? t("userBlocked") : "User blocked.", "success");
   await loadModerationData();
 
   if (typeof loadFollows === "function") await loadFollows();
@@ -190,7 +190,7 @@ async function unblockUser(userId) {
     return false;
   }
 
-  setStatus("User unblocked.", "success");
+  setStatus(typeof t === "function" ? t("userUnblocked") : "User unblocked.", "success");
   await loadModerationData();
 
   if (typeof loadFollows === "function") await loadFollows();
