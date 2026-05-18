@@ -113,6 +113,14 @@ function getPageName() {
     return "inbox";
   }
 
+  if (path === "/terms/" || path === "/terms") {
+    return "terms";
+  }
+
+  if (path === "/privacy/" || path === "/privacy") {
+    return "privacy";
+  }
+
   return "home";
 }
 
