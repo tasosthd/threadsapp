@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <title>Inbox · Loomyva</title>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" href="/assets/img/index.png" />
+  <link rel="shortcut icon" type="image/png" href="/assets/img/index.png" />
+  <link rel="apple-touch-icon" href="/assets/img/index.png" />
+
+  <meta name="theme-color" content="#050816" />
+
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="/assets/css/style.css?v=ios-sw-off-3" />
+
+  <!-- Load saved theme before page paints -->
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem("loomyva-theme") || "light";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    })();
+  </script>
+</head>
+
+<body class="notifications-page-body">
+  <div class="bg-orb orb-one"></div>
+  <div class="bg-orb orb-two"></div>
+
+  <div class="app-shell">
+    <header class="topbar app-topbar">
+      <div class="topbar-left">
+        <button id="sidebarOpenBtn" class="hamburger-btn" type="button" aria-label="Open menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <a class="brand compact-brand" href="/" aria-label="Loomyva home">
+          <img
+            src="/assets/img/index.png"
+            alt="Loomyva logo"
+            class="brand-logo"
+          />
+
+          <div>
+            <h1>Loomyva</h1>
+            <p><span data-i18n="appSubtitleHome">Post ideas. Sync everywhere.</span></p>
+          </div>
+        </a>
+
+        <button
+          class="topbar-notification-btn"
+          type="button"
+          data-open-notifications
+          aria-label="Open notifications"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 1 0-14 0v5l-2 2v1h18v-1l-2-2Z"></path>
+          </svg>
+
+          <span id="notificationsBadge" class="notification-badge hidden">0</span>
+        </button>
+      </div>
+    </header>
+
+    <aside id="appSidebar" class="app-sidebar" aria-hidden="true">
+      <div class="sidebar-head">
+        <div class="brand sidebar-brand">
+          <img
+            src="/assets/img/index.png"
+            alt="Loomyva logo"
+            class="brand-logo"
+          />
+
+          <div>
+            <h1>Loomyva</h1>
+            <p><span data-i18n="creatorMenu">Your creator menu.</span></p>
+          </div>
+        </div>
+
+        <button id="sidebarCloseBtn" class="sidebar-close-btn" type="button" aria-label="Close menu">
+          ×
+        </button>
+      </div>
+
+      <div class="sidebar-auth">
+        <form id="emailAuthForm" class="sidebar-email-auth">
+          <input
+            type="email"
+            id="authEmail"
+            class="sidebar-auth-input"
+            placeholder="Email"
+            autocomplete="email"
+            required
+          />
+
+          <div class="password-field-wrap">
+            <input
+              type="password"
+              id="authPassword"
+              class="sidebar-auth-input password-input"
+              placeholder="Password"
+              autocomplete="current-password"
+              required
+            />
+
+            <button
+              id="togglePasswordBtn"
+              class="password-toggle-btn"
+              type="button"
+              aria-label="Show password"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5c5.5 0 9.5 5.1 10.8 6.9a.9.9 0 0 1 0 1.1C21.5 14.9 17.5 20 12 20S2.5 14.9 1.2 13a.9.9 0 0 1 0-1.1C2.5 10.1 6.5 5 12 5Zm0 2C7.9 7 4.7 10.4 3.3 12.5 4.7 14.6 7.9 18 12 18s7.3-3.4 8.7-5.5C19.3 10.4 16.1 7 12 7Zm0 2.2a3.3 3.3 0 1 1 0 6.6 3.3 3.3 0 0 1 0-6.6Zm0 2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <a class="auth-switch-link" href="/create-account/">
+            Are you a new user? <strong>Create Account</strong>
+          </a>
+
+          <button id="emailLoginBtn" class="btn primary-btn" type="submit">
+            Log in
+          </button>
+        </form>
+
+        <div class="auth-divider">
+          <span>or</span>
+        </div>
+
+        <button id="googleLoginBtn" class="btn primary-btn" type="button">
+          <span data-i18n="loginGoogle">Continue with Google</span>
+        </button>
+
+        <div id="userBox" class="sidebar-account-row hidden">
+          <img id="userAvatar" class="sidebar-account-avatar" src="" alt="User avatar" />
+
+          <div class="sidebar-account-meta">
+            <strong id="userName">User</strong>
+            <span id="userEmail">email</span>
+          </div>
+
+          <button id="logoutBtn" class="sidebar-logout-btn" type="button" aria-label="Logout">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M10 3a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V5H5v14h4v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6Zm6.3 5.3a1 1 0 0 1 1.4 0l3 3a1 1 0 0 1 0 1.4l-3 3a1 1 0 1 1-1.4-1.4l1.3-1.3H10a1 1 0 1 1 0-2h7.6l-1.3-1.3a1 1 0 0 1 0-1.4Z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-theme-box">
+        <div class="sidebar-theme-head">
+          <span data-i18n="appearance">Appearance</span>
+          <small data-i18n="chooseVibe">Choose your vibe</small>
+        </div>
+
+        <div class="theme-toggle-group" role="group" aria-label="Choose theme">
+          <button id="lightThemeBtn" class="theme-toggle-btn active" type="button" aria-label="Use light mode">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Zm0 4a1 1 0 0 1-1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 1-1 1Zm0-18a1 1 0 0 1-1-1V2a1 1 0 1 1 2 0v1a1 1 0 0 1-1 1Zm10 8a1 1 0 0 1-1 1h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1ZM4 12a1 1 0 0 1-1 1H2a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1Zm14.95 6.95a1 1 0 0 1-1.41 0l-.71-.71a1 1 0 0 1 1.41-1.41l.71.71a1 1 0 0 1 0 1.41ZM7.17 7.17a1 1 0 0 1-1.41 0l-.71-.71A1 1 0 0 1 6.46 5.05l.71.71a1 1 0 0 1 0 1.41Zm11.78-2.12a1 1 0 0 1 0 1.41l-.71.71a1 1 0 1 1-1.41-1.41l.71-.71a1 1 0 0 1 1.41 0ZM7.17 16.83a1 1 0 0 1 0 1.41l-.71.71a1 1 0 0 1-1.41-1.41l.71-.71a1 1 0 0 1 1.41 0Z"></path>
+            </svg>
+            <span data-i18n="light">Light</span>
+          </button>
+
+          <button id="darkThemeBtn" class="theme-toggle-btn" type="button" aria-label="Use dark mode">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21 14.7A8.7 8.7 0 0 1 9.3 3a1 1 0 0 0-1.18-1.45A10.7 10.7 0 1 0 22.45 15.88 1 1 0 0 0 21 14.7Z"></path>
+            </svg>
+            <span data-i18n="dark">Dark</span>
+          </button>
+        </div>
+      </div>
+
+      <nav class="sidebar-links">
+        <a href="/" data-i18n="navHome">Home</a>
+        <a href="/search/" data-i18n="navSearch">Search</a>
+        <a href="/profile/" data-i18n="navProfile">Profile</a>
+
+        <button class="sidebar-notifications-link" type="button" data-open-notifications>
+          <span data-i18n="notifications">Notifications</span>
+          <span id="sidebarNotificationsBadge" class="sidebar-notification-badge hidden">0</span>
+        </button>
+
+        <button id="sidebarComposeBtn" type="button" data-i18n="createThread">
+          Create thread
+        </button>
+      </nav>
+    </aside>
+
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+    <main class="notifications-page-main">
+      <section class="notifications-page-hero glass-card">
+        <span class="eyebrow">Activity</span>
+        <h2>Inbox</h2>
+        <p>All your follows, likes, and comments in one clean page.</p>
+      </section>
+
+      <section class="notifications-page-card glass-card">
+        <div class="notifications-page-head">
+          <div>
+            <span class="eyebrow">Notifications</span>
+            <h3>Latest activity</h3>
+            <p>Stay on top of every signal from your network.</p>
+          </div>
+
+          <button id="markAllNotificationsReadBtn" class="btn ghost-btn" type="button">
+            Mark all as read
+          </button>
+        </div>
+
+        <div id="notificationsList" class="notifications-list notifications-page-list">
+          <div class="notifications-empty">
+            <strong>Loading...</strong>
+            <span>Getting your latest activity.</span>
+          </div>
+        </div>
+      </section>
+
+      <p id="statusMsg" class="status-msg hidden"></p>
+    </main>
+  </div>
+
+  <!-- Notification page globals -->
+  <script>
+    var threads = [];
+    var profiles = [];
+  </script>
+
+  <!-- App Scripts -->
+  <script src="/assets/js/config.js?v=ios-sw-off-4"></script>
+  <script src="/assets/js/language.js?v=ios-sw-off-4"></script>
+  <script src="/assets/js/ui.js?v=ios-sw-off-4"></script>
+  <script src="/assets/js/auth.js?v=ios-sw-off-4"></script>
+  <script src="/assets/js/notifications.js?v=ios-sw-off-4"></script>
+  <script src="/assets/js/comments.js?v=ios-sw-off-4"></script>
+  <script src="/assets/js/follows.js?v=ios-sw-off-4"></script>
+  <script src="/assets/js/profile.js?v=ios-sw-off-4"></script>
+
+  <script>
+    async function bootNotificationsPage() {
+      setupAuthButtons();
+      mountSharedUI({ includeModal: false });
+      setBottomNavActive("inbox");
+
+      if (typeof setupCommentsModal === "function") {
+        setupCommentsModal();
+      }
+
+      if (typeof setupProfileUserModal === "function") {
+        setupProfileUserModal();
+      }
+
+      await restoreSession();
+
+      if (typeof initNotificationsSystem === "function") {
+        await initNotificationsSystem();
+      }
+
+      listenForAuthChanges({
+        onSignedIn: async () => {
+          if (typeof initNotificationsSystem === "function") {
+            await initNotificationsSystem();
+          }
+        },
+        onSignedOut: async () => {
+          currentProfile = null;
+
+          if (typeof resetNotificationsSystem === "function") {
+            resetNotificationsSystem();
+          }
+        }
+      });
+    }
+
+    bootNotificationsPage();
+  </script>
+
+  <!-- iOS Safari/PWA cleanup: remove old service worker registrations -->
+  <script>
+    (function () {
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.getRegistrations()
+            .then(function (registrations) {
+              return Promise.all(registrations.map(function (registration) {
+                return registration.unregister();
+              }));
+            })
+            .then(function () {
+              if (window.caches && caches.keys) {
+                return caches.keys().then(function (keys) {
+                  return Promise.all(keys.map(function (key) { return caches.delete(key); }));
+                });
+              }
+            })
+            .catch(function () {});
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
