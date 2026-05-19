@@ -231,7 +231,7 @@ function renderProfilePosts() {
               <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
               <div>
                 <strong>${escapeHTML(name)}</strong>
-                <span>${escapeHTML(username)} Â· ${escapeHTML(date)}</span>
+                <span>${escapeHTML(username)} · ${escapeHTML(date)}</span>
               </div>
             </div>
           </div>
