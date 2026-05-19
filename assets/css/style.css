@@ -6286,3 +6286,67 @@ body.modal-open {
     margin-left: auto;
   }
 }
+
+
+/* =========================
+   Root sidebar mobile legal-link fix
+   Keeps Terms / Privacy above the bottom nav
+========================= */
+.sidebar-legal-links {
+  margin-top: 14px;
+  padding-top: 14px;
+  padding-bottom: 8px;
+}
+
+.sidebar-legal-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--image-soft-bg);
+  color: var(--text) !important;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+@media (max-width: 900px) {
+  .app-sidebar {
+    top: calc(10px + var(--safe-top)) !important;
+    bottom: calc(104px + var(--safe-bottom)) !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 22px !important;
+  }
+
+  .sidebar-links {
+    padding-bottom: 34px;
+  }
+
+  .sidebar-legal-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+    padding-bottom: 34px;
+  }
+
+  .sidebar-legal-link {
+    width: 100%;
+    min-height: 44px;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-sidebar {
+    width: calc(100% - 20px - var(--safe-left) - var(--safe-right)) !important;
+    left: calc(10px + var(--safe-left)) !important;
+    border-radius: 26px !important;
+  }
+}
