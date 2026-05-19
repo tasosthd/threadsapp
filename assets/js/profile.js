@@ -684,11 +684,13 @@ function closeBlockedUsersModal() {
   const followingModalBackdrop = document.getElementById("followingModalBackdrop");
   const followersModalBackdrop = document.getElementById("followersModalBackdrop");
   const profileUserModalBackdrop = document.getElementById("profileUserModalBackdrop");
+  const profileOptionsModalBackdrop = document.getElementById("profileOptionsModalBackdrop");
 
   if (
     !followingModalBackdrop?.classList.contains("active") &&
     !followersModalBackdrop?.classList.contains("active") &&
-    !profileUserModalBackdrop?.classList.contains("active")
+    !profileUserModalBackdrop?.classList.contains("active") &&
+    !profileOptionsModalBackdrop?.classList.contains("active")
   ) {
     document.body.classList.remove("modal-open");
     document.body.style.overflow = "";
@@ -835,6 +837,118 @@ function setupBlockedUsersButton() {
 
   blockedUsersBtn.dataset.blockedUsersReady = "true";
   blockedUsersBtn.addEventListener("click", openBlockedUsersModal);
+}
+
+
+/* =========================
+   PROFILE OPTIONS MODAL
+========================= */
+
+function renderProfileOptionsModalShell() {
+  return `
+    <div id="profileOptionsModalBackdrop" class="profile-options-modal-backdrop" aria-hidden="true">
+      <section class="profile-options-modal" role="dialog" aria-modal="true" aria-labelledby="profileOptionsModalTitle">
+        <div class="profile-options-modal-head">
+          <div>
+            <span class="eyebrow" data-i18n="safetyTools">${typeof t === "function" ? t("safetyTools") : "Safety tools"}</span>
+            <h2 id="profileOptionsModalTitle" data-i18n="profileOptions">${typeof t === "function" ? t("profileOptions") : "Profile options"}</h2>
+            <p data-i18n="profileOptionsText">${typeof t === "function" ? t("profileOptionsText") : "Manage your account safety controls."}</p>
+          </div>
+
+          <button id="profileOptionsModalCloseBtn" class="following-modal-close profile-options-modal-close" type="button" aria-label="Close profile options" data-i18n-aria-label="closeProfileOptions">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+
+        <div class="profile-options-modal-body">
+          <button id="profileOptionsBlockedUsersBtn" class="profile-options-action danger" type="button">
+            <span data-i18n="blockedUsers">${typeof t === "function" ? t("blockedUsers") : "Blocked users"}</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function setupProfileOptionsModal() {
+  if (!document.getElementById("profileOptionsModalBackdrop")) {
+    document.body.insertAdjacentHTML("beforeend", renderProfileOptionsModalShell());
+  }
+
+  const profileSettingsDotsBtn = document.getElementById("profileSettingsDotsBtn");
+  const profileOptionsModalBackdrop = document.getElementById("profileOptionsModalBackdrop");
+  const profileOptionsModalCloseBtn = document.getElementById("profileOptionsModalCloseBtn");
+  const profileOptionsBlockedUsersBtn = document.getElementById("profileOptionsBlockedUsersBtn");
+
+  if (profileSettingsDotsBtn && profileSettingsDotsBtn.dataset.profileOptionsReady !== "true") {
+    profileSettingsDotsBtn.dataset.profileOptionsReady = "true";
+    profileSettingsDotsBtn.addEventListener("click", openProfileOptionsModal);
+  }
+
+  if (profileOptionsModalCloseBtn && profileOptionsModalCloseBtn.dataset.profileOptionsCloseReady !== "true") {
+    profileOptionsModalCloseBtn.dataset.profileOptionsCloseReady = "true";
+    profileOptionsModalCloseBtn.addEventListener("click", closeProfileOptionsModal);
+  }
+
+  if (profileOptionsModalBackdrop && profileOptionsModalBackdrop.dataset.profileOptionsBackdropReady !== "true") {
+    profileOptionsModalBackdrop.dataset.profileOptionsBackdropReady = "true";
+    profileOptionsModalBackdrop.addEventListener("click", (event) => {
+      if (event.target === profileOptionsModalBackdrop) {
+        closeProfileOptionsModal();
+      }
+    });
+  }
+
+  if (profileOptionsBlockedUsersBtn && profileOptionsBlockedUsersBtn.dataset.blockedUsersReady !== "true") {
+    profileOptionsBlockedUsersBtn.dataset.blockedUsersReady = "true";
+    profileOptionsBlockedUsersBtn.addEventListener("click", () => {
+      closeProfileOptionsModal(true);
+      openBlockedUsersModal();
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeProfileOptionsModal();
+    }
+  });
+}
+
+function openProfileOptionsModal() {
+  const profileOptionsModalBackdrop = document.getElementById("profileOptionsModalBackdrop");
+
+  if (!profileOptionsModalBackdrop) return;
+
+  profileOptionsModalBackdrop.classList.add("active");
+  profileOptionsModalBackdrop.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeProfileOptionsModal(keepBodyLocked = false) {
+  const profileOptionsModalBackdrop = document.getElementById("profileOptionsModalBackdrop");
+
+  if (!profileOptionsModalBackdrop) return;
+
+  profileOptionsModalBackdrop.classList.remove("active");
+  profileOptionsModalBackdrop.setAttribute("aria-hidden", "true");
+
+  const followingModalBackdrop = document.getElementById("followingModalBackdrop");
+  const followersModalBackdrop = document.getElementById("followersModalBackdrop");
+  const profileUserModalBackdrop = document.getElementById("profileUserModalBackdrop");
+  const blockedUsersModalBackdrop = document.getElementById("blockedUsersModalBackdrop");
+
+  if (
+    !keepBodyLocked &&
+    !followingModalBackdrop?.classList.contains("active") &&
+    !followersModalBackdrop?.classList.contains("active") &&
+    !profileUserModalBackdrop?.classList.contains("active") &&
+    !blockedUsersModalBackdrop?.classList.contains("active")
+  ) {
+    document.body.classList.remove("modal-open");
+    document.body.style.overflow = "";
+  }
 }
 
 async function loadProfileFollowingList() {
@@ -2044,11 +2158,13 @@ function closeDeletePostModal() {
   const followingModalBackdrop = document.getElementById("followingModalBackdrop");
   const followersModalBackdrop = document.getElementById("followersModalBackdrop");
   const profileUserModalBackdrop = document.getElementById("profileUserModalBackdrop");
+  const profileOptionsModalBackdrop = document.getElementById("profileOptionsModalBackdrop");
 
   if (
     !followingModalBackdrop?.classList.contains("active") &&
     !followersModalBackdrop?.classList.contains("active") &&
-    !profileUserModalBackdrop?.classList.contains("active")
+    !profileUserModalBackdrop?.classList.contains("active") &&
+    !profileOptionsModalBackdrop?.classList.contains("active")
   ) {
     document.body.classList.remove("modal-open");
     document.body.style.overflow = "";
@@ -2269,6 +2385,7 @@ async function initProfilePage() {
   setupFollowersModal();
   setupProfileUserModal();
   setupBlockedUsersModal();
+  setupProfileOptionsModal();
 
   setupFollowingStatButton();
   setupFollowersStatButton();
