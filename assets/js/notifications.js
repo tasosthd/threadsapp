@@ -328,32 +328,29 @@ function updateNotificationsBadge() {
 }
 
 function renderNotifications() {
-  const list = document.getElementById("notificationsList");
+  const lists = Array.from(document.querySelectorAll("#notificationsList, #notificationsModalList"));
 
-  if (!list) return;
+  if (!lists.length) return;
+
+  let html = "";
 
   if (!currentUser) {
-    list.innerHTML = `
+    html = `
       <div class="notifications-empty">
         <strong>Sign in first.</strong>
         <span>Your notifications will appear here.</span>
       </div>
     `;
-    return;
-  }
-
-  if (!notifications.length) {
-    list.innerHTML = `
+  } else if (!notifications.length) {
+    html = `
       <div class="notifications-empty">
         <strong>No notifications yet.</strong>
         <span>When people follow, like, or comment, you’ll see it here.</span>
       </div>
     `;
-    return;
-  }
-
-  list.innerHTML = notifications
-    .map((notification) => {
+  } else {
+    html = notifications
+      .map((notification) => {
       const actorName = getNotificationActorName(notification);
       const actorAvatar = getNotificationActorAvatar(notification);
       const text = getNotificationText(notification);
@@ -401,8 +398,13 @@ function renderNotifications() {
           }
         </article>
       `;
-    })
-    .join("");
+      })
+      .join("");
+  }
+
+  lists.forEach((list) => {
+    list.innerHTML = html;
+  });
 
   bindNotificationActions();
 }
@@ -542,12 +544,12 @@ function renderNotificationsModalShell() {
         </div>
 
         <div class="notifications-modal-actions">
-          <button id="markAllNotificationsReadBtn" class="btn ghost-btn" type="button">
+          <button id="notificationsModalMarkAllReadBtn" class="btn ghost-btn" type="button">
             Mark all as read
           </button>
         </div>
 
-        <div id="notificationsList" class="notifications-list">
+        <div id="notificationsModalList" class="notifications-list">
           <div class="notifications-empty">
             <strong>Loading...</strong>
             <span>Getting your latest activity.</span>
@@ -559,17 +561,13 @@ function renderNotificationsModalShell() {
 }
 
 function setupNotificationsModal() {
-  if (document.body.classList.contains("notifications-page-body")) {
-    return;
-  }
-
   if (!document.getElementById("notificationsModalBackdrop")) {
     document.body.insertAdjacentHTML("beforeend", renderNotificationsModalShell());
   }
 
   const notificationsModalBackdrop = document.getElementById("notificationsModalBackdrop");
   const notificationsModalCloseBtn = document.getElementById("notificationsModalCloseBtn");
-  const markAllNotificationsReadBtn = document.getElementById("markAllNotificationsReadBtn");
+  const markAllNotificationsReadBtn = document.getElementById("notificationsModalMarkAllReadBtn");
 
   if (notificationsModalCloseBtn) {
     notificationsModalCloseBtn.addEventListener("click", closeNotificationsModal);
@@ -619,7 +617,6 @@ function closeNotificationsModal() {
 
 function setupNotificationButtons() {
   const buttons = document.querySelectorAll("[data-open-notifications]");
-  const isNotificationsPage = document.body.classList.contains("notifications-page-body");
 
   buttons.forEach((button) => {
     if (button.dataset.notificationsReady === "true") return;
@@ -627,19 +624,6 @@ function setupNotificationButtons() {
     button.dataset.notificationsReady = "true";
 
     button.addEventListener("click", () => {
-      if (isNotificationsPage) {
-        const notificationsPanel = document.querySelector(".notifications-page-card");
-
-        if (notificationsPanel) {
-          notificationsPanel.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-          });
-        }
-
-        return;
-      }
-
       openNotificationsModal();
     });
   });
@@ -686,12 +670,12 @@ async function initNotificationsSystem() {
   setupNotificationsModal();
   setupNotificationButtons();
 
-  const pageMarkAllNotificationsReadBtn = document.getElementById("markAllNotificationsReadBtn");
+  document.querySelectorAll("#markAllNotificationsReadBtn, #notificationsModalMarkAllReadBtn").forEach((button) => {
+    if (button.dataset.markAllReady === "true") return;
 
-  if (pageMarkAllNotificationsReadBtn && pageMarkAllNotificationsReadBtn.dataset.markAllReady !== "true") {
-    pageMarkAllNotificationsReadBtn.dataset.markAllReady = "true";
-    pageMarkAllNotificationsReadBtn.addEventListener("click", markAllNotificationsAsRead);
-  }
+    button.dataset.markAllReady = "true";
+    button.addEventListener("click", markAllNotificationsAsRead);
+  });
 
   if (currentUser) {
     await loadNotifications();
