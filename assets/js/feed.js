@@ -642,10 +642,10 @@ function updatePublicProfileUI() {
           aria-label="${typeof t === "function" ? t("moreActions") : "More actions"}"
         >
           <svg class="more-dots-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <circle cx="12" cy="5" r="2.1"></circle>
-              <circle cx="12" cy="12" r="2.1"></circle>
-              <circle cx="12" cy="19" r="2.1"></circle>
-            </svg>
+            <circle cx="5" cy="12" r="2.1"></circle>
+            <circle cx="12" cy="12" r="2.1"></circle>
+            <circle cx="19" cy="12" r="2.1"></circle>
+          </svg>
         </button>
       `;
     }
