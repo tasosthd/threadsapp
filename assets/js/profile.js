@@ -507,6 +507,7 @@ function closeFollowingModal() {
     !followersModalBackdrop?.classList.contains("active") &&
     !profileUserModalBackdrop?.classList.contains("active")
   ) {
+    document.body.classList.remove("modal-open");
     document.body.style.overflow = "";
   }
 }
@@ -666,6 +667,7 @@ function openBlockedUsersModal() {
 
   blockedUsersModalBackdrop.classList.add("active");
   blockedUsersModalBackdrop.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
   document.body.style.overflow = "hidden";
 
   loadBlockedUsersList();
@@ -688,6 +690,7 @@ function closeBlockedUsersModal() {
     !followersModalBackdrop?.classList.contains("active") &&
     !profileUserModalBackdrop?.classList.contains("active")
   ) {
+    document.body.classList.remove("modal-open");
     document.body.style.overflow = "";
   }
 }
@@ -990,6 +993,7 @@ function closeFollowersModal() {
     !followingModalBackdrop?.classList.contains("active") &&
     !profileUserModalBackdrop?.classList.contains("active")
   ) {
+    document.body.classList.remove("modal-open");
     document.body.style.overflow = "";
   }
 }
@@ -1286,6 +1290,7 @@ function closeProfileUserModal() {
     !followingModalBackdrop?.classList.contains("active") &&
     !followersModalBackdrop?.classList.contains("active")
   ) {
+    document.body.classList.remove("modal-open");
     document.body.style.overflow = "";
   }
 }
@@ -2045,6 +2050,7 @@ function closeDeletePostModal() {
     !followersModalBackdrop?.classList.contains("active") &&
     !profileUserModalBackdrop?.classList.contains("active")
   ) {
+    document.body.classList.remove("modal-open");
     document.body.style.overflow = "";
   }
 }
