@@ -6350,3 +6350,57 @@ body.modal-open {
     border-radius: 26px !important;
   }
 }
+
+/* =========================
+   Notifications modal mobile/nav-safe final fix
+========================= */
+.notifications-modal-backdrop {
+  z-index: 200000 !important;
+}
+
+.notifications-modal {
+  display: flex;
+  flex-direction: column;
+}
+
+.notifications-modal .notifications-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 560px) {
+  .notifications-modal-backdrop {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) 10px calc(104px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .notifications-modal {
+    width: 100% !important;
+    height: calc(100dvh - 124px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+    max-height: none !important;
+    border-radius: 28px !important;
+    overflow: hidden !important;
+  }
+
+  .notifications-modal-head {
+    flex: 0 0 auto;
+  }
+
+  .notifications-modal-actions {
+    flex: 0 0 auto;
+  }
+
+  .notifications-modal .notifications-list {
+    max-height: none !important;
+    padding-bottom: calc(34px + env(safe-area-inset-bottom, 0px)) !important;
+    overflow-y: auto !important;
+  }
+
+  .notifications-page-main {
+    padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
