@@ -22,7 +22,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=mod-menu-1" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=profile-settings-modal-1" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -260,6 +260,20 @@
             <h2 id="profileEditorName">Loomyva User</h2>
             <p id="profileEditorEmail" class="profile-editor-username">@username</p>
           </div>
+
+          <button
+            id="profileSettingsDotsBtn"
+            class="profile-more-btn profile-settings-dots-btn"
+            type="button"
+            aria-label="Profile options"
+            data-i18n-aria-label="profileOptions"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="5" cy="12" r="2" fill="currentColor"/>
+              <circle cx="12" cy="12" r="2" fill="currentColor"/>
+              <circle cx="19" cy="12" r="2" fill="currentColor"/>
+            </svg>
+          </button>
         </div>
 
         <div class="profile-editor-form">
@@ -296,16 +310,12 @@
           </label>
 
           <div class="profile-actions">
-            <button id="saveProfilePageBtn" class="btn primary-btn" type="button">
-              <span data-i18n="saveProfile">Save profile</span>
-            </button>
-
             <button id="goHomeBtn" class="btn ghost-btn" type="button">
               <span data-i18n="backToFeed">Back to feed</span>
             </button>
 
-            <button id="blockedUsersBtn" class="btn ghost-btn blocked-users-btn" type="button">
-              <span data-i18n="blockedUsers">Blocked users</span>
+            <button id="saveProfilePageBtn" class="btn primary-btn save-profile-right-btn" type="button">
+              <span data-i18n="saveProfile">Save profile</span>
             </button>
           </div>
         </div>
@@ -333,7 +343,7 @@
   <script src="/assets/js/auth.js?v=appstore-unblock-1"></script>
   <script src="/assets/js/notifications.js?v=appstore-unblock-1"></script>
   <script src="/assets/js/moderation.js?v=mod-menu-1"></script>
-  <script src="/assets/js/profile.js?v=mod-menu-1"></script>
+  <script src="/assets/js/profile.js?v=profile-settings-modal-1"></script>
   <script>
     async function bootProfilePage() {
       await initProfilePage();
