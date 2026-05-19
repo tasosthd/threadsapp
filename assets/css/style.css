@@ -6289,8 +6289,8 @@ body.modal-open {
 
 
 /* =========================
-   Root sidebar mobile legal-link fix
-   Keeps Terms / Privacy above the bottom nav
+   Sidebar mobile legal-link fix
+   Keeps Terms / Privacy above the bottom nav on all pages
 ========================= */
 .sidebar-legal-links {
   margin-top: 14px;
