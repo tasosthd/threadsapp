@@ -5748,6 +5748,91 @@ html[data-theme="dark"] .notifications-modal {
   }
 }
 
+
+/* =========================
+   Mobile-safe blocked users modal
+   Keeps bottom nav unchanged while lifting the popup above it.
+========================= */
+.blocked-users-modal-backdrop {
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  overflow: hidden;
+}
+
+.blocked-users-modal-backdrop.active {
+  display: flex;
+}
+
+.blocked-users-modal {
+  width: min(560px, 100%);
+  max-height: min(720px, calc(100dvh - 56px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.blocked-users-modal-head {
+  flex: 0 0 auto;
+}
+
+.blocked-users-modal-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 560px) {
+  #blockedUsersModalBackdrop.blocked-users-modal-backdrop {
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0;
+  }
+
+  #blockedUsersModalBackdrop .blocked-users-modal {
+    position: fixed;
+    top: calc(10px + env(safe-area-inset-top, 0px));
+    left: calc(10px + env(safe-area-inset-left, 0px));
+    right: calc(10px + env(safe-area-inset-right, 0px));
+    bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+    width: auto;
+    max-width: none;
+    height: auto;
+    max-height: calc(100dvh - 120px);
+    border-radius: 30px;
+    transform: translateY(14px) scale(0.98);
+  }
+
+  #blockedUsersModalBackdrop.active .blocked-users-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  #blockedUsersModalBackdrop .blocked-users-modal-head {
+    padding: 18px 16px 14px;
+  }
+
+  #blockedUsersModalBackdrop .blocked-users-modal-head h2 {
+    font-size: 24px;
+  }
+
+  #blockedUsersModalBackdrop .blocked-users-modal-list {
+    max-height: none;
+    padding: 10px 14px calc(34px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 390px) {
+  #blockedUsersModalBackdrop .blocked-users-modal {
+    bottom: calc(98px + env(safe-area-inset-bottom, 0px));
+    border-radius: 26px;
+  }
+}
+
 /* =========================
    Mobile followers/following drawer fix
    Keeps bottom nav unchanged while making social lists scroll inside the panel.
