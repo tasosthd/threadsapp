@@ -149,12 +149,15 @@ async function reportUser(userId, reasonOverride) {
   setStatus(typeof t === "function" ? t("userReportSent") : "User report sent.", "success");
 }
 
-async function blockUser(userId) {
+async function blockUser(userId, options = {}) {
   if (!requireModerationLogin()) return;
   if (!userId || userId === currentUser.id) return;
 
-  const confirmed = window.confirm(typeof t === "function" ? t("blockConfirm") : "Block this user? You will no longer see their posts or profile in search.");
-  if (!confirmed) return;
+  const skipConfirm = Boolean(options && options.skipConfirm);
+  if (!skipConfirm) {
+    const confirmed = window.confirm(typeof t === "function" ? t("blockConfirm") : "Block this user? You will no longer see their posts or profile in search.");
+    if (!confirmed) return;
+  }
 
   moderationBusy = true;
 
@@ -229,6 +232,10 @@ function ensureModerationMenuModal() {
 
       <p class="moderation-menu-copy">${typeof t === "function" ? t("moderationMenuText") : "Choose what you want to do with this post or user."}</p>
 
+      <div class="moderation-menu-warning">
+        ${typeof t === "function" ? t("blockWarning") : "Blocking hides this user from your feed and search. Reports are sent to your moderation table."}
+      </div>
+
       <label class="moderation-reason-label" for="moderationReasonInput">
         ${typeof t === "function" ? t("reportReasonLabel") : "Report reason"}
       </label>
@@ -272,7 +279,7 @@ function ensureModerationMenuModal() {
 
   modal.querySelector("[data-menu-block-user]")?.addEventListener("click", async () => {
     const userId = modal.dataset.userId || "";
-    await blockUser(userId);
+    await blockUser(userId, { skipConfirm: true });
     closeModerationMenu();
   });
 
@@ -298,7 +305,9 @@ function openModerationMenu({ postId = "", userId = "", context = "post" } = {})
 
   modal.classList.add("active");
   document.body.classList.add("modal-open");
-  setTimeout(() => input?.focus(), 80);
+
+  const firstAction = modal.querySelector("[data-menu-report-post]:not(.hidden), [data-menu-report-user], [data-menu-block-user]");
+  setTimeout(() => firstAction?.focus(), 80);
 }
 
 function closeModerationMenu() {
@@ -343,3 +352,15 @@ function bindModerationButtons() {
     });
   });
 }
+
+
+let moderationEscapeListenerReady = false;
+function initModerationKeyboardClose() {
+  if (moderationEscapeListenerReady) return;
+  moderationEscapeListenerReady = true;
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeModerationMenu();
+  });
+}
+
+initModerationKeyboardClose();
