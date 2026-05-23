@@ -345,6 +345,19 @@ function renderUserSearchResults() {
 
       const followingLabel = typeof t === "function" ? t("following") : "following";
 
+      const messageButton = (!isOwnProfile && currentUser)
+        ? `
+          <button
+            class="chat-message-link"
+            type="button"
+            data-open-chat-user-id="${escapeHTML(userId)}"
+            aria-label="${typeof t === "function" ? t("message") : "Message"} ${escapeHTML(name)}"
+          >
+            ${typeof t === "function" ? t("message") : "Message"}
+          </button>
+        `
+        : "";
+
       const followButton = isOwnProfile
         ? `<span class="user-search-you">${typeof t === "function" ? t("you") : "You"}</span>`
         : currentUser
@@ -386,6 +399,7 @@ function renderUserSearchResults() {
           </button>
 
           <div class="user-search-actions">
+            ${messageButton}
             ${followButton}
           </div>
         </article>
@@ -407,6 +421,17 @@ function bindUserSearchResultActions() {
       }
 
       window.location.href = `/?profile=${encodeURIComponent(userId)}`;
+    });
+  });
+
+  document.querySelectorAll("[data-open-chat-user-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (typeof openChatWithUser === "function") {
+        openChatWithUser(button.dataset.openChatUserId);
+        return;
+      }
+
+      window.location.href = `/messages/?user=${encodeURIComponent(button.dataset.openChatUserId)}`;
     });
   });
 
