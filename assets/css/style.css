@@ -7348,3 +7348,125 @@ html[data-theme="dark"] .chat-message-form {
     min-width: 84px;
   }
 }
+
+
+/* =========================================================
+   FINAL FIX: visible premium language/theme buttons + language card
+   Forces the language box to show on Loomyva.com and removes gray buttons.
+========================================================= */
+.sidebar-language-box {
+  display: grid !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 5 !important;
+  gap: 14px !important;
+  margin: 0 0 18px !important;
+  padding: 15px !important;
+  border-radius: 28px !important;
+  border: 1px solid rgba(124, 58, 237, 0.22) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(168, 85, 247, 0.22), transparent 48%),
+    radial-gradient(circle at 100% 100%, rgba(34, 211, 238, 0.18), transparent 46%),
+    rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 18px 46px rgba(69, 48, 150, 0.12), inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+
+html[data-theme="dark"] .sidebar-language-box {
+  border-color: rgba(34, 211, 238, 0.18) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(168, 85, 247, 0.22), transparent 48%),
+    radial-gradient(circle at 100% 100%, rgba(34, 211, 238, 0.16), transparent 46%),
+    rgba(15, 23, 42, 0.88) !important;
+  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+
+.sidebar-language-box .sidebar-theme-head span,
+.sidebar-language-box .sidebar-theme-head small {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.sidebar-language-box .sidebar-theme-head span {
+  color: var(--text) !important;
+}
+
+.sidebar-language-box .sidebar-theme-head small {
+  color: var(--muted) !important;
+}
+
+.theme-toggle-group.language-toggle-group {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+}
+
+.theme-toggle-btn.language-toggle-btn,
+.sidebar-language-box button[data-language-option] {
+  min-height: 48px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(124, 58, 237, 0.26) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(245, 240, 255, 0.96)) !important;
+  color: #32145f !important;
+  box-shadow: 0 12px 26px rgba(69, 48, 150, 0.10), inset 0 1px 0 rgba(255,255,255,.95) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.theme-toggle-btn.language-toggle-btn span,
+.sidebar-language-box button[data-language-option] span {
+  color: inherit !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.theme-toggle-btn.language-toggle-btn:hover,
+.sidebar-language-box button[data-language-option]:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(34, 211, 238, 0.42) !important;
+  color: #062b3a !important;
+  background: linear-gradient(135deg, rgba(245, 240, 255, 1), rgba(224, 252, 255, 1)) !important;
+}
+
+.theme-toggle-btn.language-toggle-btn.active,
+.sidebar-language-box button[data-language-option].active {
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.34) !important;
+  background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 48%, #22d3ee 100%) !important;
+  box-shadow: 0 16px 34px rgba(124, 58, 237, 0.28), 0 10px 24px rgba(34, 211, 238, 0.16) !important;
+}
+
+html[data-theme="dark"] .theme-toggle-btn.language-toggle-btn,
+html[data-theme="dark"] .sidebar-language-box button[data-language-option] {
+  border-color: rgba(34, 211, 238, 0.18) !important;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 27, 75, 0.9)) !important;
+  color: #dffbff !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+
+html[data-theme="dark"] .theme-toggle-btn.language-toggle-btn.active,
+html[data-theme="dark"] .sidebar-language-box button[data-language-option].active {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #2563eb 50%, #22d3ee 100%) !important;
+}
+
+/* Keep normal Light/Dark card buttons premium too */
+.sidebar-theme-box .theme-toggle-btn:not(.language-toggle-btn) {
+  border-color: rgba(124, 58, 237, 0.24) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(245,240,255,0.96)) !important;
+  color: #32145f !important;
+}
+
+.sidebar-theme-box .theme-toggle-btn:not(.language-toggle-btn).active {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 48%, #22d3ee 100%) !important;
+}
+
+html[data-theme="dark"] .sidebar-theme-box .theme-toggle-btn:not(.language-toggle-btn) {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 27, 75, 0.9)) !important;
+  color: #dffbff !important;
+}
