@@ -471,7 +471,11 @@ async function initChatPage() {
   if (chatBooted) return;
   chatBooted = true;
 
-  if (!window.supabaseClient) return;
+  if (typeof supabaseClient === "undefined" || !supabaseClient) {
+    console.error("Chat boot stopped: Supabase client is not available.");
+    renderLatestChatsPanel();
+    return;
+  }
 
   await getChatUser();
 
@@ -524,7 +528,12 @@ function bindChatPageUI() {
 
 async function bootChat() {
   bindChatPageUI();
-  await initChatPage();
+  try {
+    await initChatPage();
+  } catch (error) {
+    console.error("Chat boot error:", error);
+    renderLatestChatsPanel();
+  }
 }
 
 function openChatWithUser(userId) {
