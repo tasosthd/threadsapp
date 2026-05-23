@@ -7470,3 +7470,129 @@ html[data-theme="dark"] .sidebar-theme-box .theme-toggle-btn:not(.language-toggl
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 27, 75, 0.9)) !important;
   color: #dffbff !important;
 }
+
+/* =========================
+   LOOMYVA SIDEBAR POLISH FIX
+   Keeps language card visible + kills gray menu buttons
+========================= */
+.app-sidebar {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(126, 69, 255, 0.22), transparent 34%),
+    radial-gradient(circle at 90% 12%, rgba(0, 212, 255, 0.16), transparent 32%),
+    rgba(6, 22, 31, 0.96) !important;
+  border-color: rgba(0, 212, 255, 0.22) !important;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.sidebar-theme-box,
+.sidebar-language-box {
+  display: grid !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 3 !important;
+  margin: 0 0 18px !important;
+  padding: 18px !important;
+  border-radius: 28px !important;
+  border: 1px solid rgba(81, 220, 255, 0.2) !important;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(126, 69, 255, 0.2), transparent 42%),
+    linear-gradient(135deg, rgba(255,255,255,0.085), rgba(255,255,255,0.035)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 16px 45px rgba(0,0,0,0.16) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}
+
+.sidebar-theme-head span,
+.sidebar-theme-head small,
+.sidebar-language-box .sidebar-theme-head span,
+.sidebar-language-box .sidebar-theme-head small {
+  color: #f4fbff !important;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.18) !important;
+}
+
+.sidebar-theme-head small,
+.sidebar-language-box .sidebar-theme-head small {
+  color: rgba(214, 238, 247, 0.78) !important;
+}
+
+.theme-toggle-btn,
+.language-toggle-btn {
+  border: 1px solid rgba(81, 220, 255, 0.18) !important;
+  background: rgba(7, 22, 34, 0.68) !important;
+  color: #d9f5ff !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07) !important;
+}
+
+.theme-toggle-btn:hover,
+.language-toggle-btn:hover {
+  color: #ffffff !important;
+  border-color: rgba(0, 212, 255, 0.46) !important;
+  background: rgba(10, 38, 54, 0.88) !important;
+}
+
+.theme-toggle-btn.active,
+.language-toggle-btn.active {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: linear-gradient(135deg, #7c4dff 0%, #1d7fff 48%, #00d4ff 100%) !important;
+  box-shadow: 0 16px 36px rgba(0, 188, 231, 0.28), inset 0 1px 0 rgba(255,255,255,0.22) !important;
+}
+
+.sidebar-links {
+  gap: 14px !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.sidebar-links a,
+.sidebar-links button,
+.sidebar-legal-link {
+  min-height: 64px !important;
+  border-radius: 24px !important;
+  border: 1px solid rgba(81, 220, 255, 0.18) !important;
+  background:
+    radial-gradient(circle at 92% 50%, rgba(0, 212, 255, 0.13), transparent 30%),
+    linear-gradient(135deg, rgba(13, 39, 55, 0.94), rgba(9, 26, 40, 0.86)) !important;
+  color: #f4fbff !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 14px 32px rgba(0,0,0,0.16) !important;
+}
+
+.sidebar-links a:hover,
+.sidebar-links button:hover,
+.sidebar-legal-link:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(0, 212, 255, 0.5) !important;
+  background: linear-gradient(135deg, rgba(124, 77, 255, 0.82), rgba(0, 212, 255, 0.72)) !important;
+  color: #ffffff !important;
+}
+
+.sidebar-links a::after,
+.sidebar-links button::after {
+  color: #26e2ff !important;
+  font-size: 18px !important;
+  text-shadow: 0 0 16px rgba(0, 212, 255, 0.7) !important;
+}
+
+.sidebar-legal-links {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+@media (max-width: 640px) {
+  .app-sidebar {
+    padding-bottom: calc(150px + var(--safe-bottom)) !important;
+  }
+
+  .sidebar-theme-box,
+  .sidebar-language-box {
+    padding: 16px !important;
+    border-radius: 26px !important;
+  }
+
+  .sidebar-links a,
+  .sidebar-links button,
+  .sidebar-legal-link {
+    min-height: 58px !important;
+  }
+}
