@@ -7154,3 +7154,197 @@ html[data-theme="dark"] .theme-toggle-btn {
     flex: 1 1 auto;
   }
 }
+
+
+/* =========================================================
+   Premium purple → cyan polish pass
+   Keeps existing layout stable while upgrading the visual system.
+========================================================= */
+:root {
+  --purple: #7c3aed;
+  --violet: #a855f7;
+  --cyan-glow: #22d3ee;
+  --premium-gradient: linear-gradient(135deg, #7c3aed 0%, #3b82f6 48%, #22d3ee 100%);
+  --premium-gradient-soft: linear-gradient(135deg, rgba(124, 58, 237, 0.18), rgba(34, 211, 238, 0.16));
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(168, 85, 247, 0.34), transparent 34%),
+    radial-gradient(circle at 88% 12%, rgba(34, 211, 238, 0.30), transparent 32%),
+    radial-gradient(circle at 52% 92%, rgba(59, 130, 246, 0.18), transparent 42%),
+    linear-gradient(135deg, #f8f2ff 0%, #eafcff 52%, #f7fbff 100%);
+  background-attachment: fixed;
+}
+
+html[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(168, 85, 247, 0.24), transparent 36%),
+    radial-gradient(circle at 88% 12%, rgba(34, 211, 238, 0.18), transparent 34%),
+    radial-gradient(circle at 50% 92%, rgba(59, 130, 246, 0.16), transparent 44%),
+    linear-gradient(135deg, #080614 0%, #071827 50%, #051017 100%);
+  background-attachment: fixed;
+}
+
+.orb-one {
+  background: rgba(168, 85, 247, 0.34);
+}
+
+.orb-two {
+  background: rgba(34, 211, 238, 0.30);
+}
+
+.topbar,
+.app-sidebar,
+.glass-card,
+.chat-sidebar,
+.chat-window,
+.chat-signin-card,
+.bottom-nav {
+  border-color: rgba(124, 58, 237, 0.16);
+  box-shadow: 0 26px 80px rgba(69, 48, 150, 0.14);
+}
+
+html[data-theme="dark"] .topbar,
+html[data-theme="dark"] .app-sidebar,
+html[data-theme="dark"] .glass-card,
+html[data-theme="dark"] .chat-sidebar,
+html[data-theme="dark"] .chat-window,
+html[data-theme="dark"] .chat-signin-card,
+html[data-theme="dark"] .bottom-nav {
+  border-color: rgba(34, 211, 238, 0.14);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.36);
+}
+
+.primary-btn,
+.theme-toggle-btn.active,
+.bottom-nav-btn.active,
+.bottom-nav-main.active,
+.chat-message.own {
+  background: var(--premium-gradient) !important;
+  box-shadow: 0 16px 34px rgba(124, 58, 237, 0.25), 0 10px 24px rgba(34, 211, 238, 0.14);
+}
+
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.72);
+  color: #254156;
+  border-color: rgba(124, 58, 237, 0.18);
+}
+
+html[data-theme="dark"] .theme-toggle-btn {
+  background: rgba(15, 23, 42, 0.72);
+  color: #c8f6ff;
+  border-color: rgba(34, 211, 238, 0.16);
+}
+
+.sidebar-theme-box,
+.sidebar-language-box {
+  background:
+    radial-gradient(circle at top left, rgba(168, 85, 247, 0.14), transparent 46%),
+    radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.12), transparent 46%),
+    var(--soft-card);
+}
+
+.sidebar-links a,
+.sidebar-links button {
+  background: rgba(255, 255, 255, 0.58);
+  border-color: rgba(124, 58, 237, 0.14);
+}
+
+.sidebar-links a:hover,
+.sidebar-links button:hover {
+  background: var(--premium-gradient-soft);
+  border-color: rgba(34, 211, 238, 0.28);
+}
+
+.sidebar-links a::after,
+.sidebar-links button::after {
+  color: #7c3aed;
+}
+
+html[data-theme="dark"] .sidebar-links a::after,
+html[data-theme="dark"] .sidebar-links button::after {
+  color: #22d3ee;
+}
+
+.messages-page-hero {
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(34, 211, 238, 0.12)),
+    var(--card);
+}
+
+.chat-sidebar,
+.chat-window {
+  background:
+    radial-gradient(circle at top left, rgba(124, 58, 237, 0.10), transparent 42%),
+    radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.10), transparent 42%),
+    var(--card);
+}
+
+.chat-search-box input,
+.chat-message-form input {
+  border-color: rgba(124, 58, 237, 0.18);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.chat-search-box input:focus,
+.chat-message-form input:focus {
+  border-color: rgba(34, 211, 238, 0.70);
+  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.14);
+}
+
+.chat-conversation-btn,
+.chat-person-btn {
+  border-color: rgba(124, 58, 237, 0.14);
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.chat-conversation-btn:hover,
+.chat-person-btn:hover,
+.chat-conversation-btn.active {
+  border-color: rgba(34, 211, 238, 0.46);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(34, 211, 238, 0.10));
+}
+
+.chat-messages {
+  background:
+    radial-gradient(circle at top left, rgba(124, 58, 237, 0.08), transparent 38%),
+    radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.08), transparent 38%);
+}
+
+.chat-message-form {
+  background: rgba(255, 255, 255, 0.36);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+html[data-theme="dark"] .chat-message-form {
+  background: rgba(2, 8, 23, 0.42);
+}
+
+@media (max-width: 760px) {
+  .messages-page-grid {
+    width: min(100% - 18px, 1180px);
+    padding-top: 16px;
+  }
+
+  .chat-app-shell {
+    gap: 12px;
+  }
+
+  .chat-sidebar,
+  .chat-window {
+    border-radius: 24px;
+  }
+
+  .chat-message-form {
+    grid-template-columns: 1fr auto;
+    padding-bottom: calc(14px + var(--safe-bottom));
+  }
+
+  .chat-message-form .btn {
+    min-width: 84px;
+  }
+}
