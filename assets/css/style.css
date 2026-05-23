@@ -7599,164 +7599,192 @@ html[data-theme="dark"] .sidebar-theme-box .theme-toggle-btn:not(.language-toggl
 
 
 /* =========================================================
-   CHAT INBOX: latest chats clickable from Messages button
+   Latest chats cards directly under Messages hero
+   This makes the inbox visible in the empty area before the full chat window.
 ========================================================= */
-.chat-conversation-list {
-  max-height: 410px;
-  overflow-y: auto;
-  padding-right: 4px;
-  scrollbar-width: thin;
-}
-
-.chat-conversation-btn {
-  grid-template-columns: 52px minmax(0, 1fr) !important;
-  padding: 12px !important;
-  border-radius: 22px !important;
-  background:
-    radial-gradient(circle at 0% 0%, rgba(124, 58, 237, 0.14), transparent 42%),
-    radial-gradient(circle at 100% 100%, rgba(34, 211, 238, 0.12), transparent 42%),
-    rgba(255, 255, 255, 0.72) !important;
-  border: 1px solid rgba(34, 211, 238, 0.18) !important;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
-}
-
-html[data-theme="dark"] .chat-conversation-btn {
-  background:
-    radial-gradient(circle at 0% 0%, rgba(124, 58, 237, 0.22), transparent 42%),
-    radial-gradient(circle at 100% 100%, rgba(34, 211, 238, 0.16), transparent 42%),
-    rgba(8, 20, 32, 0.82) !important;
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.24);
-}
-
-.chat-conversation-btn.active,
-.chat-conversation-btn:hover {
-  border-color: rgba(34, 211, 238, 0.55) !important;
-  background:
-    linear-gradient(135deg, rgba(124, 58, 237, 0.20), rgba(34, 211, 238, 0.16)),
-    rgba(255, 255, 255, 0.84) !important;
-  box-shadow: 0 18px 46px rgba(34, 211, 238, 0.16);
-}
-
-html[data-theme="dark"] .chat-conversation-btn.active,
-html[data-theme="dark"] .chat-conversation-btn:hover {
-  background:
-    linear-gradient(135deg, rgba(124, 58, 237, 0.28), rgba(34, 211, 238, 0.20)),
-    rgba(8, 20, 32, 0.92) !important;
-}
-
-.chat-conversation-avatar-wrap {
-  position: relative;
-  width: 52px;
-  height: 52px;
-}
-
-.chat-conversation-avatar-wrap::after {
-  content: "";
-  position: absolute;
-  right: -1px;
-  bottom: -1px;
-  width: 13px;
-  height: 13px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #7c3aed, #22d3ee);
-  border: 2px solid var(--card-strong);
-}
-
-.chat-conversation-avatar-wrap img {
-  width: 52px !important;
-  height: 52px !important;
-  border-radius: 18px !important;
-}
-
-.chat-conversation-main {
-  min-width: 0;
-  display: grid !important;
-  gap: 2px !important;
-}
-
-.chat-conversation-topline {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.chat-conversation-topline strong {
-  min-width: 0;
+.latest-chats-panel {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 32px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(124, 58, 237, 0.18), transparent 38%),
+    radial-gradient(circle at 92% 14%, rgba(6, 182, 212, 0.20), transparent 42%),
+    rgba(255, 255, 255, 0.62);
+}
+
+[data-theme="dark"] .latest-chats-panel {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(124, 58, 237, 0.22), transparent 42%),
+    radial-gradient(circle at 92% 14%, rgba(6, 182, 212, 0.18), transparent 42%),
+    rgba(2, 12, 24, 0.78);
+}
+
+.latest-chats-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.latest-chats-head h2 {
+  margin: 4px 0 3px;
+  font-size: clamp(24px, 5vw, 36px);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.latest-chats-head p {
+  margin: 0;
+  color: var(--muted-color, #64748b);
+  font-weight: 600;
+}
+
+.latest-chats-count {
+  min-width: 42px;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  background: linear-gradient(135deg, #7c3aed, #06b6d4);
+  box-shadow: 0 14px 30px rgba(6, 182, 212, 0.24);
+}
+
+.latest-chats-list {
+  display: grid;
+  gap: 12px;
+}
+
+.latest-chat-card {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.52));
+  color: var(--text-color, #071f2a);
+  border-radius: 26px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+[data-theme="dark"] .latest-chat-card {
+  border-color: rgba(34, 211, 238, 0.18);
+  background:
+    linear-gradient(135deg, rgba(8, 22, 38, 0.94), rgba(15, 23, 42, 0.70));
+  color: #f8fafc;
+}
+
+.latest-chat-card:hover,
+.latest-chat-card.active {
+  transform: translateY(-2px);
+  border-color: rgba(6, 182, 212, 0.58);
+  box-shadow: 0 20px 44px rgba(6, 182, 212, 0.18);
+}
+
+.latest-chat-card img {
+  width: 54px;
+  height: 54px;
+  border-radius: 19px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #7c3aed, #06b6d4);
+}
+
+.latest-chat-meta {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.latest-chat-meta strong,
+.latest-chat-meta small {
+  overflow: hidden;
   white-space: nowrap;
-  color: var(--text);
+  text-overflow: ellipsis;
+}
+
+.latest-chat-meta strong {
+  font-size: 1rem;
   font-weight: 900;
 }
 
-.chat-conversation-topline em {
-  font-style: normal;
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: var(--cyan);
-  white-space: nowrap;
-}
-
-.chat-conversation-username {
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 800;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.chat-conversation-main small {
-  color: var(--muted) !important;
-  font-size: 0.82rem;
+.latest-chat-meta small {
+  color: var(--muted-color, #64748b);
   font-weight: 600;
-  max-width: 100%;
 }
 
-.chat-empty-inbox {
+.latest-chat-side {
   display: grid;
-  gap: 4px;
-  border: 1px dashed rgba(34, 211, 238, 0.32);
-  border-radius: 22px;
-  background: rgba(34, 211, 238, 0.06);
+  justify-items: end;
+  gap: 6px;
+  color: var(--muted-color, #64748b);
 }
 
-.chat-empty-inbox strong {
-  color: var(--text);
+.latest-chat-side em {
+  font-style: normal;
+  font-size: 0.75rem;
+  font-weight: 800;
 }
 
-.chat-empty-inbox span {
-  color: var(--muted);
+.latest-chat-side b {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(135deg, #7c3aed, #06b6d4);
 }
 
-@media (max-width: 760px) {
-  .chat-app-shell {
-    grid-template-columns: 1fr !important;
-    align-items: start;
+.latest-chat-empty {
+  display: grid;
+  gap: 5px;
+  text-align: center;
+  padding: 28px 18px;
+  border-radius: 24px;
+  border: 1px dashed rgba(100, 116, 139, 0.32);
+  color: var(--muted-color, #64748b);
+}
+
+.latest-chat-empty strong {
+  color: var(--text-color, #071f2a);
+  font-weight: 900;
+}
+
+[data-theme="dark"] .latest-chat-empty strong {
+  color: #f8fafc;
+}
+
+@media (max-width: 520px) {
+  .latest-chats-panel {
+    padding: 16px;
+    border-radius: 28px;
   }
 
-  .chat-sidebar {
-    min-height: auto !important;
+  .latest-chats-head {
+    align-items: center;
   }
 
-  .chat-window {
-    min-height: min(620px, calc(var(--app-height) - 170px)) !important;
+  .latest-chat-card {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    border-radius: 23px;
+    padding: 10px;
   }
 
-  .chat-conversation-list {
-    max-height: none;
-    overflow: visible;
-  }
-
-  .chat-conversation-btn {
-    min-height: 82px;
-  }
-
-  .chat-people-list {
-    max-height: 280px;
-    overflow-y: auto;
-    padding-right: 2px;
+  .latest-chat-card img {
+    width: 48px;
+    height: 48px;
+    border-radius: 17px;
   }
 }
