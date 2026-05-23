@@ -348,12 +348,17 @@ function renderUserSearchResults() {
       const messageButton = (!isOwnProfile && currentUser)
         ? `
           <button
-            class="chat-message-link"
+            class="chat-message-link user-search-message-icon-btn"
             type="button"
             data-open-chat-user-id="${escapeHTML(userId)}"
             aria-label="${typeof t === "function" ? t("message") : "Message"} ${escapeHTML(name)}"
+            title="${typeof t === "function" ? t("message") : "Message"}"
           >
-            ${typeof t === "function" ? t("message") : "Message"}
+            <svg class="user-search-message-icon" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+              <path d="M50 12C27.9 12 10 27.9 10 47.5c0 11.3 6 21.4 15.3 27.9L21.8 88l14.4-7.1c4.3 1.4 8.9 2.1 13.8 2.1 22.1 0 40-15.9 40-35.5S72.1 12 50 12Z" fill="currentColor" opacity="0.16"/>
+              <path d="M50 18.5c18.1 0 32.7 13 32.7 29s-14.6 29-32.7 29c-4.4 0-8.6-.8-12.4-2.2a5 5 0 0 0-3.9.2l-7.6 3.8 1.8-6.6a5 5 0 0 0-2-5.4c-7-5.1-11-11.9-11-18.8 0-16 14.7-29 33.1-29Zm-15.5 34.2a5.4 5.4 0 1 0 0-10.8 5.4 5.4 0 0 0 0 10.8Zm15.5 0a5.4 5.4 0 1 0 0-10.8 5.4 5.4 0 0 0 0 10.8Zm15.5 0a5.4 5.4 0 1 0 0-10.8 5.4 5.4 0 0 0 0 10.8Z" fill="currentColor"/>
+            </svg>
+            <span class="sr-only">${typeof t === "function" ? t("message") : "Message"}</span>
           </button>
         `
         : "";
