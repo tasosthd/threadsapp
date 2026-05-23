@@ -494,12 +494,21 @@ function renderLanguageSwitcher() {
 function setupLanguageSwitcher() {
   const sidebar = document.getElementById("appSidebar");
   const themeBox = document.querySelector(".sidebar-theme-box");
+  const sidebarLinks = document.querySelector(".sidebar-links");
 
-  if (sidebar && themeBox && !document.querySelector(".sidebar-language-box")) {
-    themeBox.insertAdjacentHTML("afterend", renderLanguageSwitcher());
+  if (sidebar && !document.querySelector(".sidebar-language-box")) {
+    if (themeBox) {
+      themeBox.insertAdjacentHTML("afterend", renderLanguageSwitcher());
+    } else if (sidebarLinks) {
+      sidebarLinks.insertAdjacentHTML("beforebegin", renderLanguageSwitcher());
+    } else {
+      sidebar.insertAdjacentHTML("beforeend", renderLanguageSwitcher());
+    }
   }
 
   document.querySelectorAll("[data-language-option]").forEach((button) => {
+    if (button.dataset.languageBound === "true") return;
+    button.dataset.languageBound = "true";
     button.addEventListener("click", () => {
       applyLanguage(button.dataset.languageOption);
       window.dispatchEvent(new CustomEvent("loomyva:language-change"));
