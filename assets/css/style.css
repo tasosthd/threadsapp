@@ -7788,3 +7788,15 @@ html[data-theme="dark"] .sidebar-theme-box .theme-toggle-btn:not(.language-toggl
     border-radius: 17px;
   }
 }
+
+/* Messages latest chats visibility hard-fix */
+.messages-page-grid #latestChatsPanel {
+  display: grid !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+.messages-page-grid #latestChatsPanel.hidden {
+  display: grid !important;
+}
