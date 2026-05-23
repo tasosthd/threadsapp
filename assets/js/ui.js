@@ -109,7 +109,7 @@ function getPageName() {
     return "search";
   }
 
-  if (path === "/notifications/" || path === "/notifications") {
+  if (path === "/messages/" || path === "/messages" || path === "/notifications/" || path === "/notifications") {
     return "inbox";
   }
 
@@ -217,7 +217,7 @@ function goProfilePage() {
 }
 
 function goInboxPage() {
-  window.location.href = "/notifications/";
+  window.location.href = "/messages/";
 }
 
 /* =========================
@@ -508,10 +508,10 @@ function setupBottomNav() {
   if (bottomInboxBtn) {
     bottomInboxBtn.addEventListener("click", () => {
       if (pageName === "inbox") {
-        const notificationsPanel = document.querySelector(".notifications-page-card");
+        const messagesPanel = document.querySelector(".chat-app-shell") || document.querySelector(".messages-page-hero");
 
-        if (notificationsPanel) {
-          notificationsPanel.scrollIntoView({
+        if (messagesPanel) {
+          messagesPanel.scrollIntoView({
             behavior: "smooth",
             block: "start"
           });
