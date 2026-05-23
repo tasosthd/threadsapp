@@ -348,17 +348,14 @@ function renderUserSearchResults() {
       const messageButton = (!isOwnProfile && currentUser)
         ? `
           <button
-            class="chat-message-link user-search-message-icon-btn"
+            class="chat-message-link"
             type="button"
             data-open-chat-user-id="${escapeHTML(userId)}"
             aria-label="${typeof t === "function" ? t("message") : "Message"} ${escapeHTML(name)}"
-            title="${typeof t === "function" ? t("message") : "Message"}"
           >
-            <svg class="user-search-message-icon" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-              <path d="M50 12C27.9 12 10 27.9 10 47.5c0 11.3 6 21.4 15.3 27.9L21.8 88l14.4-7.1c4.3 1.4 8.9 2.1 13.8 2.1 22.1 0 40-15.9 40-35.5S72.1 12 50 12Z" fill="currentColor" opacity="0.16"/>
-              <path d="M50 18.5c18.1 0 32.7 13 32.7 29s-14.6 29-32.7 29c-4.4 0-8.6-.8-12.4-2.2a5 5 0 0 0-3.9.2l-7.6 3.8 1.8-6.6a5 5 0 0 0-2-5.4c-7-5.1-11-11.9-11-18.8 0-16 14.7-29 33.1-29Zm-15.5 34.2a5.4 5.4 0 1 0 0-10.8 5.4 5.4 0 0 0 0 10.8Zm15.5 0a5.4 5.4 0 1 0 0-10.8 5.4 5.4 0 0 0 0 10.8Zm15.5 0a5.4 5.4 0 1 0 0-10.8 5.4 5.4 0 0 0 0 10.8Z" fill="currentColor"/>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM4 14V4h16v10H4Z"/>
             </svg>
-            <span class="sr-only">${typeof t === "function" ? t("message") : "Message"}</span>
           </button>
         `
         : "";
@@ -431,12 +428,7 @@ function bindUserSearchResultActions() {
 
   document.querySelectorAll("[data-open-chat-user-id]").forEach((button) => {
     button.addEventListener("click", () => {
-      if (typeof openChatWithUser === "function") {
-        openChatWithUser(button.dataset.openChatUserId);
-        return;
-      }
-
-      window.location.href = `/messages/?user=${encodeURIComponent(button.dataset.openChatUserId)}`;
+      openSearchChatModal(button.dataset.openChatUserId);
     });
   });
 
@@ -668,4 +660,276 @@ async function initSearchPage() {
       }
     }
   });
+}
+
+/* =========================================================
+   INLINE SEARCH CHAT MODAL
+========================================================= */
+
+let searchChatTargetUserId = null;
+let searchChatConversationId = null;
+let searchChatRealtimeChannel = null;
+
+function getSearchChatOverlay() {
+  return document.getElementById("searchChatOverlay");
+}
+
+function ensureSearchChatModal() {
+  if (document.getElementById("searchChatOverlay")) return;
+
+  const overlay = document.createElement("div");
+  overlay.id = "searchChatOverlay";
+  overlay.className = "search-chat-overlay";
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-label", "Chat");
+
+  overlay.innerHTML = `
+    <div class="search-chat-modal" id="searchChatModal">
+      <div class="search-chat-modal-header" id="searchChatHeader">
+        <img id="searchChatAvatar" src="" alt="" />
+        <div class="search-chat-modal-header-info">
+          <strong id="searchChatName">...</strong>
+          <span id="searchChatUsername">@...</span>
+        </div>
+        <button class="search-chat-close-btn" id="searchChatCloseBtn" type="button" aria-label="Close chat">×</button>
+      </div>
+      <div class="search-chat-messages" id="searchChatMessages">
+        <div class="chat-loading">Loading…</div>
+      </div>
+      <div class="search-chat-status hidden" id="searchChatStatus"></div>
+      <div class="search-chat-form">
+        <textarea
+          class="search-chat-input"
+          id="searchChatInput"
+          placeholder="Write a message…"
+          rows="1"
+          maxlength="1000"
+        ></textarea>
+        <button class="search-chat-send-btn" id="searchChatSendBtn" type="button" aria-label="Send">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeSearchChatModal();
+  });
+
+  document.getElementById("searchChatCloseBtn").addEventListener("click", closeSearchChatModal);
+
+  document.getElementById("searchChatSendBtn").addEventListener("click", sendSearchChatMessage);
+
+  document.getElementById("searchChatInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendSearchChatMessage();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSearchChatModal();
+  });
+}
+
+async function openSearchChatModal(userId) {
+  if (!userId) return;
+
+  if (!currentUser) {
+    if (typeof openSidebar === "function") openSidebar();
+    return;
+  }
+
+  searchChatTargetUserId = userId;
+
+  ensureSearchChatModal();
+
+  // Populate header with target user info
+  const profile = (typeof profiles !== "undefined" ? profiles : []).find((p) => p.id === userId);
+  const name = profile?.full_name || profile?.username || "User";
+  const username = profile?.username ? `@${profile.username}` : "";
+  const avatar = profile?.avatar_url || (typeof fallbackAvatar === "function" ? fallbackAvatar(name) : "/assets/img/index.png");
+
+  document.getElementById("searchChatAvatar").src = avatar;
+  document.getElementById("searchChatAvatar").alt = `${name} avatar`;
+  document.getElementById("searchChatName").textContent = name;
+  document.getElementById("searchChatUsername").textContent = username;
+
+  // Show modal
+  const overlay = getSearchChatOverlay();
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+
+  // Focus input
+  setTimeout(() => document.getElementById("searchChatInput")?.focus(), 280);
+
+  // Load or create conversation
+  await initSearchChatConversation(userId);
+}
+
+function closeSearchChatModal() {
+  const overlay = getSearchChatOverlay();
+  if (!overlay) return;
+  overlay.classList.remove("open");
+  document.body.style.overflow = "";
+
+  if (searchChatRealtimeChannel) {
+    supabaseClient.removeChannel(searchChatRealtimeChannel);
+    searchChatRealtimeChannel = null;
+  }
+
+  searchChatConversationId = null;
+  searchChatTargetUserId = null;
+}
+
+async function initSearchChatConversation(otherUserId) {
+  const messagesEl = document.getElementById("searchChatMessages");
+  if (messagesEl) messagesEl.innerHTML = `<div class="chat-loading">Loading…</div>`;
+
+  try {
+    // Check for existing conversation
+    const { data: participantRows } = await supabaseClient
+      .from("chat_participants")
+      .select("conversation_id")
+      .eq("user_id", currentUser.id);
+
+    const myConvIds = (participantRows || []).map((r) => r.conversation_id);
+
+    let conversationId = null;
+
+    if (myConvIds.length) {
+      const { data: otherRows } = await supabaseClient
+        .from("chat_participants")
+        .select("conversation_id")
+        .eq("user_id", otherUserId)
+        .in("conversation_id", myConvIds);
+
+      conversationId = otherRows?.[0]?.conversation_id || null;
+    }
+
+    if (!conversationId) {
+      // Create new conversation
+      const { data: conv, error: convErr } = await supabaseClient
+        .from("chat_conversations")
+        .insert({ created_by: currentUser.id })
+        .select("id")
+        .single();
+
+      if (convErr) throw convErr;
+      conversationId = conv.id;
+
+      const { error: partErr } = await supabaseClient
+        .from("chat_participants")
+        .insert([
+          { conversation_id: conversationId, user_id: currentUser.id },
+          { conversation_id: conversationId, user_id: otherUserId }
+        ]);
+
+      if (partErr) throw partErr;
+    }
+
+    searchChatConversationId = conversationId;
+    await loadSearchChatMessages();
+    subscribeSearchChatRealtime(conversationId);
+
+  } catch (err) {
+    console.error("Search chat init error:", err);
+    if (messagesEl) messagesEl.innerHTML = `<div class="chat-empty-state">Could not load chat. Please try again.</div>`;
+  }
+}
+
+async function loadSearchChatMessages() {
+  const messagesEl = document.getElementById("searchChatMessages");
+  if (!messagesEl || !searchChatConversationId) return;
+
+  const { data, error } = await supabaseClient
+    .from("chat_messages")
+    .select("id, conversation_id, sender_id, body, created_at")
+    .eq("conversation_id", searchChatConversationId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    messagesEl.innerHTML = `<div class="chat-empty-state">Could not load messages.</div>`;
+    return;
+  }
+
+  const messages = data || [];
+
+  if (!messages.length) {
+    messagesEl.innerHTML = `<div class="chat-empty-state">No messages yet. Send the first one 🚀</div>`;
+    return;
+  }
+
+  const escFn = typeof escapeHTML === "function" ? escapeHTML : (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
+
+  messagesEl.innerHTML = messages.map((msg) => {
+    const own = msg.sender_id === currentUser?.id ? "own" : "";
+    const time = new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return `
+      <div class="chat-message ${own}">
+        <p>${escFn(msg.body)}</p>
+        <small>${time}</small>
+      </div>
+    `;
+  }).join("");
+
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function subscribeSearchChatRealtime(conversationId) {
+  if (searchChatRealtimeChannel) {
+    supabaseClient.removeChannel(searchChatRealtimeChannel);
+  }
+
+  searchChatRealtimeChannel = supabaseClient
+    .channel(`search_chat_${conversationId}`)
+    .on("postgres_changes", {
+      event: "INSERT",
+      schema: "public",
+      table: "chat_messages",
+      filter: `conversation_id=eq.${conversationId}`
+    }, () => loadSearchChatMessages())
+    .subscribe();
+}
+
+async function sendSearchChatMessage() {
+  const input = document.getElementById("searchChatInput");
+  const body = String(input?.value || "").trim();
+
+  if (!body || !currentUser || !searchChatConversationId) return;
+
+  input.value = "";
+  input.style.height = "auto";
+
+  const { error } = await supabaseClient
+    .from("chat_messages")
+    .insert({ conversation_id: searchChatConversationId, sender_id: currentUser.id, body });
+
+  if (error) {
+    console.error("Send message error:", error);
+    input.value = body;
+    showSearchChatStatus("Message failed. Try again.", true);
+    return;
+  }
+
+  await supabaseClient
+    .from("chat_conversations")
+    .update({ updated_at: new Date().toISOString() })
+    .eq("id", searchChatConversationId);
+
+  await loadSearchChatMessages();
+}
+
+function showSearchChatStatus(message, isError = false) {
+  const el = document.getElementById("searchChatStatus");
+  if (!el) return;
+  el.textContent = message;
+  el.className = "search-chat-status" + (isError ? " error" : "");
+  el.classList.remove("hidden");
+  setTimeout(() => el.classList.add("hidden"), 2600);
 }
