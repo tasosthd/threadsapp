@@ -33,6 +33,30 @@ function chatName(profile) {
   return profile?.full_name || profile?.username || "Loomyva User";
 }
 
+function chatRelativeTime(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  const diff = Date.now() - date.getTime();
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+
+  if (Number.isNaN(date.getTime())) return "";
+  if (diff < minute) return chatT("justNow", "Just now");
+  if (diff < hour) return `${Math.floor(diff / minute)}m`;
+  if (diff < day) return `${Math.floor(diff / hour)}h`;
+  if (diff < day * 7) return `${Math.floor(diff / day)}d`;
+  return date.toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
+function getConversationLastMessage(conversation) {
+  const messages = conversation?.chat_messages || [];
+  return messages
+    .slice()
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0] || null;
+}
+
+
 async function getChatUser() {
   const { data } = await supabaseClient.auth.getUser();
   chatCurrentUser = data?.user || null;
@@ -77,9 +101,9 @@ async function loadConversations() {
     return;
   }
 
-  chatConversations = sortConversationsByLatest((data || []).filter((conversation) => {
+  chatConversations = (data || []).filter((conversation) => {
     return (conversation.chat_participants || []).some((p) => p.user_id === chatCurrentUser.id);
-  }));
+  });
 }
 
 async function ensureConversation(otherUserId) {
@@ -150,45 +174,6 @@ function renderChatPeople() {
   });
 }
 
-function formatChatPreviewTime(value) {
-  if (!value) return "";
-  const date = new Date(value);
-  const now = new Date();
-  const sameDay = date.toDateString() === now.toDateString();
-
-  if (sameDay) {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
-
-  const yesterday = new Date(now);
-  yesterday.setDate(now.getDate() - 1);
-
-  if (date.toDateString() === yesterday.toDateString()) {
-    return chatT("yesterday", "Yesterday");
-  }
-
-  return date.toLocaleDateString([], { month: "short", day: "numeric" });
-}
-
-function getConversationLastMessage(conversation) {
-  const lastMessages = Array.isArray(conversation?.chat_messages) ? conversation.chat_messages : [];
-
-  return lastMessages
-    .slice()
-    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))[0] || null;
-}
-
-function sortConversationsByLatest(conversations) {
-  return (conversations || []).slice().sort((a, b) => {
-    const lastA = getConversationLastMessage(a);
-    const lastB = getConversationLastMessage(b);
-    const timeA = new Date(lastA?.created_at || a.updated_at || a.created_at || 0).getTime();
-    const timeB = new Date(lastB?.created_at || b.updated_at || b.created_at || 0).getTime();
-
-    return timeB - timeA;
-  });
-}
-
 function renderConversationList() {
   const list = document.getElementById("chatConversationList");
   if (!list) return;
@@ -198,13 +183,70 @@ function renderConversationList() {
     return;
   }
 
-  const conversations = sortConversationsByLatest(chatConversations);
+  if (!chatConversations.length) {
+    list.innerHTML = `<div class="chat-empty-mini">${chatT("chatNoConversations", "No conversations yet. Search someone and start the money-network effect.")}</div>`;
+    return;
+  }
+
+  list.innerHTML = chatConversations.map((conversation) => {
+    const otherId = otherParticipant(conversation);
+    const profile = getProfileById(otherId);
+    const lastMessages = conversation.chat_messages || [];
+    const last = lastMessages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+    const active = conversation.id === activeConversationId ? "active" : "";
+
+    return `
+      <button class="chat-conversation-btn ${active}" type="button" data-conversation-id="${chatEscape(conversation.id)}">
+        <img src="${chatEscape(chatAvatar(profile))}" alt="${chatEscape(chatName(profile))} avatar" />
+        <span>
+          <strong>${chatEscape(chatName(profile))}</strong>
+          <small>${last ? chatEscape(last.body) : chatT("chatNewConversation", "New conversation")}</small>
+        </span>
+      </button>
+    `;
+  }).join("");
+
+  list.querySelectorAll("[data-conversation-id]").forEach((button) => {
+    button.addEventListener("click", () => openConversation(button.dataset.conversationId));
+  });
+
+  renderLatestChatsPanel();
+}
+
+function renderLatestChatsPanel() {
+  const panel = document.getElementById("latestChatsPanel");
+  const list = document.getElementById("latestChatsList");
+  const count = document.getElementById("latestChatsCount");
+  if (!panel || !list) return;
+
+  panel.classList.remove("hidden");
+
+  if (!chatCurrentUser) {
+    if (count) count.textContent = "0";
+    list.innerHTML = `
+      <div class="latest-chat-empty">
+        <strong>${chatT("chatSignInTitle", "Sign in to chat")}</strong>
+        <span>${chatT("chatSignInText", "Sign in to use real-time chat.")}</span>
+      </div>
+    `;
+    return;
+  }
+
+  const conversations = chatConversations
+    .slice()
+    .sort((a, b) => {
+      const aLast = getConversationLastMessage(a)?.created_at || a.updated_at || a.created_at;
+      const bLast = getConversationLastMessage(b)?.created_at || b.updated_at || b.created_at;
+      return new Date(bLast) - new Date(aLast);
+    });
+
+  if (count) count.textContent = String(conversations.length);
 
   if (!conversations.length) {
     list.innerHTML = `
-      <div class="chat-empty-mini chat-empty-inbox">
+      <div class="latest-chat-empty">
         <strong>${chatT("chatNoConversationsTitle", "No chats yet")}</strong>
-        <span>${chatT("chatNoConversations", "Search someone below and start the first conversation.")}</span>
+        <span>${chatT("chatNoConversations", "No conversations yet. Search someone and start the money-network effect.")}</span>
       </div>
     `;
     return;
@@ -215,33 +257,33 @@ function renderConversationList() {
     const profile = getProfileById(otherId);
     const last = getConversationLastMessage(conversation);
     const active = conversation.id === activeConversationId ? "active" : "";
-    const isOwnLast = last?.sender_id === chatCurrentUser?.id;
-    const preview = last
-      ? `${isOwnLast ? chatT("chatYouPrefix", "You: ") : ""}${last.body}`
-      : chatT("chatNewConversation", "New conversation");
-    const time = formatChatPreviewTime(last?.created_at || conversation.updated_at || conversation.created_at);
+    const preview = last ? last.body : chatT("chatNewConversation", "New conversation");
+    const time = chatRelativeTime(last?.created_at || conversation.updated_at || conversation.created_at);
 
     return `
-      <button class="chat-conversation-btn ${active}" type="button" data-conversation-id="${chatEscape(conversation.id)}">
-        <span class="chat-conversation-avatar-wrap">
-          <img src="${chatEscape(chatAvatar(profile))}" alt="${chatEscape(chatName(profile))} avatar" />
-        </span>
-        <span class="chat-conversation-main">
-          <span class="chat-conversation-topline">
-            <strong>${chatEscape(chatName(profile))}</strong>
-            <em>${chatEscape(time)}</em>
-          </span>
-          <span class="chat-conversation-username">@${chatEscape(profile?.username || "user")}</span>
+      <button class="latest-chat-card ${active}" type="button" data-latest-conversation-id="${chatEscape(conversation.id)}">
+        <img src="${chatEscape(chatAvatar(profile))}" alt="${chatEscape(chatName(profile))} avatar" />
+        <span class="latest-chat-meta">
+          <strong>${chatEscape(chatName(profile))}</strong>
           <small>${chatEscape(preview)}</small>
+        </span>
+        <span class="latest-chat-side">
+          <em>${chatEscape(time)}</em>
+          <b>↗</b>
         </span>
       </button>
     `;
   }).join("");
 
-  list.querySelectorAll("[data-conversation-id]").forEach((button) => {
-    button.addEventListener("click", () => openConversation(button.dataset.conversationId));
+  list.querySelectorAll("[data-latest-conversation-id]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      await openConversation(button.dataset.latestConversationId);
+      document.getElementById("chatApp")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => document.getElementById("chatMessageInput")?.focus(), 320);
+    });
   });
 }
+
 async function openConversationWithUser(otherUserId) {
   try {
     const conversationId = await ensureConversation(otherUserId);
@@ -254,18 +296,10 @@ async function openConversationWithUser(otherUserId) {
 
 async function openConversation(conversationId) {
   activeConversationId = conversationId;
-  document.getElementById("chatApp")?.classList.add("chat-has-active-conversation");
   renderConversationList();
   renderChatHeader();
   await loadMessages(conversationId);
   subscribeToConversation(conversationId);
-
-  if (window.matchMedia("(max-width: 760px)").matches) {
-    document.querySelector(".chat-window")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }
 }
 
 function renderChatHeader() {
@@ -419,6 +453,7 @@ function subscribeToAllMessages() {
     }, async () => {
       await loadConversations();
       renderConversationList();
+      renderLatestChatsPanel();
     })
     .subscribe();
 }
@@ -446,6 +481,7 @@ async function initChatPage() {
   if (!chatCurrentUser) {
     signInCard?.classList.remove("hidden");
     app?.classList.add("hidden");
+    renderLatestChatsPanel();
     return;
   }
 
@@ -457,6 +493,7 @@ async function initChatPage() {
 
   renderChatPeople();
   renderConversationList();
+  renderLatestChatsPanel();
   renderChatHeader();
   renderMessages([]);
   subscribeToAllMessages();
@@ -480,6 +517,7 @@ function bindChatPageUI() {
   window.addEventListener("loomyva:language-change", () => {
     renderChatPeople();
     renderConversationList();
+    renderLatestChatsPanel();
     renderChatHeader();
   });
 }
