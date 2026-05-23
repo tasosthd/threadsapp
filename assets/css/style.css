@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Inter", "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -7799,4 +7799,698 @@ html[data-theme="dark"] .sidebar-theme-box .theme-toggle-btn:not(.language-toggl
 
 .messages-page-grid #latestChatsPanel.hidden {
   display: grid !important;
+}
+
+/* =========================================================
+   LOOMYVA 2026 — Obsidian Aurora Redesign
+   Global visual rebrand applied after the original styles.
+   ========================================================= */
+
+:root {
+  color-scheme: dark;
+  --bg: #05050a;
+  --bg-2: #0a1020;
+  --text: #f8fbff;
+  --muted: #aab6cf;
+  --card: rgba(13, 18, 34, 0.74);
+  --card-strong: rgba(16, 22, 42, 0.92);
+  --line: rgba(255, 255, 255, 0.12);
+  --cyan: #17e6ff;
+  --cyan-dark: #00b7ff;
+  --blue: #7c3cff;
+  --danger: #ff4d7d;
+  --success: #27f6a7;
+  --shadow: 0 34px 110px rgba(0, 0, 0, 0.48);
+  --topbar-bg: rgba(7, 10, 22, 0.72);
+  --sidebar-bg: rgba(7, 10, 22, 0.92);
+  --soft-card: rgba(255, 255, 255, 0.075);
+  --soft-card-2: rgba(255, 255, 255, 0.105);
+  --input-bg: rgba(255, 255, 255, 0.075);
+  --thread-text: #eef7ff;
+  --modal-bg: rgba(9, 13, 27, 0.96);
+  --image-soft-bg: rgba(255, 255, 255, 0.08);
+  --placeholder: #7887a6;
+  --hamburger-bg: rgba(255, 255, 255, 0.09);
+  --hamburger-line: #f8fbff;
+  --backdrop: rgba(0, 0, 0, 0.62);
+  --aurora-purple: #9b5cff;
+  --aurora-pink: #ff4ecd;
+  --aurora-cyan: #18e6ff;
+  --aurora-lime: #9effc9;
+  --radius-xl: 34px;
+  --radius-lg: 26px;
+  --radius-md: 18px;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f7f8ff;
+  --bg-2: #eaf6ff;
+  --text: #0a1020;
+  --muted: #667085;
+  --card: rgba(255, 255, 255, 0.72);
+  --card-strong: rgba(255, 255, 255, 0.94);
+  --line: rgba(15, 23, 42, 0.11);
+  --cyan: #00b8ff;
+  --cyan-dark: #0077ff;
+  --blue: #7c3cff;
+  --danger: #e11d48;
+  --success: #059669;
+  --shadow: 0 30px 90px rgba(62, 69, 143, 0.18);
+  --topbar-bg: rgba(255, 255, 255, 0.76);
+  --sidebar-bg: rgba(255, 255, 255, 0.94);
+  --soft-card: rgba(255, 255, 255, 0.72);
+  --soft-card-2: rgba(255, 255, 255, 0.86);
+  --input-bg: rgba(255, 255, 255, 0.76);
+  --thread-text: #101828;
+  --modal-bg: rgba(255, 255, 255, 0.96);
+  --image-soft-bg: rgba(255, 255, 255, 0.65);
+  --placeholder: #8492a6;
+  --hamburger-bg: rgba(255, 255, 255, 0.9);
+  --hamburger-line: #0a1020;
+  --backdrop: rgba(15, 23, 42, 0.32);
+}
+
+* {
+  letter-spacing: -0.015em;
+}
+
+html,
+body {
+  background: #05050a;
+}
+
+body {
+  position: relative;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 13% 9%, rgba(155, 92, 255, 0.38), transparent 30%),
+    radial-gradient(circle at 88% 12%, rgba(24, 230, 255, 0.30), transparent 26%),
+    radial-gradient(circle at 80% 86%, rgba(255, 78, 205, 0.20), transparent 34%),
+    linear-gradient(145deg, var(--bg), var(--bg-2) 48%, #090712);
+  background-attachment: fixed;
+}
+
+html[data-theme="light"] body {
+  background:
+    radial-gradient(circle at 10% 8%, rgba(155, 92, 255, 0.22), transparent 31%),
+    radial-gradient(circle at 88% 12%, rgba(24, 230, 255, 0.22), transparent 28%),
+    radial-gradient(circle at 70% 88%, rgba(255, 78, 205, 0.14), transparent 34%),
+    linear-gradient(145deg, var(--bg), var(--bg-2) 58%, #fff7ff);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -2;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 78%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.05), transparent);
+  opacity: 0.42;
+}
+
+.bg-orb {
+  filter: blur(14px) saturate(1.35);
+  opacity: 0.68;
+  mix-blend-mode: screen;
+}
+
+.orb-one {
+  background: radial-gradient(circle, rgba(155, 92, 255, 0.85), rgba(24, 230, 255, 0.18), transparent 70%);
+  width: 520px;
+  height: 520px;
+  top: -180px;
+  left: -150px;
+}
+
+.orb-two {
+  background: radial-gradient(circle, rgba(24, 230, 255, 0.68), rgba(255, 78, 205, 0.24), transparent 72%);
+  width: 560px;
+  height: 560px;
+  right: -220px;
+  bottom: 4%;
+}
+
+.app-shell,
+.legal-page-shell,
+.auth-page-shell,
+.chat-app-shell {
+  position: relative;
+}
+
+.app-topbar,
+.topbar {
+  background: var(--topbar-bg) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 18px 70px rgba(0, 0, 0, 0.22) !important;
+  backdrop-filter: blur(28px) saturate(1.35) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.35) !important;
+}
+
+.brand-logo,
+.auth-page-brand img,
+.latest-chat-card img,
+.user-search-card img,
+.sidebar-account-avatar,
+#publicProfileAvatar,
+.profile-avatar-control img,
+.chat-active-header img {
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 15px 40px rgba(124, 60, 255, 0.28), inset 0 0 0 1px rgba(255,255,255,0.1) !important;
+}
+
+.brand h1,
+.auth-page-brand h1,
+.feed-top h2,
+.page-hero h1,
+.messages-page-hero h1,
+.notifications-page-hero h1,
+.search-page-hero h1,
+.profile-editor-head h1,
+.profile-editor-info h1,
+.legal-page-card h1,
+.legal-section h2 {
+  color: var(--text) !important;
+  letter-spacing: -0.055em;
+}
+
+.brand h1,
+.auth-page-brand h1,
+.page-hero h1,
+.messages-page-hero h1,
+.notifications-page-hero h1,
+.search-page-hero h1,
+.legal-page-card h1 {
+  background: linear-gradient(135deg, #ffffff, var(--aurora-cyan) 42%, var(--aurora-purple) 78%, var(--aurora-pink));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+
+html[data-theme="light"] .brand h1,
+html[data-theme="light"] .auth-page-brand h1,
+html[data-theme="light"] .page-hero h1,
+html[data-theme="light"] .messages-page-hero h1,
+html[data-theme="light"] .notifications-page-hero h1,
+html[data-theme="light"] .search-page-hero h1,
+html[data-theme="light"] .legal-page-card h1 {
+  background: linear-gradient(135deg, #0a1020, #006dff 42%, #7c3cff 78%, #d600a8);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.brand p,
+.page-hero p,
+.messages-page-hero p,
+.notifications-page-hero p,
+.search-page-hero p,
+.legal-page-card p,
+.auth-page-copy p,
+.sidebar-theme-head span,
+.sidebar-account-meta span,
+.latest-chat-meta small,
+.latest-chat-side,
+.public-profile-bio,
+.profile-editor-info p,
+.notifications-empty p {
+  color: var(--muted) !important;
+}
+
+.glass-card,
+.feed-panel,
+.public-profile-card,
+.auth-page-card,
+.legal-page-card,
+.search-page-card,
+.profile-editor-card,
+.profile-page-panel,
+.notifications-page-card,
+.latest-chats-panel,
+.chat-sidebar,
+.chat-window,
+.chat-signin-card,
+.messages-page-hero,
+.notifications-page-hero,
+.search-page-hero,
+.page-hero,
+.app-sidebar {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.045)),
+    var(--card) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  box-shadow: var(--shadow) !important;
+  backdrop-filter: blur(30px) saturate(1.32) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(1.32) !important;
+}
+
+html[data-theme="light"] .glass-card,
+html[data-theme="light"] .feed-panel,
+html[data-theme="light"] .public-profile-card,
+html[data-theme="light"] .auth-page-card,
+html[data-theme="light"] .legal-page-card,
+html[data-theme="light"] .search-page-card,
+html[data-theme="light"] .profile-editor-card,
+html[data-theme="light"] .profile-page-panel,
+html[data-theme="light"] .notifications-page-card,
+html[data-theme="light"] .latest-chats-panel,
+html[data-theme="light"] .chat-sidebar,
+html[data-theme="light"] .chat-window,
+html[data-theme="light"] .chat-signin-card,
+html[data-theme="light"] .messages-page-hero,
+html[data-theme="light"] .notifications-page-hero,
+html[data-theme="light"] .search-page-hero,
+html[data-theme="light"] .page-hero,
+html[data-theme="light"] .app-sidebar {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.78), rgba(255,255,255,0.46)),
+    var(--card) !important;
+  border-color: rgba(15, 23, 42, 0.09) !important;
+}
+
+.glass-card,
+.feed-panel,
+.public-profile-card,
+.auth-page-card,
+.legal-page-card,
+.search-page-card,
+.profile-editor-card,
+.profile-page-panel,
+.notifications-page-card,
+.latest-chats-panel,
+.chat-sidebar,
+.chat-window,
+.chat-signin-card,
+.page-hero,
+.messages-page-hero,
+.notifications-page-hero,
+.search-page-hero {
+  border-radius: var(--radius-xl) !important;
+}
+
+.glass-card::before,
+.feed-panel::before,
+.auth-page-card::before,
+.legal-page-card::before,
+.search-page-card::before,
+.profile-editor-card::before,
+.notifications-page-card::before,
+.latest-chats-panel::before,
+.chat-window::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(24,230,255,0.48), rgba(155,92,255,0.14), rgba(255,78,205,0.38));
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  opacity: 0.7;
+}
+
+.glass-card,
+.feed-panel,
+.auth-page-card,
+.legal-page-card,
+.search-page-card,
+.profile-editor-card,
+.notifications-page-card,
+.latest-chats-panel,
+.chat-window {
+  position: relative;
+  overflow: hidden;
+}
+
+.intro-card,
+.stats-card,
+.roadmap-card {
+  transform: translateZ(0);
+}
+
+.eyebrow,
+.pill,
+.public-profile-stat,
+.profile-inline-stat,
+.latest-chats-count,
+.legal-updated {
+  color: var(--aurora-cyan) !important;
+  background: linear-gradient(135deg, rgba(24,230,255,0.16), rgba(155,92,255,0.14)) !important;
+  border: 1px solid rgba(24,230,255,0.24) !important;
+  box-shadow: inset 0 0 22px rgba(24,230,255,0.06) !important;
+}
+
+.btn,
+.primary-btn,
+.ghost-btn,
+.hamburger-btn,
+.sidebar-close-btn,
+.sidebar-logout-btn,
+.topbar-notification-btn,
+.theme-toggle-btn,
+.sidebar-links a,
+.sidebar-links button,
+.sidebar-notifications-link,
+.user-search-clear,
+.avatar-upload-btn,
+.save-profile-right-btn,
+.profile-more-btn,
+.profile-settings-dots-btn,
+.chat-message-form button,
+.chat-search-box button,
+.legal-page-actions a,
+.auth-switch-link {
+  border-radius: 999px !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease !important;
+}
+
+.primary-btn,
+.btn.primary-btn,
+.sidebar-links a,
+.sidebar-links button,
+.sidebar-notifications-link,
+.chat-message-form button,
+.save-profile-right-btn,
+.avatar-upload-btn,
+.auth-switch-link,
+.legal-page-actions a:first-child {
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: linear-gradient(135deg, #7c3cff, #00c8ff 48%, #ff4ecd) !important;
+  box-shadow: 0 16px 42px rgba(0, 200, 255, 0.20), 0 10px 28px rgba(124, 60, 255, 0.22) !important;
+}
+
+.ghost-btn,
+.btn.ghost-btn,
+.theme-toggle-btn,
+.hamburger-btn,
+.sidebar-close-btn,
+.sidebar-logout-btn,
+.topbar-notification-btn,
+.profile-more-btn,
+.profile-settings-dots-btn,
+.user-search-clear,
+.legal-page-actions a:not(:first-child),
+.password-toggle-btn {
+  color: var(--text) !important;
+  background: rgba(255, 255, 255, 0.09) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12) !important;
+}
+
+html[data-theme="light"] .ghost-btn,
+html[data-theme="light"] .btn.ghost-btn,
+html[data-theme="light"] .theme-toggle-btn,
+html[data-theme="light"] .hamburger-btn,
+html[data-theme="light"] .sidebar-close-btn,
+html[data-theme="light"] .sidebar-logout-btn,
+html[data-theme="light"] .topbar-notification-btn,
+html[data-theme="light"] .profile-more-btn,
+html[data-theme="light"] .profile-settings-dots-btn,
+html[data-theme="light"] .user-search-clear,
+html[data-theme="light"] .legal-page-actions a:not(:first-child),
+html[data-theme="light"] .password-toggle-btn {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border-color: rgba(15, 23, 42, 0.10) !important;
+}
+
+.theme-toggle-btn.active,
+.language-toggle-btn.active,
+.filter-pills button.active,
+.pill.active {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #00c8ff, #7c3cff, #ff4ecd) !important;
+  box-shadow: 0 16px 35px rgba(124, 60, 255, 0.26) !important;
+}
+
+.btn:hover,
+.primary-btn:hover,
+.ghost-btn:hover,
+.hamburger-btn:hover,
+.sidebar-close-btn:hover,
+.sidebar-logout-btn:hover,
+.topbar-notification-btn:hover,
+.theme-toggle-btn:hover,
+.sidebar-links a:hover,
+.sidebar-links button:hover,
+.sidebar-notifications-link:hover,
+.user-search-clear:hover,
+.avatar-upload-btn:hover,
+.save-profile-right-btn:hover,
+.profile-more-btn:hover,
+.profile-settings-dots-btn:hover,
+.chat-message-form button:hover,
+.legal-page-actions a:hover,
+.auth-switch-link:hover {
+  transform: translateY(-2px) scale(1.01) !important;
+  box-shadow: 0 22px 54px rgba(24, 230, 255, 0.22), 0 14px 36px rgba(124, 60, 255, 0.20) !important;
+}
+
+.sidebar-language-box,
+.sidebar-theme-box,
+.sidebar-auth,
+.sidebar-account-row,
+.chat-people-list,
+.user-search-box,
+.profile-inline-stats,
+.public-profile-stats,
+.auth-page-form,
+.notifications-page-list,
+.latest-chats-list {
+  background: rgba(255, 255, 255, 0.065) !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+  border-radius: 26px !important;
+}
+
+.sidebar-language-box {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-top: 14px !important;
+}
+
+.sidebar-theme-head strong,
+.sidebar-links a,
+.sidebar-links button,
+.sidebar-notifications-link,
+.sidebar-account-meta strong,
+.latest-chat-meta strong,
+.user-search-card strong,
+.chat-active-header strong,
+.notifications-page-card strong,
+.legal-section h2 {
+  color: var(--text) !important;
+}
+
+.sidebar-auth-input,
+.input-field,
+textarea,
+.chat-search-box input,
+.chat-message-form input,
+.user-search-box input,
+.bio-field,
+.auth-page-form input,
+.auth-page-form textarea {
+  color: var(--text) !important;
+  background: var(--input-bg) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 20px !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.035), 0 14px 34px rgba(0,0,0,0.09) !important;
+}
+
+html[data-theme="light"] .sidebar-auth-input,
+html[data-theme="light"] .input-field,
+html[data-theme="light"] textarea,
+html[data-theme="light"] .chat-search-box input,
+html[data-theme="light"] .chat-message-form input,
+html[data-theme="light"] .user-search-box input,
+html[data-theme="light"] .bio-field,
+html[data-theme="light"] .auth-page-form input,
+html[data-theme="light"] .auth-page-form textarea {
+  border-color: rgba(15, 23, 42, 0.10) !important;
+}
+
+.sidebar-auth-input:focus,
+.input-field:focus,
+textarea:focus,
+.chat-search-box input:focus,
+.chat-message-form input:focus,
+.user-search-box input:focus,
+.bio-field:focus,
+.auth-page-form input:focus {
+  outline: none !important;
+  border-color: rgba(24, 230, 255, 0.55) !important;
+  box-shadow: 0 0 0 4px rgba(24, 230, 255, 0.11), 0 18px 44px rgba(124,60,255,0.16) !important;
+}
+
+::placeholder {
+  color: var(--placeholder) !important;
+}
+
+.threads-list article,
+.user-search-card,
+.latest-chat-card,
+.notifications-list article,
+.chat-people-list button,
+.chat-message,
+.comment-card,
+.thread-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.105), rgba(255,255,255,0.052)) !important;
+  border: 1px solid rgba(255,255,255,0.11) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 20px 55px rgba(0,0,0,0.15) !important;
+}
+
+html[data-theme="light"] .threads-list article,
+html[data-theme="light"] .user-search-card,
+html[data-theme="light"] .latest-chat-card,
+html[data-theme="light"] .notifications-list article,
+html[data-theme="light"] .chat-people-list button,
+html[data-theme="light"] .chat-message,
+html[data-theme="light"] .comment-card,
+html[data-theme="light"] .thread-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.86), rgba(255,255,255,0.56)) !important;
+  border-color: rgba(15, 23, 42, 0.10) !important;
+}
+
+.threads-list article:hover,
+.user-search-card:hover,
+.latest-chat-card:hover,
+.notifications-list article:hover,
+.chat-people-list button:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(24, 230, 255, 0.38) !important;
+  box-shadow: 0 26px 70px rgba(24,230,255,0.13), 0 18px 55px rgba(124,60,255,0.12) !important;
+}
+
+.notification-badge,
+.sidebar-notification-badge,
+.latest-chat-side b {
+  background: linear-gradient(135deg, #ff4ecd, #7c3cff, #00c8ff) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 30px rgba(255, 78, 205, 0.34) !important;
+}
+
+.chat-message.sent,
+.chat-message.outgoing,
+.message-outgoing {
+  background: linear-gradient(135deg, rgba(124,60,255,0.92), rgba(0,200,255,0.78)) !important;
+  color: #fff !important;
+}
+
+.chat-message.received,
+.chat-message.incoming,
+.message-incoming {
+  background: rgba(255,255,255,0.10) !important;
+  color: var(--text) !important;
+}
+
+.chat-messages {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(24,230,255,0.10), transparent 28%),
+    radial-gradient(circle at 90% 75%, rgba(255,78,205,0.09), transparent 30%),
+    rgba(255,255,255,0.035) !important;
+  border-radius: 28px !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+
+.status-msg,
+.field-label,
+.legal-section p,
+.legal-section li,
+.notifications-page-body,
+.thread-card p,
+.threads-list p {
+  color: var(--muted) !important;
+}
+
+.main-grid,
+.profile-page-grid,
+.search-page-grid,
+.messages-page-grid,
+.notifications-page-main {
+  gap: 24px !important;
+}
+
+.left-panel,
+.feed-panel,
+.profile-page-panel,
+.search-page-card,
+.notifications-page-card,
+.chat-sidebar,
+.chat-window {
+  animation: auroraFloatIn 0.42s ease both;
+}
+
+@keyframes auroraFloatIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.04);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7c3cff, #00c8ff);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+@media (max-width: 760px) {
+  body {
+    padding-bottom: calc(98px + var(--safe-bottom)) !important;
+  }
+
+  .app-topbar,
+  .topbar {
+    border-radius: 0 0 28px 28px !important;
+  }
+
+  .glass-card,
+  .feed-panel,
+  .public-profile-card,
+  .auth-page-card,
+  .legal-page-card,
+  .search-page-card,
+  .profile-editor-card,
+  .profile-page-panel,
+  .notifications-page-card,
+  .latest-chats-panel,
+  .chat-sidebar,
+  .chat-window,
+  .chat-signin-card,
+  .page-hero,
+  .messages-page-hero,
+  .notifications-page-hero,
+  .search-page-hero {
+    border-radius: 26px !important;
+  }
 }
