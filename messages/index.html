@@ -22,7 +22,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=latest-chats-14" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=latest-chats-2" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -227,6 +227,21 @@
         <p><span data-i18n="messagesHeroText">Send live messages, build relationships, and turn your network into leverage.</span></p>
       </section>
 
+      <section id="latestChatsPanel" class="glass-card latest-chats-panel hidden" aria-live="polite">
+        <div class="latest-chats-head">
+          <div>
+            <span class="eyebrow" data-i18n="chatInbox">Chat inbox</span>
+            <h2 data-i18n="latestChatsTitle">Latest chats</h2>
+            <p data-i18n="latestChatsText">Tap a conversation to keep the momentum going.</p>
+          </div>
+          <span id="latestChatsCount" class="latest-chats-count">0</span>
+        </div>
+
+        <div id="latestChatsList" class="latest-chats-list">
+          <div class="chat-loading" data-i18n="loading">Loading...</div>
+        </div>
+      </section>
+
       <p id="chatStatus" class="status-msg hidden"></p>
 
       <section id="chatSignInCard" class="glass-card chat-signin-card hidden">
@@ -275,12 +290,12 @@
   </script>
 
   <!-- App Scripts -->
-  <script src="/assets/js/config.js?v=chat-1"></script>
-  <script src="/assets/js/language.js?v=chat-1"></script>
-  <script src="/assets/js/ui.js?v=chat-1"></script>
-  <script src="/assets/js/auth.js?v=chat-1"></script>
-  <script src="/assets/js/notifications.js?v=chat-1"></script>
-  <script src="/assets/js/chat.js?v=latest-chats-14"></script>
+  <script src="/assets/js/config.js?v=latest-chats-2"></script>
+  <script src="/assets/js/language.js?v=latest-chats-2"></script>
+  <script src="/assets/js/ui.js?v=latest-chats-2"></script>
+  <script src="/assets/js/auth.js?v=latest-chats-2"></script>
+  <script src="/assets/js/notifications.js?v=latest-chats-2"></script>
+  <script src="/assets/js/chat.js?v=latest-chats-2"></script>
   <script>
     async function bootMessagesPage() {
       if (typeof mountSharedUI === "function") {
