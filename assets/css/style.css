@@ -9586,3 +9586,429 @@ body:has(.profile-exact-page) #bottomComposeBtn svg {
     font-size: 12px !important;
   }
 }
+
+/* =========================================================
+   Loomyva Perfect Responsive Pass — source-of-truth overrides
+   Goal: compact phone UI, no horizontal overflow, polished desktop.
+========================================================= */
+:root {
+  --lm-shell: min(1120px, calc(100vw - 32px));
+  --lm-phone-pad: max(12px, env(safe-area-inset-left));
+  --lm-bottom-height: 64px;
+}
+
+* { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: hidden; }
+body { min-width: 0; }
+img, video, canvas, svg { max-width: 100%; }
+button, a, input, textarea { -webkit-tap-highlight-color: transparent; }
+
+.app-shell {
+  width: var(--lm-shell) !important;
+  max-width: 100vw !important;
+  padding: 18px 0 calc(86px + var(--safe-bottom)) !important;
+}
+
+.topbar {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.topbar-left,
+.brand,
+.compact-brand,
+.thread-user,
+.sidebar-account-meta,
+.public-profile-main,
+.following-person-info {
+  min-width: 0 !important;
+}
+
+.brand h1,
+.brand p,
+.profile-top-handle,
+.thread-user strong,
+.thread-user span,
+.sidebar-account-meta strong,
+.sidebar-account-meta span,
+.following-person-info strong,
+.following-person-info span {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.glass-card,
+.composer,
+.thread-card,
+.public-profile-card,
+.profile-editor-card,
+.profile-cover-card,
+.thread-modal,
+.following-modal {
+  max-width: 100% !important;
+}
+
+.thread-card,
+.composer,
+.glass-card,
+.profile-editor-card,
+.public-profile-card {
+  border-radius: clamp(20px, 4vw, 30px) !important;
+}
+
+.btn,
+.primary-btn,
+.ghost-btn,
+.mini-action,
+.follow-btn,
+.pill {
+  min-height: 38px;
+}
+
+/* Compact floating nav that never creates a scrollbar */
+.bottom-nav {
+  left: 50% !important;
+  right: auto !important;
+  bottom: max(10px, var(--safe-bottom)) !important;
+  width: min(430px, calc(100vw - 20px)) !important;
+  max-width: calc(100vw - 20px) !important;
+  height: 62px !important;
+  min-height: 62px !important;
+  padding: 7px !important;
+  gap: 5px !important;
+  border-radius: 999px !important;
+  overflow: visible !important;
+  transform: translateX(-50%) !important;
+}
+
+.bottom-nav-btn,
+.bottom-nav-main {
+  height: 46px !important;
+  min-height: 46px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  border-radius: 999px !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+}
+
+.bottom-nav-btn svg,
+.bottom-nav-main svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+#bottomComposeBtn {
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  margin-top: -16px !important;
+}
+
+/* Profile page: exact compact reference proportions */
+body[data-page="profile"] .app-shell,
+body:has(.profile-exact-page) .app-shell {
+  width: 100% !important;
+  max-width: 100vw !important;
+  padding: 0 0 calc(76px + var(--safe-bottom)) !important;
+}
+
+.profile-exact-topbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 140 !important;
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  height: calc(70px + var(--safe-top)) !important;
+  min-height: calc(70px + var(--safe-top)) !important;
+  padding: calc(10px + var(--safe-top)) 14px 10px !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-top: 0 !important;
+  border-radius: 0 0 26px 26px !important;
+  box-shadow: 0 10px 34px rgba(0,0,0,.14) !important;
+}
+
+.profile-top-avatar-btn {
+  display: grid !important;
+  place-items: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  overflow: hidden !important;
+}
+
+.topbar-profile-avatar {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 2px solid rgba(255,255,255,.72) !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,.16) !important;
+}
+
+.profile-top-handle {
+  justify-self: center !important;
+  max-width: 100% !important;
+  font-size: clamp(16px, 4.6vw, 21px) !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.profile-top-actions {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  padding: 4px !important;
+  border-radius: 18px !important;
+  background: rgba(0,0,0,.22) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+}
+
+.profile-top-icon-btn {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  padding: 0 !important;
+  border-radius: 14px !important;
+}
+.profile-top-icon-btn svg { width: 21px !important; height: 21px !important; }
+
+.profile-exact-page {
+  width: min(740px, 100%) !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+}
+
+.profile-cover-card {
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-radius: 0 0 28px 28px !important;
+  overflow: hidden !important;
+  box-shadow: 0 18px 48px rgba(0,0,0,.12) !important;
+}
+
+.profile-cover-strip { height: clamp(104px, 25vw, 152px) !important; }
+
+.profile-identity-area {
+  min-height: 70px !important;
+  padding: 0 clamp(14px, 4vw, 24px) !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.profile-exact-avatar { margin-top: -42px !important; padding-bottom: 0 !important; }
+.profile-exact-avatar img,
+.profile-avatar-control.profile-exact-avatar img {
+  width: clamp(76px, 21vw, 106px) !important;
+  height: clamp(76px, 21vw, 106px) !important;
+  border-radius: 50% !important;
+  border: 5px solid var(--card-strong) !important;
+  box-shadow: 0 14px 28px rgba(0,0,0,.18) !important;
+}
+
+.profile-exact-avatar .avatar-upload-btn {
+  left: auto !important;
+  right: 1px !important;
+  bottom: 2px !important;
+  width: 30px !important;
+  height: 30px !important;
+  border-width: 3px !important;
+  transform: none !important;
+}
+.profile-exact-avatar .avatar-upload-btn:hover { transform: translateY(-1px) !important; }
+.profile-exact-avatar .avatar-upload-btn svg { width: 15px !important; height: 15px !important; }
+
+.profile-exact-edit-btn {
+  margin-top: 22px !important;
+  min-width: 104px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 14px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  box-shadow: none !important;
+}
+
+.profile-exact-info {
+  padding: 0 clamp(14px, 4vw, 24px) 0 !important;
+  overflow-wrap: anywhere !important;
+}
+.profile-exact-info h1 {
+  max-width: 100% !important;
+  margin: 0 !important;
+  font-size: clamp(22px, 6.2vw, 34px) !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.055em !important;
+  overflow-wrap: anywhere !important;
+}
+.profile-exact-username {
+  margin-top: 3px !important;
+  max-width: 100% !important;
+  font-size: clamp(14px, 4vw, 18px) !important;
+  line-height: 1.2 !important;
+  overflow-wrap: anywhere !important;
+}
+.profile-exact-bio {
+  max-width: 64ch !important;
+  margin-top: 8px !important;
+  font-size: clamp(12px, 3.4vw, 14px) !important;
+  line-height: 1.45 !important;
+  overflow-wrap: anywhere !important;
+}
+
+.profile-exact-stats {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  padding: 14px clamp(14px, 4vw, 24px) !important;
+  overflow: visible !important;
+  white-space: normal !important;
+}
+.profile-exact-stats .profile-inline-stat {
+  min-width: 0 !important;
+  padding: 8px 4px !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 16px !important;
+  background: var(--soft-card) !important;
+  text-align: center !important;
+  align-items: center !important;
+}
+.profile-exact-stats .profile-inline-stat strong {
+  font-size: clamp(17px, 5vw, 23px) !important;
+  line-height: 1 !important;
+}
+.profile-exact-stats .profile-inline-stat span {
+  margin-top: 3px !important;
+  font-size: clamp(10px, 3vw, 12px) !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+}
+
+.profile-exact-tabs {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+.profile-exact-tabs button {
+  min-width: 0 !important;
+  width: 100% !important;
+  padding: 12px 2px 13px !important;
+  font-size: clamp(10px, 2.85vw, 13px) !important;
+  line-height: 1 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.profile-posts-surface {
+  width: min(740px, 100%) !important;
+  margin: 0 auto !important;
+  padding: 22px clamp(12px, 4vw, 22px) calc(86px + var(--safe-bottom)) !important;
+}
+
+.profile-exact-edit-panel {
+  width: min(700px, calc(100% - 24px)) !important;
+  margin: 14px auto 0 !important;
+}
+
+/* Feed/search/messages responsive polish */
+@media (min-width: 901px) {
+  .app-shell { padding-top: 22px !important; }
+  .main-grid { grid-template-columns: minmax(260px, 320px) minmax(0, 1fr) !important; }
+  .bottom-nav { width: min(420px, calc(100vw - 40px)) !important; }
+  body[data-page="profile"] .profile-exact-topbar,
+  body:has(.profile-exact-page) .profile-exact-topbar {
+    width: min(740px, 100%) !important;
+    margin: 0 auto !important;
+    border-left: 1px solid var(--line) !important;
+    border-right: 1px solid var(--line) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  :root { --lm-shell: calc(100vw - 20px); }
+  .main-grid { grid-template-columns: 1fr !important; gap: 16px !important; margin-top: 14px !important; }
+  .left-panel { display: none !important; }
+  .feed-panel { min-width: 0 !important; }
+  .topbar { top: 8px !important; padding: 10px !important; border-radius: 22px !important; }
+  .brand-logo { width: 42px !important; height: 42px !important; border-radius: 14px !important; }
+  .brand h1 { font-size: 20px !important; }
+  .brand p { display: none !important; }
+  .hamburger-btn,
+  .topbar-notification-btn { width: 44px !important; height: 44px !important; min-width: 44px !important; border-radius: 16px !important; }
+  .feed-top { gap: 10px !important; }
+}
+
+@media (max-width: 560px) {
+  :root { --lm-shell: calc(100vw - 14px); }
+  body { padding-bottom: calc(78px + var(--safe-bottom)) !important; }
+  .app-shell { padding-top: 8px !important; }
+  .topbar-left { gap: 8px !important; }
+  .glass-card,
+  .composer,
+  .thread-card,
+  .public-profile-card,
+  .profile-editor-card { padding: 14px !important; }
+  textarea { font-size: 16px !important; min-height: 108px !important; }
+  .feed-top { align-items: stretch !important; flex-direction: column !important; }
+  .filter-pills { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px !important; width: 100% !important; }
+  .pill { width: 100% !important; padding: 8px 5px !important; font-size: 11px !important; }
+  .thread-card { padding: 13px !important; }
+  .thread-top { gap: 8px !important; }
+  .thread-user img { width: 38px !important; height: 38px !important; border-radius: 14px !important; }
+  .thread-user strong { max-width: 46vw !important; font-size: 13px !important; }
+  .thread-user span { max-width: 48vw !important; font-size: 11px !important; }
+  .thread-text { font-size: 14px !important; line-height: 1.55 !important; overflow-wrap: anywhere !important; }
+  .social-actions { gap: 12px !important; }
+  .bottom-nav { width: calc(100vw - 14px) !important; height: 58px !important; min-height: 58px !important; padding: 6px !important; }
+  .bottom-nav-btn,
+  .bottom-nav-main { height: 44px !important; min-height: 44px !important; font-size: 9px !important; gap: 2px !important; }
+  .bottom-nav-btn svg,
+  .bottom-nav-main svg { width: 18px !important; height: 18px !important; }
+  #bottomComposeBtn { width: 50px !important; height: 50px !important; min-width: 50px !important; }
+
+  .profile-exact-topbar {
+    grid-template-columns: 38px minmax(0, 1fr) auto !important;
+    height: calc(64px + var(--safe-top)) !important;
+    min-height: calc(64px + var(--safe-top)) !important;
+    padding: calc(8px + var(--safe-top)) 10px 8px !important;
+    border-radius: 0 0 22px 22px !important;
+  }
+  .profile-top-avatar-btn,
+  .topbar-profile-avatar { width: 34px !important; height: 34px !important; min-width: 34px !important; }
+  .profile-top-actions { gap: 3px !important; padding: 3px !important; }
+  .profile-top-icon-btn { width: 31px !important; height: 31px !important; min-width: 31px !important; border-radius: 12px !important; }
+  .profile-top-icon-btn svg { width: 19px !important; height: 19px !important; }
+  .profile-cover-strip { height: 104px !important; }
+  .profile-identity-area { min-height: 62px !important; }
+  .profile-exact-avatar { margin-top: -38px !important; }
+  .profile-exact-avatar img,
+  .profile-avatar-control.profile-exact-avatar img { width: 76px !important; height: 76px !important; border-width: 4px !important; }
+  .profile-exact-edit-btn { margin-top: 18px !important; min-width: 96px !important; height: 34px !important; min-height: 34px !important; font-size: 12px !important; padding: 0 12px !important; }
+  .profile-exact-stats { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 5px !important; padding-top: 12px !important; padding-bottom: 12px !important; }
+  .profile-exact-stats .profile-inline-stat { border-radius: 13px !important; padding: 7px 2px !important; }
+  .profile-posts-surface { padding-top: 16px !important; }
+}
+
+@media (max-width: 380px) {
+  .profile-top-handle { font-size: 15px !important; }
+  .profile-top-icon-btn { width: 29px !important; height: 29px !important; min-width: 29px !important; }
+  .profile-exact-stats .profile-inline-stat span { font-size: 9.5px !important; }
+  .profile-exact-tabs button { font-size: 9.5px !important; letter-spacing: -0.04em !important; }
+}
