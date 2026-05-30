@@ -26,7 +26,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=worldclass-20260530" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=layout-revision-20260531" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -232,64 +232,67 @@
 
     <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
-    <main id="mainContent" class="messages-page-grid">
-      <section class="glass-card page-hero messages-page-hero">
+    <main id="mainContent" class="messages-page-grid messages-command-layout">
+      <section class="glass-card page-hero messages-page-hero messages-command-hero">
         <span class="eyebrow" data-i18n="messages">Messages</span>
-        <h2 data-i18n="messagesHeroTitle">Real-time creator chat.</h2>
+        <h1 data-i18n="messagesHeroTitle">Real-time creator chat.</h1>
         <p><span data-i18n="messagesHeroText">Send live messages, build relationships, and turn your network into leverage.</span></p>
       </section>
 
-      <section id="latestChatsPanel" class="glass-card latest-chats-panel" aria-live="polite">
-        <div class="latest-chats-head">
-          <div>
-            <span class="eyebrow" data-i18n="chatInbox">Chat inbox</span>
-            <h2 data-i18n="latestChatsTitle">Latest chats</h2>
-            <p data-i18n="latestChatsText">Tap a conversation to keep the momentum going.</p>
-          </div>
-          <span id="latestChatsCount" class="latest-chats-count">0</span>
-        </div>
-
-        <div id="latestChatsList" class="latest-chats-list">
-          <div class="chat-loading" data-i18n="loading">Loading...</div>
-        </div>
-      </section>
-
-      <p id="chatStatus" class="status-msg hidden"></p>
-
-      <section id="chatSignInCard" class="glass-card chat-signin-card hidden">
-        <h2 data-i18n="chatSignInTitle">Sign in to chat</h2>
-        <p data-i18n="chatSignInText">Sign in to use real-time chat.</p>
-        <button class="btn primary-btn" type="button" data-open-chat-login data-i18n="signIn">Sign in</button>
-      </section>
-
-      <section id="chatApp" class="chat-app-shell hidden">
-        <aside class="chat-sidebar glass-card">
-          <div class="chat-section-head">
-            <span class="eyebrow" data-i18n="chatInbox">Chat inbox</span>
-            <h2 data-i18n="messages">Messages</h2>
+      <section class="messages-workbench">
+        <section id="latestChatsPanel" class="glass-card latest-chats-panel latest-chats-dock" aria-live="polite">
+          <div class="latest-chats-head">
+            <div>
+              <span class="eyebrow" data-i18n="chatInbox">Chat inbox</span>
+              <h2 data-i18n="latestChatsTitle">Latest chats</h2>
+              <p data-i18n="latestChatsText">Tap a conversation to keep the momentum going.</p>
+            </div>
+            <span id="latestChatsCount" class="latest-chats-count">0</span>
           </div>
 
-          <div id="chatConversationList" class="chat-conversation-list"></div>
-
-          <div class="chat-section-head chat-people-head">
-            <span class="eyebrow" data-i18n="newChat">New chat</span>
-            <p data-i18n="newChatText">Search a creator and start a direct message.</p>
+          <div id="latestChatsList" class="latest-chats-list">
+            <div class="chat-loading" data-i18n="loading">Loading...</div>
           </div>
+        </section>
 
-          <div class="chat-search-box">
-            <input id="chatSearchInput" type="search" placeholder="Search @username or name..." data-i18n-placeholder="searchPlaceholder" autocomplete="off" />
-          </div>
+        <p id="chatStatus" class="status-msg hidden"></p>
 
-          <div id="chatPeopleList" class="chat-people-list"></div>
-        </aside>
+        <section id="chatSignInCard" class="glass-card chat-signin-card hidden">
+          <h2 data-i18n="chatSignInTitle">Sign in to chat</h2>
+          <p data-i18n="chatSignInText">Sign in to use real-time chat.</p>
+          <button class="btn primary-btn" type="button" data-open-chat-login data-i18n="signIn">Sign in</button>
+        </section>
 
-        <section class="chat-window glass-card">
-          <header id="chatActiveHeader" class="chat-active-header"></header>
-          <div id="chatMessages" class="chat-messages"></div>
-          <form id="chatMessageForm" class="chat-message-form">
-            <input id="chatMessageInput" type="text" placeholder="Write a message..." data-i18n-placeholder="chatMessagePlaceholder" maxlength="1000" autocomplete="off" />
-            <button class="btn primary-btn" type="submit" data-i18n="send">Send</button>
-          </form>
+        <section id="chatApp" class="chat-app-shell chat-product-shell hidden">
+          <aside class="chat-sidebar glass-card chat-command-sidebar">
+            <div class="chat-section-head chat-people-head">
+              <span class="eyebrow" data-i18n="newChat">New chat</span>
+              <h2>Start DM</h2>
+              <p data-i18n="newChatText">Search a creator and start a direct message.</p>
+            </div>
+
+            <div class="chat-search-box chat-search-prime">
+              <input id="chatSearchInput" type="search" placeholder="Search @username or name..." data-i18n-placeholder="searchPlaceholder" autocomplete="off" />
+            </div>
+
+            <div id="chatPeopleList" class="chat-people-list"></div>
+
+            <div class="chat-section-head chat-inbox-head">
+              <span class="eyebrow" data-i18n="chatInbox">Chat inbox</span>
+              <h2 data-i18n="messages">Messages</h2>
+            </div>
+
+            <div id="chatConversationList" class="chat-conversation-list"></div>
+          </aside>
+
+          <section class="chat-window glass-card chat-focus-window">
+            <header id="chatActiveHeader" class="chat-active-header"></header>
+            <div id="chatMessages" class="chat-messages"></div>
+            <form id="chatMessageForm" class="chat-message-form">
+              <input id="chatMessageInput" type="text" placeholder="Write a message..." data-i18n-placeholder="chatMessagePlaceholder" maxlength="1000" autocomplete="off" />
+              <button class="btn primary-btn" type="submit" data-i18n="send">Send</button>
+            </form>
+          </section>
         </section>
       </section>
     </main>
@@ -302,12 +305,12 @@
   </script>
 
   <!-- App Scripts -->
-  <script src="/assets/js/config.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/language.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/ui.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/auth.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/notifications.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/chat.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/config.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/language.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/ui.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/auth.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/notifications.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/chat.js?v=layout-revision-20260531"></script>
   <script>
     async function bootMessagesPage() {
       if (typeof mountSharedUI === "function") {

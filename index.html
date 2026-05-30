@@ -26,7 +26,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=worldclass-20260530" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=layout-revision-20260531" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -232,43 +232,35 @@
 
     <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
-    <main id="mainContent" class="main-grid">
-      <aside class="left-panel">
-        <section class="glass-card intro-card">
+    <main id="mainContent" class="main-grid home-product-grid">
+      <section class="home-command-card glass-card">
+        <div class="home-command-copy">
           <span class="eyebrow" data-i18n="founderFeed">Founder feed</span>
+          <h1 data-i18n="privateSocialEngine">Your private social engine.</h1>
+          <p>Post ideas, discover builders, and turn conversations into momentum.</p>
+        </div>
 
-          <h2 data-i18n="privateSocialEngine">Your private social engine.</h2>
-
-          <p>
-            <!-- <span data-i18n="homeIntroText">Google login, Supabase Auth, cloud posts, real likes, public profiles, image uploads, comments, follows, persistent sessions, and creator identity.</span> -->
-          </p>
-        </section>
-
-        <section class="glass-card stats-card">
+        <div class="home-command-stats" aria-label="Loomyva activity stats">
           <div>
             <strong id="totalThreads">0</strong>
             <span data-i18n="totalThreads">Total threads</span>
           </div>
-
           <div>
             <strong id="myThreads">0</strong>
             <span data-i18n="yourPosts">Your posts</span>
           </div>
+        </div>
+      </section>
+
+      <aside class="left-panel home-rail-panel">
+        <section class="glass-card intro-card">
+          <span class="eyebrow">Network OS</span>
+          <h2>Build your creator graph.</h2>
+          <p>Use the feed, follows, replies, and DMs like a compact social CRM.</p>
         </section>
-
-        <!-- <section class="glass-card roadmap-card">
-          <h3 data-i18n="nextUpgrades">Next money upgrades</h3>
-
-          <ul>
-            <li>Notifications</li>
-            <li>AI caption generator</li>
-            <li>Search users/posts</li>
-            <li>Analytics dashboard</li>
-          </ul>
-        </section> -->
       </aside>
 
-      <section class="feed-panel">
+      <section class="feed-panel home-feed-panel">
         <section id="publicProfileView" class="public-profile-card hidden">
           <div class="public-profile-head">
             <div class="public-profile-main">
@@ -333,15 +325,15 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="/assets/js/config.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/language.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/ui.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/auth.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/notifications.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/comments.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/follows.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/feed.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/moderation.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/config.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/language.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/ui.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/auth.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/notifications.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/comments.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/follows.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/feed.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/moderation.js?v=layout-revision-20260531"></script>
 
   <script>
     async function bootFeedPage() {
