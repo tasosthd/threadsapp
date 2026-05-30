@@ -225,12 +225,12 @@ function renderThreads() {
       : activeFilter === "mine"
         ? typeof t === "function" ? t("youNoPosts") : "You have not posted yet. Drop your first founder thought."
         : activeFilter === "following"
-          ? typeof t === "function" ? t("followingNoPosts") : "No posts from people you follow yet. Follow some creators first."
+          ? "Follow people to see their posts here."
           : typeof t === "function" ? t("firstPost") : "Be the first founder to post something powerful.";
 
     threadsList.innerHTML = `
       <div class="empty-state">
-        <strong>${typeof t === "function" ? t("noThreadsYet") : "No threads yet."}</strong>
+        <strong>${activeFilter === "following" ? "Your feed is empty" : (typeof t === "function" ? t("noThreadsYet") : "No threads yet.")}</strong>
         ${message}
       </div>
     `;
