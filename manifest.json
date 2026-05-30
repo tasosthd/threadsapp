@@ -1,19 +1,40 @@
 {
-  "name": "Loomyva",
+  "name": "Loomyva — Creator Social Network",
   "short_name": "Loomyva",
-  "description": "Post threads, share thoughts, and discover people on Loomyva.",
+  "description": "A premium creator network for posting ideas, discovering builders, messaging people, and growing a social graph.",
   "start_url": "/",
   "scope": "/",
+  "id": "/",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#050816",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "orientation": "portrait-primary",
+  "background_color": "#120817",
   "theme_color": "#050816",
+  "categories": ["social", "productivity", "business"],
+  "lang": "en",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/assets/img/index.png",
       "sizes": "1080x1080",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create thread",
+      "short_name": "Create",
+      "description": "Post a new Loomyva thread.",
+      "url": "/?compose=true",
+      "icons": [{ "src": "/assets/img/index.png", "sizes": "1080x1080" }]
+    },
+    {
+      "name": "Search creators",
+      "short_name": "Search",
+      "description": "Find creators and profiles.",
+      "url": "/search/",
+      "icons": [{ "src": "/assets/img/index.png", "sizes": "1080x1080" }]
     }
   ]
 }

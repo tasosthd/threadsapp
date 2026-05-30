@@ -179,29 +179,22 @@ function cleanUsername(value) {
 }
 
 function setBottomNavActive(section) {
-  const bottomHomeBtn = document.getElementById("bottomHomeBtn");
-  const bottomSearchBtn = document.getElementById("bottomSearchBtn");
-  const bottomComposeBtn = document.getElementById("bottomComposeBtn");
-  const bottomInboxBtn = document.getElementById("bottomInboxBtn");
-  const bottomProfileBtn = document.getElementById("bottomProfileBtn");
+  const navMap = {
+    home: document.getElementById("bottomHomeBtn"),
+    search: document.getElementById("bottomSearchBtn"),
+    compose: document.getElementById("bottomComposeBtn"),
+    inbox: document.getElementById("bottomInboxBtn"),
+    profile: document.getElementById("bottomProfileBtn")
+  };
 
-  if (!bottomHomeBtn || !bottomProfileBtn) return;
+  Object.entries(navMap).forEach(([key, button]) => {
+    if (!button) return;
 
-  bottomHomeBtn.classList.toggle("active", section === "home");
-
-  if (bottomSearchBtn) {
-    bottomSearchBtn.classList.toggle("active", section === "search");
-  }
-
-  if (bottomComposeBtn) {
-    bottomComposeBtn.classList.toggle("active", section === "compose");
-  }
-
-  if (bottomInboxBtn) {
-    bottomInboxBtn.classList.toggle("active", section === "inbox");
-  }
-
-  bottomProfileBtn.classList.toggle("active", section === "profile");
+    const isActive = key === section;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-current", isActive ? "page" : "false");
+    button.setAttribute("aria-pressed", isActive ? "true" : "false");
+  });
 }
 
 function goHomePage() {
@@ -729,14 +722,14 @@ function setupThreadModal() {
 function renderBottomNav() {
   return `
     <nav class="bottom-nav" aria-label="Bottom navigation">
-      <button id="bottomHomeBtn" class="bottom-nav-btn" type="button">
+      <button id="bottomHomeBtn" class="bottom-nav-btn" type="button" aria-label="Go to home">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M3 11.5 12 4l9 7.5V21a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-9.5Z"></path>
         </svg>
         <span data-i18n="navHome">${typeof t === "function" ? t("navHome") : "Home"}</span>
       </button>
 
-      <button id="bottomSearchBtn" class="bottom-nav-btn" type="button">
+      <button id="bottomSearchBtn" class="bottom-nav-btn" type="button" aria-label="Go to search">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M10.5 3a7.5 7.5 0 0 1 5.93 12.1l4.24 4.23a1 1 0 0 1-1.42 1.42l-4.23-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"></path>
         </svg>
@@ -758,7 +751,7 @@ function renderBottomNav() {
         <span id="bottomNotificationsBadge" class="bottom-nav-badge hidden">0</span>
       </button>
 
-      <button id="bottomProfileBtn" class="bottom-nav-btn" type="button">
+      <button id="bottomProfileBtn" class="bottom-nav-btn" type="button" aria-label="Go to profile">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.42 0-8 2.24-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.76-3.58-5-8-5Z"></path>
         </svg>
@@ -832,6 +825,37 @@ function renderThreadModal() {
   `;
 }
 
+
+function upgradeDynamicImages(root = document) {
+  const images = Array.from(root.querySelectorAll("img"));
+
+  images.forEach((image) => {
+    if (!image.hasAttribute("loading")) image.setAttribute("loading", "lazy");
+    if (!image.hasAttribute("decoding")) image.setAttribute("decoding", "async");
+    image.addEventListener("error", () => {
+      if (!image.dataset.fallbackApplied) {
+        image.dataset.fallbackApplied = "true";
+        image.src = fallbackAvatar(image.alt || "Loomyva");
+      }
+    }, { once: true });
+  });
+}
+
+function watchDynamicSurfaces() {
+  if (window.__loomyvaImageObserver) return;
+
+  window.__loomyvaImageObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === 1) upgradeDynamicImages(node);
+      });
+    });
+  });
+
+  window.__loomyvaImageObserver.observe(document.body, { childList: true, subtree: true });
+  upgradeDynamicImages(document);
+}
+
 function mountSharedUI({ includeModal = false } = {}) {
   applyTheme(getSavedTheme());
 
@@ -847,6 +871,7 @@ function mountSharedUI({ includeModal = false } = {}) {
   setupBottomNav();
   setupSidebar();
   setupThemeToggle();
+  watchDynamicSurfaces();
 
   if (typeof setupLanguageSwitcher === "function") {
     setupLanguageSwitcher();

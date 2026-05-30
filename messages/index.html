@@ -14,15 +14,19 @@
   <link rel="apple-touch-icon" href="/assets/img/index.png" />
 
   <meta name="theme-color" content="#050816" />
+  <meta name="description" content="Loomyva is a premium creator network for posting ideas, discovering builders, messaging people, and growing a social graph." />
+  <meta name="application-name" content="Loomyva" />
 
   <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet"
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=compact-polish-1" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=worldclass-20260530" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -34,6 +38,7 @@
 </head>
 
 <body>
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
   <div class="bg-orb orb-one"></div>
   <div class="bg-orb orb-two"></div>
 
@@ -227,7 +232,7 @@
 
     <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
-    <main class="messages-page-grid">
+    <main id="mainContent" class="messages-page-grid">
       <section class="glass-card page-hero messages-page-hero">
         <span class="eyebrow" data-i18n="messages">Messages</span>
         <h2 data-i18n="messagesHeroTitle">Real-time creator chat.</h2>
@@ -297,12 +302,12 @@
   </script>
 
   <!-- App Scripts -->
-  <script src="/assets/js/config.js?v=latest-chats-3"></script>
-  <script src="/assets/js/language.js?v=latest-chats-3"></script>
-  <script src="/assets/js/ui.js?v=latest-chats-3"></script>
-  <script src="/assets/js/auth.js?v=latest-chats-3"></script>
-  <script src="/assets/js/notifications.js?v=latest-chats-3"></script>
-  <script src="/assets/js/chat.js?v=latest-chats-3"></script>
+  <script src="/assets/js/config.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/language.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/ui.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/auth.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/notifications.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/chat.js?v=worldclass-20260530"></script>
   <script>
     async function bootMessagesPage() {
       if (typeof mountSharedUI === "function") {
