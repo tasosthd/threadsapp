@@ -38,38 +38,36 @@
   <div class="bg-orb orb-two"></div>
 
   <div class="app-shell">
-    <header class="topbar app-topbar">
-      <div class="topbar-left">
-        <button id="sidebarOpenBtn" class="hamburger-btn" type="button" aria-label="Open menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+    <header class="topbar app-topbar profile-exact-topbar">
+      <button id="sidebarOpenBtn" class="profile-top-avatar-btn" type="button" aria-label="Open menu">
+        <img
+          id="topbarProfileAvatar"
+          class="topbar-profile-avatar"
+          data-user-avatar
+          src="/assets/img/index.png"
+          alt="Your profile picture"
+        />
+      </button>
 
-        <a class="brand compact-brand" href="/" aria-label="Loomyva home">
-          <img
-            src="/assets/img/index.png"
-            alt="Loomyva logo"
-            class="brand-logo"
-          />
+      <div id="profileTopHandle" class="profile-top-handle">@loomyva</div>
 
-          <div>
-            <h1>Loomyva</h1>
-            <p><span data-i18n="appSubtitleProfile">Edit your creator identity.</span></p>
-          </div>
+      <div class="profile-top-actions" aria-label="Profile actions">
+        <a class="profile-top-icon-btn" href="/messages/" aria-label="Open messages">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3.5 6.5A2.5 2.5 0 0 1 6 4h12a2.5 2.5 0 0 1 2.5 2.5v11A2.5 2.5 0 0 1 18 20H6a2.5 2.5 0 0 1-2.5-2.5v-11Zm2.2.3 6.3 5.1 6.3-5.1A.7.7 0 0 0 18 6H6a.7.7 0 0 0-.3.8Zm12.8 2.1-5.6 4.5a1.4 1.4 0 0 1-1.8 0L5.5 8.9v8.6c0 .3.2.5.5.5h12c.3 0 .5-.2.5-.5V8.9Z"></path>
+          </svg>
         </a>
 
         <button
-          class="topbar-notification-btn"
+          id="profileSettingsDotsBtn"
+          class="profile-top-icon-btn"
           type="button"
-          data-open-notifications
-          aria-label="Open notifications"
+          aria-label="Profile options"
+          data-i18n-aria-label="profileOptions"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 1 0-14 0v5l-2 2v1h18v-1l-2-2Z"></path>
+            <path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a7.8 7.8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.8 7.8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a7.8 7.8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.8 7.8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.8A3.8 3.8 0 1 1 12 8a3.8 3.8 0 0 1 0 7.8Z"></path>
           </svg>
-
-          <span id="notificationsBadge" class="notification-badge hidden">0</span>
         </button>
       </div>
     </header>
@@ -202,22 +200,12 @@
 
     <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
-    <main class="profile-page-grid">
-      <section class="glass-card page-hero">
-        <span class="eyebrow" data-i18n="creatorProfile">Creator profile</span>
+    <main class="profile-exact-page">
+      <section class="profile-cover-card" aria-label="Your profile">
+        <div class="profile-cover-strip"></div>
 
-        <h2 data-i18n="buildIdentity">Build your identity.</h2>
-
-        <p>
-          <span data-i18n="profileHeroText">
-            Edit your username, bio, profile picture, and creator presence. Your posts, images, likes, followers, following, and creator stats live here.
-          </span>
-        </p>
-      </section>
-
-      <section class="profile-editor-card">
-        <div class="profile-editor-head">
-          <div class="profile-avatar-control">
+        <div class="profile-identity-area">
+          <div class="profile-avatar-control profile-exact-avatar">
             <img id="profileEditorAvatar" src="" alt="Profile avatar" />
 
             <label class="avatar-upload-btn" for="profileAvatarInput" aria-label="Change profile photo">
@@ -234,49 +222,47 @@
             />
           </div>
 
-          <div class="profile-editor-info">
-            <div class="profile-inline-stats" aria-label="Profile stats">
-              <div class="profile-inline-stat">
-                <strong id="profilePostCount">0</strong>
-                <span data-i18n="yourPosts">Posts</span>
-              </div>
-
-              <div class="profile-inline-stat">
-                <strong id="profileLikeCount">0</strong>
-                <span data-i18n="totalLikes">Likes</span>
-              </div>
-
-              <div class="profile-inline-stat profile-clickable-stat">
-                <strong id="profileFollowerCount">0</strong>
-                <span data-i18n="followers">Followers</span>
-              </div>
-
-              <div class="profile-inline-stat profile-clickable-stat">
-                <strong id="profileFollowingCount">0</strong>
-                <span data-i18n="following">Following</span>
-              </div>
-            </div>
-
-            <span class="eyebrow" data-i18n="yourAccount">Your account</span>
-            <h2 id="profileEditorName">Loomyva User</h2>
-            <p id="profileEditorEmail" class="profile-editor-username">@username</p>
-          </div>
-
-          <button
-            id="profileSettingsDotsBtn"
-            class="profile-more-btn profile-settings-dots-btn"
-            type="button"
-            aria-label="Profile options"
-            data-i18n-aria-label="profileOptions"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="5" cy="12" r="2" fill="currentColor"/>
-              <circle cx="12" cy="12" r="2" fill="currentColor"/>
-              <circle cx="19" cy="12" r="2" fill="currentColor"/>
-            </svg>
-          </button>
+          <button id="profileEditToggleBtn" class="profile-exact-edit-btn" type="button">Edit Profile</button>
         </div>
 
+        <div class="profile-exact-info">
+          <h1 id="profileEditorName">Loomyva User</h1>
+          <p id="profileEditorEmail" class="profile-exact-username">@username</p>
+          <p id="profileBioDisplay" class="profile-exact-bio"></p>
+        </div>
+
+        <div class="profile-exact-stats" aria-label="Profile stats">
+          <div class="profile-inline-stat">
+            <strong id="profilePostCount">0</strong>
+            <span>Posts</span>
+          </div>
+
+          <div class="profile-inline-stat profile-clickable-stat">
+            <strong id="profileFollowerCount">0</strong>
+            <span>Followers</span>
+          </div>
+
+          <div class="profile-inline-stat profile-clickable-stat">
+            <strong id="profileFollowingCount">0</strong>
+            <span>Following</span>
+          </div>
+
+          <div class="profile-inline-stat profile-likes-stat">
+            <strong id="profileLikeCount">0</strong>
+            <span>Likes</span>
+          </div>
+        </div>
+
+        <nav class="profile-exact-tabs" aria-label="Profile sections">
+          <button class="active" type="button">Posts</button>
+          <button type="button">Replies</button>
+          <button type="button">Media</button>
+          <button type="button">Likes</button>
+          <button type="button">Bookmarks</button>
+        </nav>
+      </section>
+
+      <section id="profileEditPanel" class="profile-editor-card profile-exact-edit-panel" hidden>
         <div class="profile-editor-form">
           <label class="field-label">
             <span>Full name</span>
@@ -322,17 +308,9 @@
         </div>
       </section>
 
-      <section class="feed-panel profile-page-panel">
-        <section class="feed-top">
-          <div>
-            <span class="eyebrow" data-i18n="yourRecentPosts">Your recent posts</span>
-            <h2 data-i18n="profileThreads">Profile Threads</h2>
-          </div>
-        </section>
-
+      <section class="profile-posts-surface">
         <p id="statusMsg" class="status-msg hidden"></p>
-
-        <section id="profilePostsList" class="threads-list"></section>
+        <section id="profilePostsList" class="threads-list profile-exact-posts-list"></section>
       </section>
     </main>
   </div>
@@ -345,6 +323,35 @@
   <script src="/assets/js/notifications.js?v=appstore-unblock-1"></script>
   <script src="/assets/js/moderation.js?v=mod-menu-1"></script>
   <script src="/assets/js/profile.js?v=profile-settings-modal-2"></script>
+
+  <script>
+    (function () {
+      function syncProfileChrome() {
+        const handle = document.getElementById("profileEditorEmail")?.textContent || "@loomyva";
+        const topHandle = document.getElementById("profileTopHandle");
+        const bioInput = document.getElementById("profileBioInput");
+        const bioDisplay = document.getElementById("profileBioDisplay");
+        if (topHandle) topHandle.textContent = handle || "@loomyva";
+        if (bioDisplay) bioDisplay.textContent = bioInput?.value || "";
+      }
+
+      window.addEventListener("load", function () {
+        const editBtn = document.getElementById("profileEditToggleBtn");
+        const editPanel = document.getElementById("profileEditPanel");
+        if (editBtn && editPanel) {
+          editBtn.addEventListener("click", function () {
+            editPanel.hidden = !editPanel.hidden;
+            editBtn.textContent = editPanel.hidden ? "Edit Profile" : "Close Editor";
+            if (!editPanel.hidden) editPanel.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+        }
+
+        syncProfileChrome();
+        setInterval(syncProfileChrome, 700);
+      });
+    })();
+  </script>
+
   <script>
     async function bootProfilePage() {
       await initProfilePage();
