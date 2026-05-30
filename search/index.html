@@ -56,7 +56,7 @@
 
           <div>
             <h1>Loomyva</h1>
-            <p>Discover creators.</p>
+            <p><span data-i18n="appSubtitleHome">Post ideas. Sync everywhere.</span></p>
           </div>
         </a>
 
@@ -106,24 +106,6 @@
             required
           />
 
-          <input
-            type="text"
-            id="authFullName"
-            class="sidebar-auth-input"
-            placeholder="Full name"
-            autocomplete="name"
-            maxlength="60"
-          />
-
-          <input
-            type="text"
-            id="authUsername"
-            class="sidebar-auth-input"
-            placeholder="Username for signup"
-            autocomplete="username"
-            maxlength="28"
-          />
-
           <div class="password-field-wrap">
             <input
               type="password"
@@ -146,12 +128,12 @@
             </button>
           </div>
 
+          <a class="auth-switch-link" href="/create-account/">
+            Are you a new user? <strong>Create Account</strong>
+          </a>
+
           <button id="emailLoginBtn" class="btn primary-btn" type="submit">
             Log in
-          </button>
-
-          <button id="emailSignupBtn" class="btn ghost-btn" type="button">
-            Create account
           </button>
         </form>
 
@@ -202,6 +184,25 @@
         </div>
       </div>
 
+      <div class="sidebar-language-box">
+        <div class="sidebar-theme-head">
+          <span data-i18n="language">Language</span>
+          <small data-i18n="chooseLanguage">Choose app language</small>
+        </div>
+
+        <div class="theme-toggle-group language-toggle-group" role="group" aria-label="Choose language">
+          <button class="theme-toggle-btn language-toggle-btn" type="button" data-language-option="en">
+            <span>EN</span>
+            <span data-i18n="english">English</span>
+          </button>
+
+          <button class="theme-toggle-btn language-toggle-btn" type="button" data-language-option="el">
+            <span>EL</span>
+            <span data-i18n="greek">Ελληνικά</span>
+          </button>
+        </div>
+      </div>
+
       <nav class="sidebar-links">
         <a href="/" data-i18n="navHome">Home</a>
         <a href="/search/" data-i18n="navSearch">Search</a>
@@ -216,6 +217,11 @@
         <button id="sidebarComposeBtn" type="button" data-i18n="createThread">
           Create thread
         </button>
+
+        <div class="sidebar-legal-links" aria-label="Legal links">
+          <a class="sidebar-legal-link" href="/terms/" data-i18n="terms">Terms</a>
+          <a class="sidebar-legal-link" href="/privacy/" data-i18n="privacy">Privacy</a>
+        </div>
       </nav>
     </aside>
 
