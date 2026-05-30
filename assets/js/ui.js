@@ -768,7 +768,7 @@ function renderThreadModal() {
         <div class="modal-head">
           <div>
             <h2 id="threadModalTitle" data-i18n="createThread">${typeof t === "function" ? t("createThread") : "Create thread"}</h2>
-            <p data-i18n="modalText">${typeof t === "function" ? t("modalText") : "Write your next move. Add an image if it makes the post hit harder."}</p>
+            <p data-i18n="modalText">${typeof t === "function" ? t("modalText") : "Share a clean update. Add an image when it helps."}</p>
           </div>
 
           <button id="modalCloseBtn" class="modal-close" type="button" aria-label="Close modal">
@@ -780,7 +780,7 @@ function renderThreadModal() {
           id="modalThreadInput"
           class="modal-textarea"
           maxlength="280"
-          placeholder="${typeof t === "function" ? t("modalPlaceholder") : "What's building in your mind today?"}" data-i18n-placeholder="modalPlaceholder"
+          placeholder="${typeof t === "function" ? t("modalPlaceholder") : "What are you building today?"}" data-i18n-placeholder="modalPlaceholder"
         ></textarea>
 
         <div class="image-upload-box">
@@ -856,6 +856,24 @@ function watchDynamicSurfaces() {
   upgradeDynamicImages(document);
 }
 
+
+function setupTopbarCompose() {
+  document.querySelectorAll("[data-topbar-compose]").forEach((button) => {
+    if (button.dataset.bound === "true") return;
+    button.dataset.bound = "true";
+    button.addEventListener("click", () => {
+      if (getPageName() !== "home") {
+        window.location.href = "/?compose=1";
+        return;
+      }
+
+      if (typeof openThreadModal === "function") {
+        openThreadModal();
+      }
+    });
+  });
+}
+
 function mountSharedUI({ includeModal = false } = {}) {
   applyTheme(getSavedTheme());
 
@@ -870,6 +888,7 @@ function mountSharedUI({ includeModal = false } = {}) {
 
   setupBottomNav();
   setupSidebar();
+  setupTopbarCompose();
   setupThemeToggle();
   watchDynamicSurfaces();
 

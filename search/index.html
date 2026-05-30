@@ -26,7 +26,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=layout-revision-20260531" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=minimal-blue-20260531" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -65,6 +65,15 @@
           </div>
         </a>
 
+
+        <nav class="topbar-nav" aria-label="Primary navigation">
+          <a class="topbar-nav-link " href="/" data-i18n="navHome">Home</a>
+          <a class="topbar-nav-link active" href="/search/" data-i18n="navSearch">Search</a>
+          <button class="topbar-nav-link topbar-compose-link" type="button" data-topbar-compose data-i18n="navCreate">Create</button>
+          <a class="topbar-nav-link " href="/messages/" data-i18n="messages">Messages</a>
+          <a class="topbar-nav-link " href="/profile/" data-i18n="navProfile">Profile</a>
+        </nav>
+
         <button
           class="topbar-notification-btn"
           type="button"
@@ -91,7 +100,7 @@
 
           <div>
             <h1>Loomyva</h1>
-            <p><span data-i18n="creatorMenu">Your creator menu.</span></p>
+            <p><span data-i18n="creatorMenu">Menu</span></p>
           </div>
         </div>
 
@@ -242,7 +251,7 @@
               Find creators by name or username, open their profile, and follow them.
             </p>
           </div>
-          <div class="search-command-chip">Creator graph</div>
+          <div class="search-command-chip">People</div>
         </div>
 
         <div class="user-search-box search-primary-box">
@@ -269,10 +278,10 @@
 
       <section class="glass-card page-hero search-page-hero search-context-panel">
         <span class="eyebrow" data-i18n="searchEyebrow">Search</span>
-        <h2 data-i18n="searchHeroTitle">Find creators fast.</h2>
+        <h2 data-i18n="searchHeroTitle">Find people fast.</h2>
         <p>
           <span data-i18n="searchHeroText">
-            Search usernames, names, and bios. Open profiles, follow people, and build the network effect.
+            Search names and usernames. Open profiles, follow creators, and start conversations.
           </span>
         </p>
       </section>
@@ -288,15 +297,15 @@
   </script>
 
   <!-- App Scripts -->
-  <script src="/assets/js/config.js?v=layout-revision-20260531"></script>
-  <script src="/assets/js/language.js?v=layout-revision-20260531"></script>
-  <script src="/assets/js/ui.js?v=layout-revision-20260531"></script>
-  <script src="/assets/js/auth.js?v=layout-revision-20260531"></script>
-  <script src="/assets/js/notifications.js?v=layout-revision-20260531"></script>
-  <script src="/assets/js/moderation.js?v=layout-revision-20260531"></script>
-  <script src="/assets/js/follows.js?v=layout-revision-20260531"></script>
-  <script src="/assets/js/user-search.js?v=layout-revision-20260531"></script>
-  <script src="/assets/js/chat.js?v=layout-revision-20260531"></script>
+  <script src="/assets/js/config.js?v=minimal-blue-20260531"></script>
+  <script src="/assets/js/language.js?v=minimal-blue-20260531"></script>
+  <script src="/assets/js/ui.js?v=minimal-blue-20260531"></script>
+  <script src="/assets/js/auth.js?v=minimal-blue-20260531"></script>
+  <script src="/assets/js/notifications.js?v=minimal-blue-20260531"></script>
+  <script src="/assets/js/moderation.js?v=minimal-blue-20260531"></script>
+  <script src="/assets/js/follows.js?v=minimal-blue-20260531"></script>
+  <script src="/assets/js/user-search.js?v=minimal-blue-20260531"></script>
+  <script src="/assets/js/chat.js?v=minimal-blue-20260531"></script>
   <script>
     async function bootSearchPage() {
       await initSearchPage();
