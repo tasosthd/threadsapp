@@ -10012,3 +10012,790 @@ body:has(.profile-exact-page) .app-shell {
   .profile-exact-stats .profile-inline-stat span { font-size: 9.5px !important; }
   .profile-exact-tabs button { font-size: 9.5px !important; letter-spacing: -0.04em !important; }
 }
+
+
+/* =========================================================
+   Compact Polish Layer - 2026-05-30
+   Makes Loomyva tighter, cleaner, and consistent on phone/PC.
+========================================================= */
+:root {
+  --compact-shadow: 0 14px 42px rgba(132, 38, 92, 0.14);
+}
+
+body {
+  padding-bottom: calc(88px + var(--safe-bottom));
+}
+
+.bg-orb {
+  width: 280px;
+  height: 280px;
+  opacity: 0.34;
+}
+
+.app-shell {
+  width: min(1040px, calc(100% - 24px));
+  padding: 14px 0 48px;
+}
+
+.topbar {
+  top: 10px;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 24px;
+  box-shadow: var(--compact-shadow);
+}
+
+.topbar-left {
+  gap: 10px;
+  min-width: 0;
+}
+
+.brand {
+  gap: 10px;
+}
+
+.brand-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+}
+
+.brand h1 {
+  font-size: 19px;
+  letter-spacing: -0.035em;
+}
+
+.brand p {
+  margin-top: 3px;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.hamburger-btn,
+.topbar-notification-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(132, 38, 92, 0.12);
+}
+
+.hamburger-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.hamburger-btn span {
+  width: 20px;
+  height: 2px;
+}
+
+.topbar-notification-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.topbar-user-avatar {
+  position: absolute;
+  inset: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  display: none;
+  border-radius: 13px;
+  object-fit: cover;
+  object-position: center;
+}
+
+body.is-logged-in .topbar-user-avatar[src]:not([src=""]) {
+  display: block;
+}
+
+body.is-logged-in .hamburger-btn span {
+  display: none;
+}
+
+.main-grid {
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.left-panel,
+.feed-panel,
+.profile-page-panel {
+  gap: 12px;
+}
+
+.glass-card,
+.composer,
+.thread-card,
+.public-profile-card,
+.profile-editor-card {
+  box-shadow: var(--compact-shadow);
+}
+
+.glass-card,
+.public-profile-card,
+.profile-editor-card {
+  padding: 16px;
+  border-radius: 24px;
+}
+
+.intro-card h2,
+.page-hero h2 {
+  font-size: 23px;
+}
+
+.intro-card p,
+.roadmap-card li,
+.profile-hint,
+.public-profile-bio,
+.page-hero p {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.btn,
+.primary-btn,
+.ghost-btn,
+.mini-action,
+.pill,
+.follow-btn,
+.public-profile-follow,
+.feed-follow-btn,
+.profile-user-modal-follow-btn {
+  min-height: 0;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.15;
+}
+
+.input-field,
+.bio-field,
+.modal-textarea,
+.sidebar-auth-input,
+.search-input,
+.chat-input {
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+textarea {
+  min-height: 104px;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.composer {
+  padding: 14px;
+  border-radius: 24px;
+}
+
+.feed-top {
+  gap: 10px;
+}
+
+.feed-top h2 {
+  font-size: 21px;
+}
+
+.filter-pills {
+  gap: 6px;
+}
+
+.thread-card {
+  padding: 14px;
+  border-radius: 23px;
+}
+
+.thread-top {
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.thread-user {
+  gap: 9px;
+}
+
+.thread-user img {
+  width: 38px;
+  height: 38px;
+}
+
+.thread-user strong {
+  max-width: 230px;
+  font-size: 13px;
+}
+
+.thread-user span {
+  max-width: 310px;
+  font-size: 11px;
+}
+
+.thread-content {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.thread-image-wrap,
+.profile-thread-image-wrap {
+  width: min(100%, 360px);
+  margin-top: 10px;
+  border-radius: 18px;
+}
+
+.thread-image,
+.profile-thread-image {
+  max-height: 240px;
+  border-radius: 18px;
+}
+
+.thread-actions {
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.social-actions {
+  gap: 10px;
+}
+
+.social-action-btn {
+  gap: 4px;
+  padding: 6px 2px;
+  font-size: 12px;
+}
+
+.social-action-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.social-action-btn span {
+  font-size: 12px;
+}
+
+.profile-page-grid {
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.profile-editor-head {
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.profile-editor-head h2 {
+  font-size: 23px;
+}
+
+.profile-editor-head p {
+  font-size: 12px;
+}
+
+.profile-avatar-control {
+  padding-bottom: 12px;
+}
+
+.profile-avatar-control img {
+  width: 74px;
+  height: 74px;
+  border-radius: 22px;
+}
+
+.avatar-upload-btn {
+  width: 34px;
+  height: 34px;
+  border-width: 2px;
+}
+
+.avatar-upload-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.profile-editor-form {
+  gap: 9px;
+}
+
+.profile-actions {
+  gap: 8px;
+}
+
+.stats-card {
+  gap: 8px;
+}
+
+.stats-card div {
+  padding: 11px;
+  border-radius: 17px;
+}
+
+.stats-card strong {
+  font-size: 22px;
+}
+
+.stats-card span {
+  margin-top: 4px;
+  font-size: 10px;
+}
+
+.profile-social-stats-card div,
+.profile-main-stats-card div {
+  min-height: 78px;
+}
+
+.public-profile-card {
+  border-radius: 24px;
+}
+
+.public-profile-head {
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.public-profile-main {
+  gap: 12px;
+}
+
+.public-profile-main img {
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+}
+
+.public-profile-main h3 {
+  font-size: 21px;
+}
+
+.public-profile-stats {
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.public-profile-stat {
+  padding: 9px 10px;
+  border-radius: 16px;
+}
+
+.bottom-nav {
+  width: min(430px, calc(100% - 22px));
+  bottom: 12px;
+  gap: 4px;
+  padding: 7px;
+  border-radius: 24px;
+  box-shadow: 0 14px 42px rgba(132, 38, 92, 0.18);
+}
+
+.bottom-nav-btn,
+.bottom-nav-main {
+  height: 44px;
+  gap: 2px;
+  border-radius: 18px;
+  font-size: 9px;
+}
+
+.bottom-nav-btn svg,
+.bottom-nav-main svg {
+  width: 18px;
+  height: 18px;
+}
+
+.bottom-nav-badge {
+  top: 2px;
+  right: 8px;
+  min-width: 15px;
+  height: 15px;
+  font-size: 8px;
+}
+
+.app-sidebar {
+  width: min(340px, calc(100% - 24px));
+  top: calc(12px + var(--safe-top));
+  left: calc(12px + var(--safe-left));
+  max-height: calc(var(--app-height) - 24px - var(--safe-top) - var(--safe-bottom));
+  padding: 14px;
+  border-radius: 24px;
+}
+
+.sidebar-head {
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.sidebar-brand .brand-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+}
+
+.sidebar-brand h1 {
+  font-size: 18px;
+}
+
+.sidebar-close-btn {
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+}
+
+.sidebar-auth,
+.sidebar-email-auth,
+.sidebar-theme-box,
+.sidebar-links {
+  gap: 8px;
+}
+
+.sidebar-auth,
+.sidebar-theme-box {
+  padding: 10px;
+  border-radius: 18px;
+}
+
+.sidebar-account-row {
+  padding: 8px;
+  border-radius: 18px;
+}
+
+.sidebar-account-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+}
+
+.sidebar-account-meta strong {
+  font-size: 13px;
+}
+
+.sidebar-account-meta span {
+  font-size: 10px;
+}
+
+.sidebar-logout-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 13px;
+}
+
+.theme-toggle-btn {
+  min-height: 38px;
+  border-radius: 14px;
+  font-size: 12px;
+}
+
+.sidebar-links a,
+.sidebar-links button {
+  min-height: 38px;
+  padding: 9px 10px;
+  border-radius: 14px;
+  font-size: 13px;
+}
+
+@media (min-width: 901px) {
+  body {
+    padding-bottom: calc(82px + var(--safe-bottom));
+  }
+
+  .bottom-nav {
+    width: min(390px, calc(100% - 40px));
+    bottom: 14px;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    width: min(100% - 16px, 1040px);
+    padding-top: 8px;
+  }
+
+  .topbar {
+    top: 8px;
+    border-radius: 22px;
+  }
+
+  .main-grid {
+    gap: 12px;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  body {
+    padding-bottom: calc(74px + var(--safe-bottom));
+  }
+
+  .app-shell {
+    width: min(100% - 12px, 1040px);
+    padding-top: 6px;
+  }
+
+  .topbar,
+  .app-topbar {
+    top: 6px;
+    padding: 7px 8px;
+    border-radius: 18px;
+  }
+
+  .topbar-left {
+    gap: 7px;
+  }
+
+  .brand,
+  .compact-brand {
+    gap: 8px;
+  }
+
+  .brand-logo,
+  .compact-brand .brand-logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+  }
+
+  .brand h1 {
+    font-size: 16px;
+  }
+
+  .hamburger-btn,
+  .topbar-notification-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 13px;
+  }
+
+  .topbar-user-avatar {
+    inset: 3px;
+    width: calc(100% - 6px);
+    height: calc(100% - 6px);
+    border-radius: 10px;
+  }
+
+  .hamburger-btn span {
+    width: 17px;
+    height: 2px;
+  }
+
+  .hamburger-btn:hover,
+  .bottom-nav-btn:hover,
+  .bottom-nav-main:hover,
+  .mini-action:hover,
+  .social-action-btn:hover {
+    transform: none;
+  }
+
+  .topbar-notification-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .glass-card,
+  .public-profile-card,
+  .profile-editor-card,
+  .composer,
+  .thread-card {
+    border-radius: 18px;
+  }
+
+  .glass-card,
+  .public-profile-card,
+  .profile-editor-card {
+    padding: 12px;
+  }
+
+  .composer,
+  .thread-card {
+    padding: 11px;
+  }
+
+  .feed-top,
+  .public-profile-head {
+    gap: 8px;
+  }
+
+  .feed-top h2,
+  .profile-editor-head h2,
+  .public-profile-main h3 {
+    font-size: 18px;
+  }
+
+  .feed-top .btn,
+  .filter-pills,
+  .pill {
+    width: auto;
+  }
+
+  .filter-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .filter-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pill {
+    flex: 0 0 auto;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  .public-profile-main,
+  .profile-editor-head {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .profile-editor-head {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .profile-avatar-control img {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+  }
+
+  .avatar-upload-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .profile-main-stats-card,
+  .profile-social-stats-card,
+  .profile-stats-card,
+  .public-profile-stats-top {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .profile-social-stats-card div,
+  .profile-main-stats-card div,
+  .stats-card div {
+    min-height: 62px;
+    padding: 8px 5px;
+    text-align: center;
+  }
+
+  .stats-card strong {
+    font-size: 17px;
+  }
+
+  .stats-card span {
+    font-size: 8px;
+    line-height: 1.15;
+  }
+
+  .thread-user img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .thread-user strong {
+    max-width: 135px;
+    font-size: 12px;
+  }
+
+  .thread-user span {
+    max-width: 145px;
+    font-size: 10px;
+  }
+
+  .thread-content {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .thread-image-wrap,
+  .profile-thread-image-wrap {
+    border-radius: 15px;
+  }
+
+  .thread-image,
+  .profile-thread-image {
+    max-height: 205px;
+    border-radius: 15px;
+  }
+
+  .thread-actions {
+    align-items: center;
+    gap: 6px;
+  }
+
+  .social-actions {
+    gap: 8px;
+  }
+
+  .social-action-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .social-action-btn span {
+    font-size: 11px;
+  }
+
+  .feed-follow-btn {
+    min-width: 72px;
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+
+  .profile-delete-btn {
+    width: auto;
+  }
+
+  .bottom-nav {
+    width: min(360px, calc(100% - 14px));
+    bottom: calc(8px + var(--safe-bottom));
+    gap: 3px;
+    padding: 5px;
+    border-radius: 20px;
+  }
+
+  .bottom-nav-btn,
+  .bottom-nav-main {
+    height: 38px;
+    border-radius: 15px;
+    font-size: 8px;
+  }
+
+  .bottom-nav-btn svg,
+  .bottom-nav-main svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .bottom-nav-badge {
+    top: 1px;
+    right: 6px;
+    min-width: 13px;
+    height: 13px;
+    border-width: 1px;
+    font-size: 7px;
+  }
+
+  .app-sidebar {
+    top: calc(8px + var(--safe-top));
+    left: calc(8px + var(--safe-left));
+    width: calc(100% - 16px - var(--safe-left) - var(--safe-right));
+    max-height: calc(var(--app-height) - 16px - var(--safe-top) - var(--safe-bottom));
+    padding: 11px;
+    border-radius: 20px;
+  }
+
+  .sidebar-auth,
+  .sidebar-theme-box {
+    padding: 8px;
+    border-radius: 16px;
+  }
+
+  .sidebar-links a,
+  .sidebar-links button {
+    min-height: 34px;
+    padding: 8px 9px;
+    border-radius: 13px;
+    font-size: 12px;
+  }
+}

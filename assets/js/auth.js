@@ -96,6 +96,7 @@ function updateSharedAuthUI() {
   const userEmails = Array.from(document.querySelectorAll("#userEmail, [data-user-email]"));
 
   const showLoggedOutUI = () => {
+    document.body.classList.remove("is-logged-in");
     loginButtons.forEach((el) => el.classList.remove("hidden"));
     googleLoginButtons.forEach((el) => el.classList.remove("hidden"));
     emailAuthForms.forEach((el) => el.classList.remove("hidden"));
@@ -132,6 +133,7 @@ function updateSharedAuthUI() {
     meta.username ||
     "";
 
+  document.body.classList.add("is-logged-in");
   loginButtons.forEach((el) => el.classList.add("hidden"));
   googleLoginButtons.forEach((el) => el.classList.add("hidden"));
   emailAuthForms.forEach((el) => el.classList.add("hidden"));
