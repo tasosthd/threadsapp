@@ -723,7 +723,7 @@ html[data-theme="dark"] .sidebar-account-row {
 
 .sidebar-links a::after,
 .sidebar-links button::after {
-  content: "↗";
+  content: "â†—";
   color: var(--cyan-dark);
 }
 
@@ -1005,7 +1005,7 @@ html[data-theme="dark"] .sidebar-account-row {
 }
 
 .roadmap-card li::before {
-  content: "↗";
+  content: "â†—";
   position: absolute;
   left: 0;
   top: 0;
@@ -7157,7 +7157,7 @@ html[data-theme="dark"] .theme-toggle-btn {
 
 
 /* =========================================================
-   Premium purple → cyan polish pass
+   Premium purple â†’ cyan polish pass
    Keeps existing layout stable while upgrading the visual system.
 ========================================================= */
 :root {
@@ -9588,7 +9588,7 @@ body:has(.profile-exact-page) #bottomComposeBtn svg {
 }
 
 /* =========================================================
-   Loomyva Perfect Responsive Pass — source-of-truth overrides
+   Loomyva Perfect Responsive Pass â€” source-of-truth overrides
    Goal: compact phone UI, no horizontal overflow, polished desktop.
 ========================================================= */
 :root {
@@ -10801,7 +10801,7 @@ textarea {
 }
 
 /* =========================================================
-   WORLD-CLASS PRODUCT POLISH — 2026-05-30
+   WORLD-CLASS PRODUCT POLISH â€” 2026-05-30
    System-level overrides for a consistent, premium SaaS feel.
    ========================================================= */
 :root {
@@ -11319,5 +11319,167 @@ body.is-logged-in .hamburger-btn {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
+  }
+}
+
+/* =========================================================
+   CRITICAL NAVBAR SYNC PATCH
+   Keeps profile/index.html using the exact same bottom navbar
+   geometry as Home/Search/Inbox. This intentionally overrides
+   older profile-only navbar rules that made Profile look square.
+========================================================= */
+.bottom-nav,
+body:has(.profile-exact-page) .bottom-nav {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: calc(18px + var(--safe-bottom)) !important;
+  z-index: 999 !important;
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: min(520px, calc(100vw - 28px - var(--safe-left) - var(--safe-right))) !important;
+  min-height: 64px !important;
+  padding: 7px !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-radius: 999px !important;
+  background: rgba(28, 13, 42, 0.86) !important;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.34) !important;
+  backdrop-filter: blur(26px) saturate(1.35) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(1.35) !important;
+  transform: translateX(-50%) !important;
+  overflow: visible !important;
+}
+
+.bottom-nav-btn,
+.bottom-nav-main,
+body:has(.profile-exact-page) .bottom-nav-btn,
+body:has(.profile-exact-page) .bottom-nav-main {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 50px !important;
+  min-height: 50px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.64) !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.02em !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.bottom-nav-btn svg,
+.bottom-nav-main svg,
+body:has(.profile-exact-page) .bottom-nav-btn svg,
+body:has(.profile-exact-page) .bottom-nav-main svg {
+  width: 19px !important;
+  height: 19px !important;
+  fill: currentColor !important;
+}
+
+.bottom-nav-btn span:not(.bottom-nav-badge),
+.bottom-nav-main span:not(.bottom-nav-badge) {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.bottom-nav-btn.active,
+.bottom-nav-main.active,
+body:has(.profile-exact-page) .bottom-nav-btn.active,
+body:has(.profile-exact-page) .bottom-nav-main.active {
+  background: rgba(255, 255, 255, 0.09) !important;
+  color: #fff !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+.bottom-nav-btn:hover,
+.bottom-nav-main:hover,
+body:has(.profile-exact-page) .bottom-nav-btn:hover,
+body:has(.profile-exact-page) .bottom-nav-main:hover {
+  background: rgba(255, 255, 255, 0.075) !important;
+  color: #fff !important;
+  transform: translateY(-1px) !important;
+}
+
+#bottomComposeBtn,
+body:has(.profile-exact-page) #bottomComposeBtn {
+  place-self: center !important;
+  width: 62px !important;
+  height: 62px !important;
+  min-width: 62px !important;
+  min-height: 62px !important;
+  margin-top: -24px !important;
+  border-radius: 22px !important;
+  background: linear-gradient(135deg, #ff4fb8, #ff8d6b) !important;
+  color: #fff !important;
+  box-shadow: 0 18px 38px rgba(255, 79, 184, 0.36) !important;
+}
+
+#bottomComposeBtn span:not(.bottom-nav-badge),
+body:has(.profile-exact-page) #bottomComposeBtn span:not(.bottom-nav-badge) {
+  display: none !important;
+}
+
+#bottomComposeBtn svg,
+body:has(.profile-exact-page) #bottomComposeBtn svg {
+  width: 25px !important;
+  height: 25px !important;
+}
+
+#bottomComposeBtn.active,
+body:has(.profile-exact-page) #bottomComposeBtn.active {
+  background: linear-gradient(135deg, #ff4fb8, #ff8d6b) !important;
+}
+
+@media (max-width: 680px) {
+  .bottom-nav,
+  body:has(.profile-exact-page) .bottom-nav {
+    bottom: calc(9px + var(--safe-bottom)) !important;
+    width: min(430px, calc(100vw - 16px - var(--safe-left) - var(--safe-right))) !important;
+    min-height: 58px !important;
+    padding: 6px !important;
+    gap: 4px !important;
+  }
+
+  .bottom-nav-btn,
+  .bottom-nav-main,
+  body:has(.profile-exact-page) .bottom-nav-btn,
+  body:has(.profile-exact-page) .bottom-nav-main {
+    height: 44px !important;
+    min-height: 44px !important;
+    font-size: 9px !important;
+  }
+
+  .bottom-nav-btn svg,
+  .bottom-nav-main svg,
+  body:has(.profile-exact-page) .bottom-nav-btn svg,
+  body:has(.profile-exact-page) .bottom-nav-main svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+  #bottomComposeBtn,
+  body:has(.profile-exact-page) #bottomComposeBtn {
+    width: 58px !important;
+    height: 58px !important;
+    min-width: 58px !important;
+    min-height: 58px !important;
+    margin-top: -22px !important;
+    border-radius: 20px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .bottom-nav-btn span:not(.bottom-nav-badge),
+  .bottom-nav-main span:not(.bottom-nav-badge) {
+    display: none !important;
   }
 }
