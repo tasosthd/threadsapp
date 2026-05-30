@@ -22,7 +22,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=navbar-exact-profile-3" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=home-navbar-profile-1" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -38,36 +38,38 @@
   <div class="bg-orb orb-two"></div>
 
   <div class="app-shell">
-    <header class="topbar app-topbar profile-exact-topbar">
-      <button id="sidebarOpenBtn" class="profile-top-avatar-btn" type="button" aria-label="Open menu">
-        <img
-          id="topbarProfileAvatar"
-          class="topbar-profile-avatar"
-          data-user-avatar
-          src="/assets/img/index.png"
-          alt="Your profile picture"
-        />
-      </button>
+    <header class="topbar app-topbar">
+      <div class="topbar-left">
+        <button id="sidebarOpenBtn" class="hamburger-btn" type="button" aria-label="Open menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-      <div id="profileTopHandle" class="profile-top-handle">@loomyva</div>
+        <a class="brand compact-brand" href="/" aria-label="Loomyva home">
+          <img
+            src="/assets/img/index.png"
+            alt="Loomyva logo"
+            class="brand-logo"
+          />
 
-      <div class="profile-top-actions" aria-label="Profile actions">
-        <a class="profile-top-icon-btn" href="/messages/" aria-label="Open messages">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M3.5 6.5A2.5 2.5 0 0 1 6 4h12a2.5 2.5 0 0 1 2.5 2.5v11A2.5 2.5 0 0 1 18 20H6a2.5 2.5 0 0 1-2.5-2.5v-11Zm2.2.3 6.3 5.1 6.3-5.1A.7.7 0 0 0 18 6H6a.7.7 0 0 0-.3.8Zm12.8 2.1-5.6 4.5a1.4 1.4 0 0 1-1.8 0L5.5 8.9v8.6c0 .3.2.5.5.5h12c.3 0 .5-.2.5-.5V8.9Z"></path>
-          </svg>
+          <div>
+            <h1>Loomyva</h1>
+            <p><span data-i18n="appSubtitleHome">Post ideas. Sync everywhere.</span></p>
+          </div>
         </a>
 
         <button
-          id="profileSettingsDotsBtn"
-          class="profile-top-icon-btn"
+          class="topbar-notification-btn"
           type="button"
-          aria-label="Profile options"
-          data-i18n-aria-label="profileOptions"
+          data-open-notifications
+          aria-label="Open notifications"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a7.8 7.8 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.8 7.8 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a7.8 7.8 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.8 7.8 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.8A3.8 3.8 0 1 1 12 8a3.8 3.8 0 0 1 0 7.8Z"></path>
+            <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 1 0-14 0v5l-2 2v1h18v-1l-2-2Z"></path>
           </svg>
+
+          <span id="notificationsBadge" class="notification-badge hidden">0</span>
         </button>
       </div>
     </header>
@@ -318,7 +320,7 @@
   <!-- App Scripts -->
   <script src="/assets/js/config.js?v=appstore-unblock-1"></script>
   <script src="/assets/js/language.js?v=profile-settings-modal-2"></script>
-  <script src="/assets/js/ui.js?v=navbar-exact-profile-3"></script>
+  <script src="/assets/js/ui.js?v=home-navbar-profile-1"></script>
   <script src="/assets/js/auth.js?v=appstore-unblock-1"></script>
   <script src="/assets/js/notifications.js?v=appstore-unblock-1"></script>
   <script src="/assets/js/moderation.js?v=mod-menu-1"></script>
