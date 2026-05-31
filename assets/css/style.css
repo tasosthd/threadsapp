@@ -1308,3 +1308,15 @@ html[data-theme="dark"] .social-action-btn.liked {
   .chat-message { max-width: 92% !important; }
   .profile-exact-tabs button { min-width: 90px !important; }
 }
+
+/* Profile header name placement fix - 2026-05-31
+   Removes the top label gap so the user name owns the header area. */
+.profile-product-info {
+  padding-top: 0;
+}
+.profile-product-info .eyebrow {
+  display: none;
+}
+.profile-product-info h1 {
+  margin-top: 0;
+}
