@@ -393,7 +393,7 @@ html[data-theme="dark"] .btn.primary-btn { box-shadow: none; }
   gap: 6px;
   border-radius: 28px;
   background: color-mix(in srgb, var(--surface) 95%, transparent);
-  border: 1px solid var(--line);
+  border: 0; /* Removed the unwanted thin divider/outline around the bottom bar */
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -2044,4 +2044,10 @@ html[data-theme="dark"] .rich-empty-state {
     height: 38px;
     border-radius: 14px;
   }
+}
+
+/* Bottom bar line fix: keep the navigation, remove only the unwanted thin divider/outline. */
+.bottom-nav {
+  border: 0 !important;
+  outline: 0 !important;
 }
