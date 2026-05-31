@@ -1,5 +1,6 @@
 let threads = [];
 let likes = [];
+let bookmarks = [];
 let profiles = [];
 let activeFilter = "all";
 let viewedProfileId = null;
@@ -32,6 +33,24 @@ function userLikedThread(threadId) {
   return likes.some((like) => {
     return like.thread_id === threadId && like.user_id === currentUser.id;
   });
+}
+
+function userBookmarkedThread(threadId) {
+  if (!currentUser) return false;
+
+  return bookmarks.some((bookmark) => {
+    return bookmark.thread_id === threadId && bookmark.user_id === currentUser.id;
+  });
+}
+
+function isMissingBookmarksTableError(error) {
+  return String(error?.message || error || "").toLowerCase().includes("thread_bookmarks");
+}
+
+function getBookmarkStatusMessage(error) {
+  return isMissingBookmarksTableError(error)
+    ? "Bookmark table missing. Run supabase-thread-bookmarks.sql in Supabase SQL Editor."
+    : (error?.message || "Could not update bookmark.");
 }
 
 function getFileExtension(file) {
@@ -89,13 +108,21 @@ async function loadFeed() {
     .from("thread_likes")
     .select("*");
 
+  const bookmarksRequest = currentUser
+    ? supabaseClient
+      .from("thread_bookmarks")
+      .select("*")
+      .eq("user_id", currentUser.id)
+    : Promise.resolve({ data: [], error: null });
+
   const profilesRequest = supabaseClient
     .from("profiles")
     .select("id, full_name, username, avatar_url, bio, created_at, updated_at");
 
-  const [threadsResponse, likesResponse, profilesResponse] = await Promise.all([
+  const [threadsResponse, likesResponse, bookmarksResponse, profilesResponse] = await Promise.all([
     threadsRequest,
     likesRequest,
+    bookmarksRequest,
     profilesRequest
   ]);
 
@@ -109,6 +136,11 @@ async function loadFeed() {
     return;
   }
 
+  if (bookmarksResponse.error && !isMissingBookmarksTableError(bookmarksResponse.error)) {
+    setStatus(bookmarksResponse.error.message, "error");
+    return;
+  }
+
   if (profilesResponse.error) {
     setStatus(profilesResponse.error.message, "error");
     return;
@@ -116,6 +148,7 @@ async function loadFeed() {
 
   threads = threadsResponse.data || [];
   likes = likesResponse.data || [];
+  bookmarks = bookmarksResponse.error ? [] : (bookmarksResponse.data || []);
   profiles = profilesResponse.data || [];
 
   if (typeof loadComments === "function") {
@@ -241,6 +274,7 @@ function renderThreads() {
     .map((thread) => {
       const isOwner = currentUser && thread.user_id === currentUser.id;
       const likedByUser = userLikedThread(thread.id);
+      const bookmarkedByUser = userBookmarkedThread(thread.id);
       const likeCount = getThreadLikeCount(thread.id);
 
       const commentCount =
@@ -377,6 +411,18 @@ function renderThreads() {
                 <span class="action-count">${commentCount}</span>
                 <span class="action-label">Comment</span>
               </button>
+
+              <button
+                class="social-action-btn bookmark-action ${bookmarkedByUser ? "bookmarked" : ""}"
+                data-bookmark-id="${escapeHTML(thread.id)}"
+                type="button"
+                aria-label="Bookmark"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Zm2 2v12.55l4-2.29 4 2.29V5H8Z"></path>
+                </svg>
+                <span class="action-label">${bookmarkedByUser ? "Saved" : "Save"}</span>
+              </button>
             </div>
 
             <div class="thread-secondary-actions">
@@ -413,6 +459,13 @@ function bindThreadActions() {
       if (typeof openCommentsModal === "function") {
         openCommentsModal(id);
       }
+    });
+  });
+
+  document.querySelectorAll("[data-bookmark-id]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const id = button.dataset.bookmarkId;
+      await toggleBookmarkThread(id);
     });
   });
 
@@ -760,6 +813,61 @@ async function uploadThreadFromModal() {
   await loadFeed();
 }
 
+
+async function toggleBookmarkThread(id) {
+  if (!currentUser) {
+    setStatus("Sign in to bookmark posts.", "error");
+    return;
+  }
+
+  const targetThread = threads.find((thread) => thread.id === id);
+
+  if (targetThread && typeof canInteractWithUser === "function" && !canInteractWithUser(targetThread.user_id)) {
+    setStatus("You cannot bookmark a blocked user's post.", "error");
+    return;
+  }
+
+  const alreadyBookmarked = userBookmarkedThread(id);
+
+  if (alreadyBookmarked) {
+    const { error } = await supabaseClient
+      .from("thread_bookmarks")
+      .delete()
+      .eq("thread_id", id)
+      .eq("user_id", currentUser.id);
+
+    if (error) {
+      setStatus(getBookmarkStatusMessage(error), "error");
+      return;
+    }
+
+    bookmarks = bookmarks.filter((bookmark) => !(bookmark.thread_id === id && bookmark.user_id === currentUser.id));
+    setStatus("Removed from bookmarks.", "success");
+  } else {
+    const { data, error } = await supabaseClient
+      .from("thread_bookmarks")
+      .insert({
+        thread_id: id,
+        user_id: currentUser.id
+      })
+      .select()
+      .single();
+
+    if (error) {
+      setStatus(getBookmarkStatusMessage(error), "error");
+      return;
+    }
+
+    if (data) {
+      bookmarks = [data, ...bookmarks];
+    }
+
+    setStatus("Saved to bookmarks.", "success");
+  }
+
+  renderThreads();
+}
+
 async function likeThread(id) {
   if (!currentUser) {
     setStatus(typeof t === "function" ? t("signInLike") : "Sign in to like threads.", "error");
@@ -866,6 +974,17 @@ function subscribeToRealtime() {
         event: "*",
         schema: "public",
         table: "profiles"
+      },
+      async () => {
+        await loadFeed();
+      }
+    )
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "thread_bookmarks"
       },
       async () => {
         await loadFeed();

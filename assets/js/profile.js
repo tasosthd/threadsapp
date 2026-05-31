@@ -1,5 +1,10 @@
 let profileThreads = [];
 let profileLikes = [];
+let profileBookmarks = [];
+let profileComments = [];
+let profileAllThreads = [];
+let profileAllProfiles = [];
+let activeProfileTab = "posts";
 let profileData = null;
 let pendingDeleteThreadId = null;
 let latestUploadedAvatarUrl = null;
@@ -32,6 +37,24 @@ function getProfileFileExtension(file) {
 
 function getProfileThreadLikeCount(threadId) {
   return profileLikes.filter((like) => like.thread_id === threadId).length;
+}
+
+function getProfileThreadReplyCount(threadId) {
+  return profileComments.filter((comment) => comment.thread_id === threadId).length;
+}
+
+function profileUserLikedThread(threadId) {
+  if (!currentUser) return false;
+  return profileLikes.some((like) => like.thread_id === threadId && like.user_id === currentUser.id);
+}
+
+function profileUserBookmarkedThread(threadId) {
+  if (!currentUser) return false;
+  return profileBookmarks.some((bookmark) => bookmark.thread_id === threadId && bookmark.user_id === currentUser.id);
+}
+
+function getProfileThreadAuthor(thread) {
+  return profileAllProfiles.find((profile) => profile.id === thread?.user_id) || null;
 }
 
 function getProfileTotalLikes() {
@@ -156,119 +179,437 @@ function renderProfileStats() {
   }
 }
 
+function getProfileTabLabel(tab = activeProfileTab) {
+  const labels = {
+    posts: "Posts",
+    replies: "Replies",
+    media: "Media",
+    likes: "Likes",
+    bookmarks: "Bookmarks"
+  };
+
+  return labels[tab] || "Posts";
+}
+
+function getProfileEmptyState(tab = activeProfileTab) {
+  const states = {
+    posts: {
+      title: typeof t === "function" ? t("noThreadsYet") : "No posts yet.",
+      body: "Your profile posts will appear here after you upload your first thread."
+    },
+    replies: {
+      title: "No replies yet.",
+      body: "Your replies will appear here after you comment on a thread."
+    },
+    media: {
+      title: "No media yet.",
+      body: "Posts with images will appear here."
+    },
+    likes: {
+      title: "No liked posts yet.",
+      body: "Posts you like will appear here."
+    },
+    bookmarks: {
+      title: "No bookmarks yet.",
+      body: "Save posts with the bookmark button and they will appear here."
+    }
+  };
+
+  return states[tab] || states.posts;
+}
+
+function renderProfileThreadCard(thread, options = {}) {
+  const isOwner = currentUser && thread.user_id === currentUser.id;
+  const profile = getProfileThreadAuthor(thread);
+  const name =
+    profile?.full_name ||
+    (isOwner ? profileData?.full_name || currentProfile?.full_name : "") ||
+    thread.user_name ||
+    "Loomyva User";
+
+  const avatar =
+    profile?.avatar_url ||
+    (isOwner ? latestUploadedAvatarUrl || profileData?.avatar_url || currentProfile?.avatar_url : "") ||
+    thread.user_avatar ||
+    fallbackAvatar(name || "User");
+
+  const username =
+    profile?.username
+      ? `@${profile.username}`
+      : isOwner && profileData?.username
+        ? `@${profileData.username}`
+        : isOwner && currentProfile?.username
+          ? `@${currentProfile.username}`
+          : "@user";
+
+  const content = escapeHTML(thread.content || "");
+  const date = formatDate(thread.created_at);
+  const likeCount = getProfileThreadLikeCount(thread.id);
+  const replyCount = getProfileThreadReplyCount(thread.id);
+  const likedByUser = profileUserLikedThread(thread.id);
+  const bookmarkedByUser = profileUserBookmarkedThread(thread.id);
+
+  const threadText = content
+    ? `<p class="thread-content">${content}</p>`
+    : "";
+
+  const threadImage = thread.image_url
+    ? `
+      <div class="thread-image-wrap profile-thread-image-wrap">
+        <img
+          class="thread-image profile-thread-image"
+          src="${escapeHTML(thread.image_url)}"
+          alt="Thread image"
+          loading="lazy"
+        />
+      </div>
+    `
+    : "";
+
+  const deleteButton = isOwner && options.showDelete !== false
+    ? `
+      <button
+        class="mini-action delete-action profile-delete-btn"
+        type="button"
+        data-profile-delete-id="${escapeHTML(thread.id)}"
+      >
+        Delete
+      </button>
+    `
+    : "";
+
+  const contextLabel = options.contextLabel
+    ? `<span class="profile-card-context">${escapeHTML(options.contextLabel)}</span>`
+    : "";
+
+  return `
+    <article class="thread-card profile-tab-thread-card">
+      ${contextLabel}
+
+      <div class="thread-top">
+        <button class="thread-user profile-thread-author-btn" data-profile-open-user-id="${escapeHTML(thread.user_id)}" type="button">
+          <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
+          <div>
+            <strong>${escapeHTML(name)}</strong>
+            <span>${escapeHTML(username)} · ${escapeHTML(date)}</span>
+          </div>
+        </button>
+      </div>
+
+      ${threadText}
+      ${threadImage}
+
+      <div class="thread-actions profile-thread-actions">
+        <div class="action-left social-actions">
+          <button
+            class="social-action-btn like-action ${likedByUser ? "liked" : ""}"
+            type="button"
+            data-profile-like-id="${escapeHTML(thread.id)}"
+            aria-label="Like"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12.1 21.35 10.65 20.03C5.4 15.26 2 12.18 2 8.4 2 5.32 4.42 2.9 7.5 2.9c1.74 0 3.41.81 4.5 2.09C13.09 3.71 14.76 2.9 16.5 2.9 19.58 2.9 22 5.32 22 8.4c0 3.78-3.4 6.86-8.65 11.63l-1.25 1.32Z"></path>
+            </svg>
+            <span class="action-count">${likeCount}</span>
+            <span class="action-label">Like</span>
+          </button>
+
+          <button
+            class="social-action-btn reply-action"
+            type="button"
+            data-profile-comments-id="${escapeHTML(thread.id)}"
+            aria-label="Replies"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Zm-2 12H6v-2h12v2Zm0-3H6V9h12v2Zm0-3H6V6h12v2Z"></path>
+            </svg>
+            <span class="action-count">${replyCount}</span>
+            <span class="action-label">Reply</span>
+          </button>
+
+          <button
+            class="social-action-btn bookmark-action ${bookmarkedByUser ? "bookmarked" : ""}"
+            type="button"
+            data-profile-bookmark-id="${escapeHTML(thread.id)}"
+            aria-label="Bookmark"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Zm2 2v12.55l4-2.29 4 2.29V5H8Z"></path>
+            </svg>
+            <span class="action-label">${bookmarkedByUser ? "Saved" : "Save"}</span>
+          </button>
+        </div>
+
+        <div class="thread-secondary-actions">
+          ${deleteButton}
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderProfileReplyCard(comment) {
+  const originalThread = profileAllThreads.find((thread) => thread.id === comment.thread_id);
+  const replyProfile = profileAllProfiles.find((profile) => profile.id === comment.user_id) || profileData || currentProfile;
+  const name = getSafeProfileName(replyProfile, "You");
+  const username = getSafeUsername(replyProfile);
+  const avatar = getSafeAvatar(replyProfile, name);
+  const originalAuthor = getProfileThreadAuthor(originalThread);
+  const originalName = originalAuthor?.full_name || originalThread?.user_name || "creator";
+
+  return `
+    <article class="thread-card profile-reply-card">
+      <span class="profile-card-context">You replied to ${escapeHTML(originalName)}</span>
+
+      <div class="thread-top">
+        <div class="thread-user">
+          <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
+          <div>
+            <strong>${escapeHTML(name)}</strong>
+            <span>${escapeHTML(username)} · ${escapeHTML(formatDate(comment.created_at))}</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="thread-content">${escapeHTML(comment.content || "")}</p>
+
+      ${
+        originalThread
+          ? `<div class="profile-reply-original">${renderProfileThreadCard(originalThread, { showDelete: false, contextLabel: "Original post" })}</div>`
+          : `<div class="empty-state compact-empty-state"><strong>Original post unavailable.</strong></div>`
+      }
+    </article>
+  `;
+}
+
+function getProfileTabItems() {
+  if (!currentUser) return [];
+
+  if (activeProfileTab === "replies") {
+    return profileComments
+      .filter((comment) => comment.user_id === currentUser.id)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  }
+
+  if (activeProfileTab === "media") {
+    return profileThreads.filter((thread) => Boolean(thread.image_url));
+  }
+
+  if (activeProfileTab === "likes") {
+    const likedThreadIds = new Set(
+      profileLikes
+        .filter((like) => like.user_id === currentUser.id)
+        .map((like) => like.thread_id)
+    );
+
+    return profileAllThreads.filter((thread) => likedThreadIds.has(thread.id));
+  }
+
+  if (activeProfileTab === "bookmarks") {
+    const bookmarkThreadIds = new Set(
+      profileBookmarks
+        .filter((bookmark) => bookmark.user_id === currentUser.id)
+        .map((bookmark) => bookmark.thread_id)
+    );
+
+    return profileAllThreads.filter((thread) => bookmarkThreadIds.has(thread.id));
+  }
+
+  return profileThreads;
+}
+
+function renderProfileTabs() {
+  document.querySelectorAll("[data-profile-tab]").forEach((button) => {
+    const isActive = button.dataset.profileTab === activeProfileTab;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-selected", isActive ? "true" : "false");
+  });
+}
+
 function renderProfilePosts() {
   const profilePostsList = document.getElementById("profilePostsList");
 
   if (!profilePostsList) return;
 
+  renderProfileTabs();
+
   if (!currentUser) {
     profilePostsList.innerHTML = `
       <div class="empty-state">
         <strong>Sign in first.</strong>
-        Login with Google to edit your profile and see your posts.
+        Login to edit your profile and see your profile sections.
       </div>
     `;
     return;
   }
 
-  if (!profileThreads.length) {
+  const items = getProfileTabItems();
+
+  if (!items.length) {
+    const emptyState = getProfileEmptyState(activeProfileTab);
+
     profilePostsList.innerHTML = `
       <div class="empty-state">
-        <strong>${typeof t === "function" ? t("noThreadsYet") : "No posts yet."}</strong>
-        Your profile posts will appear here after you upload your first thread.
+        <strong>${escapeHTML(emptyState.title)}</strong>
+        ${escapeHTML(emptyState.body)}
       </div>
     `;
     return;
   }
 
-  profilePostsList.innerHTML = profileThreads
-    .map((thread) => {
-      const name =
-        profileData?.full_name ||
-        currentProfile?.full_name ||
-        thread.user_name ||
-        "Loomyva User";
+  if (activeProfileTab === "replies") {
+    profilePostsList.innerHTML = items.map(renderProfileReplyCard).join("");
+  } else {
+    const contextLabel = activeProfileTab === "likes"
+      ? "Liked post"
+      : activeProfileTab === "bookmarks"
+        ? "Bookmarked post"
+        : activeProfileTab === "media"
+          ? "Media post"
+          : "";
 
-      const avatar =
-        latestUploadedAvatarUrl ||
-        profileData?.avatar_url ||
-        currentProfile?.avatar_url ||
-        thread.user_avatar ||
-        fallbackAvatar(name || "User");
+    profilePostsList.innerHTML = items
+      .map((thread) => renderProfileThreadCard(thread, { contextLabel }))
+      .join("");
+  }
 
-      const username =
-        profileData?.username
-          ? `@${profileData.username}`
-          : currentProfile?.username
-            ? `@${currentProfile.username}`
-            : "@user";
+  bindProfilePostActions();
+}
 
-      const content = escapeHTML(thread.content || "");
-      const date = formatDate(thread.created_at);
-      const likeCount = getProfileThreadLikeCount(thread.id);
-
-      const threadText = content
-        ? `<p class="thread-content">${content}</p>`
-        : "";
-
-      const threadImage = thread.image_url
-        ? `
-          <div class="thread-image-wrap profile-thread-image-wrap">
-            <img
-              class="thread-image profile-thread-image"
-              src="${escapeHTML(thread.image_url)}"
-              alt="Thread image"
-              loading="lazy"
-            />
-          </div>
-        `
-        : "";
-
-      return `
-        <article class="thread-card">
-          <div class="thread-top">
-            <div class="thread-user">
-              <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
-              <div>
-                <strong>${escapeHTML(name)}</strong>
-                <span>${escapeHTML(username)} · ${escapeHTML(date)}</span>
-              </div>
-            </div>
-          </div>
-
-          ${threadText}
-          ${threadImage}
-
-          <div class="thread-actions profile-thread-actions">
-            <div class="action-left social-actions">
-              <button
-                class="social-action-btn like-action"
-                type="button"
-                aria-label="Likes"
-                disabled
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12.1 21.35 10.65 20.03C5.4 15.26 2 12.18 2 8.4 2 5.32 4.42 2.9 7.5 2.9c1.74 0 3.41.81 4.5 2.09C13.09 3.71 14.76 2.9 16.5 2.9 19.58 2.9 22 5.32 22 8.4c0 3.78-3.4 6.86-8.65 11.63l-1.25 1.32Z"></path>
-                </svg>
-                <span class="action-count">${likeCount}</span>
-                <span class="action-label">Likes</span>
-              </button>
-            </div>
-
-            <button
-              class="mini-action delete-action profile-delete-btn"
-              type="button"
-              data-profile-delete-id="${escapeHTML(thread.id)}"
-            >
-              Delete
-            </button>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-
+function bindProfilePostActions() {
   bindProfileDeleteButtons();
+
+  document.querySelectorAll("[data-profile-open-user-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (typeof openProfileUserModal === "function") {
+        openProfileUserModal(button.dataset.profileOpenUserId);
+      }
+    });
+  });
+
+  document.querySelectorAll("[data-profile-like-id]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      await toggleProfileThreadLike(button.dataset.profileLikeId);
+    });
+  });
+
+  document.querySelectorAll("[data-profile-bookmark-id]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      await toggleProfileThreadBookmark(button.dataset.profileBookmarkId);
+    });
+  });
+
+  document.querySelectorAll("[data-profile-comments-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (typeof openCommentsModal === "function") {
+        openCommentsModal(button.dataset.profileCommentsId);
+      } else {
+        setStatus("Replies are available from the home feed.", "error");
+      }
+    });
+  });
+}
+
+function setupProfileTabs() {
+  document.querySelectorAll("[data-profile-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeProfileTab = button.dataset.profileTab || "posts";
+      renderProfilePosts();
+    });
+  });
+}
+
+/* =========================
+   PROFILE SOCIAL ACTIONS
+========================= */
+
+async function toggleProfileThreadLike(threadId) {
+  if (!currentUser) {
+    setStatus("Sign in first to like posts.", "error");
+    return;
+  }
+
+  const existingLike = profileLikes.find((like) => like.thread_id === threadId && like.user_id === currentUser.id);
+
+  if (existingLike) {
+    const { error } = await supabaseClient
+      .from("thread_likes")
+      .delete()
+      .eq("thread_id", threadId)
+      .eq("user_id", currentUser.id);
+
+    if (error) {
+      setStatus(error.message, "error");
+      return;
+    }
+
+    profileLikes = profileLikes.filter((like) => !(like.thread_id === threadId && like.user_id === currentUser.id));
+  } else {
+    const { data, error } = await supabaseClient
+      .from("thread_likes")
+      .insert({ thread_id: threadId, user_id: currentUser.id })
+      .select()
+      .single();
+
+    if (error) {
+      setStatus(error.message, "error");
+      return;
+    }
+
+    if (data) profileLikes = [data, ...profileLikes];
+  }
+
+  renderProfileStats();
+  renderProfilePosts();
+  setStatus("");
+}
+
+async function toggleProfileThreadBookmark(threadId) {
+  if (!currentUser) {
+    setStatus("Sign in first to bookmark posts.", "error");
+    return;
+  }
+
+  const existingBookmark = profileBookmarks.find((bookmark) => bookmark.thread_id === threadId && bookmark.user_id === currentUser.id);
+
+  if (existingBookmark) {
+    const { error } = await supabaseClient
+      .from("thread_bookmarks")
+      .delete()
+      .eq("thread_id", threadId)
+      .eq("user_id", currentUser.id);
+
+    if (error) {
+      setStatus(error.message, "error");
+      return;
+    }
+
+    profileBookmarks = profileBookmarks.filter((bookmark) => !(bookmark.thread_id === threadId && bookmark.user_id === currentUser.id));
+    setStatus("Removed from bookmarks.", "success");
+  } else {
+    const { data, error } = await supabaseClient
+      .from("thread_bookmarks")
+      .insert({ thread_id: threadId, user_id: currentUser.id })
+      .select()
+      .single();
+
+    if (error) {
+      const missingTable = String(error.message || "").toLowerCase().includes("thread_bookmarks");
+
+      setStatus(
+        missingTable
+          ? "Bookmark table missing. Run supabase-thread-bookmarks.sql in Supabase SQL Editor."
+          : error.message,
+        "error"
+      );
+      return;
+    }
+
+    if (data) profileBookmarks = [data, ...profileBookmarks];
+    setStatus("Saved to bookmarks.", "success");
+  }
+
+  renderProfilePosts();
 }
 
 /* =========================
@@ -1839,6 +2180,10 @@ async function loadProfilePageData() {
     profileData = null;
     profileThreads = [];
     profileLikes = [];
+    profileBookmarks = [];
+    profileComments = [];
+    profileAllThreads = [];
+    profileAllProfiles = [];
     profileFollowersCount = 0;
     profileFollowingCount = 0;
     latestUploadedAvatarUrl = null;
@@ -1861,6 +2206,14 @@ async function loadProfilePageData() {
     null
   );
 
+  const allThreadsResponse = await runIOSSafeRequest(
+    supabaseClient
+      .from("threads")
+      .select("*")
+      .order("created_at", { ascending: false }),
+    []
+  );
+
   const threadsResponse = await runIOSSafeRequest(
     supabaseClient
       .from("threads")
@@ -1874,6 +2227,30 @@ async function loadProfilePageData() {
     supabaseClient
       .from("thread_likes")
       .select("*"),
+    []
+  );
+
+  const bookmarksResponse = await runIOSSafeRequest(
+    supabaseClient
+      .from("thread_bookmarks")
+      .select("*")
+      .eq("user_id", currentUser.id)
+      .order("created_at", { ascending: false }),
+    []
+  );
+
+  const commentsResponse = await runIOSSafeRequest(
+    supabaseClient
+      .from("thread_comments")
+      .select("*")
+      .order("created_at", { ascending: false }),
+    []
+  );
+
+  const allProfilesResponse = await runIOSSafeRequest(
+    supabaseClient
+      .from("profiles")
+      .select("id, full_name, username, avatar_url, bio, created_at, updated_at"),
     []
   );
 
@@ -1898,7 +2275,11 @@ async function loadProfilePageData() {
   latestUploadedAvatarUrl = profileData?.avatar_url || latestUploadedAvatarUrl;
 
   profileThreads = Array.isArray(threadsResponse.data) ? threadsResponse.data : [];
+  profileAllThreads = Array.isArray(allThreadsResponse.data) ? allThreadsResponse.data : profileThreads;
   profileLikes = Array.isArray(likesResponse.data) ? likesResponse.data : [];
+  profileBookmarks = Array.isArray(bookmarksResponse.data) ? bookmarksResponse.data : [];
+  profileComments = Array.isArray(commentsResponse.data) ? commentsResponse.data : [];
+  profileAllProfiles = Array.isArray(allProfilesResponse.data) ? allProfilesResponse.data : [];
   profileFollowersCount = followersResponse.count || 0;
   profileFollowingCount = followingResponse.count || 0;
 
@@ -1909,8 +2290,12 @@ async function loadProfilePageData() {
 
   const realError =
     profileResponse.error ||
+    allThreadsResponse.error ||
     threadsResponse.error ||
     likesResponse.error ||
+    (bookmarksResponse.error && !String(bookmarksResponse.error.message || "").toLowerCase().includes("thread_bookmarks")) ||
+    commentsResponse.error ||
+    allProfilesResponse.error ||
     followersResponse.error ||
     followingResponse.error;
 
@@ -2347,6 +2732,32 @@ function subscribeToProfileRealtime() {
       {
         event: "*",
         schema: "public",
+        table: "thread_comments"
+      },
+      async () => {
+        await loadProfilePageData();
+
+        if (profileViewingModalUserId) {
+          await loadProfileUserModal(profileViewingModalUserId);
+        }
+      }
+    )
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "thread_bookmarks"
+      },
+      async () => {
+        await loadProfilePageData();
+      }
+    )
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
         table: "profiles"
       },
       async () => {
@@ -2398,6 +2809,7 @@ function setupProfilePageButtons() {
 async function initProfilePage() {
   setupAuthButtons();
   setupProfilePageButtons();
+  setupProfileTabs();
 
   mountSharedUI({
     includeModal: true
@@ -2466,6 +2878,11 @@ async function initProfilePage() {
       }
       profileThreads = [];
       profileLikes = [];
+      profileBookmarks = [];
+      profileComments = [];
+      profileAllThreads = [];
+      profileAllProfiles = [];
+      activeProfileTab = "posts";
       profileFollowersCount = 0;
       profileFollowingCount = 0;
       latestUploadedAvatarUrl = null;

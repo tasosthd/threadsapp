@@ -1654,3 +1654,122 @@ body.sidebar-is-open .bottom-nav {
     flex-basis: 26px !important;
   }
 }
+
+
+/* =========================================================
+   Profile tabs + bookmarks/replies/media polish
+   ========================================================= */
+.bookmark-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  min-height: 44px !important;
+  min-width: 44px !important;
+  padding: 0 16px !important;
+  border-radius: var(--radius-pill) !important;
+  border: 1px solid var(--line-strong) !important;
+  background: var(--surface-muted) !important;
+  color: var(--text-soft) !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: transform var(--fast), background var(--fast), color var(--fast), border-color var(--fast) !important;
+}
+
+.bookmark-action:hover {
+  background: var(--surface-hover) !important;
+  color: var(--text) !important;
+  border-color: var(--line-strong) !important;
+  transform: translateY(-1px) !important;
+}
+
+.bookmark-action svg {
+  display: block !important;
+  width: 19px !important;
+  height: 19px !important;
+  min-width: 19px !important;
+  flex: 0 0 auto !important;
+  fill: currentColor !important;
+  opacity: 1 !important;
+}
+
+.bookmark-action.bookmarked {
+  background: rgba(37, 99, 235, .10) !important;
+  color: var(--brand-2) !important;
+  border-color: rgba(37, 99, 235, .28) !important;
+}
+
+html[data-theme="dark"] .bookmark-action.bookmarked {
+  background: rgba(96, 165, 250, .16) !important;
+  color: #93c5fd !important;
+  border-color: rgba(147, 197, 253, .24) !important;
+}
+
+.profile-card-context {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin-bottom: 12px;
+  padding: 5px 11px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.profile-thread-author-btn {
+  width: fit-content;
+  text-align: left;
+}
+
+.profile-reply-card {
+  gap: 14px;
+}
+
+.profile-reply-original {
+  margin-top: 14px;
+  padding-left: 14px;
+  border-left: 3px solid var(--line-strong);
+}
+
+.profile-reply-original .thread-card {
+  margin: 0;
+  box-shadow: none;
+  background: var(--surface-muted);
+}
+
+.compact-empty-state {
+  min-height: 74px;
+  padding: 16px;
+}
+
+.profile-exact-tabs [data-profile-tab] {
+  white-space: nowrap;
+}
+
+.profile-exact-tabs [data-profile-tab].active {
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .bookmark-action .action-label,
+  .reply-action .action-label,
+  .like-action .action-label {
+    display: none !important;
+  }
+
+  .social-actions {
+    gap: 7px;
+  }
+
+  .profile-reply-original {
+    padding-left: 10px;
+  }
+}

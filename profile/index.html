@@ -26,7 +26,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=session-sidebar-fix-20260531" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=profile-tabs-bookmarks-20260531" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -290,12 +290,12 @@
           </div>
         </div>
 
-        <nav class="profile-exact-tabs" aria-label="Profile sections">
-          <button class="active" type="button">Posts</button>
-          <button type="button">Replies</button>
-          <button type="button">Media</button>
-          <button type="button">Likes</button>
-          <button type="button">Bookmarks</button>
+        <nav class="profile-exact-tabs" aria-label="Profile sections" role="tablist">
+          <button class="active" type="button" data-profile-tab="posts" role="tab" aria-selected="true">Posts</button>
+          <button type="button" data-profile-tab="replies" role="tab" aria-selected="false">Replies</button>
+          <button type="button" data-profile-tab="media" role="tab" aria-selected="false">Media</button>
+          <button type="button" data-profile-tab="likes" role="tab" aria-selected="false">Likes</button>
+          <button type="button" data-profile-tab="bookmarks" role="tab" aria-selected="false">Bookmarks</button>
         </nav>
       </section>
 
@@ -355,7 +355,7 @@
   <script src="/assets/js/auth.js?v=session-sidebar-fix-20260531"></script>
   <script src="/assets/js/notifications.js?v=polish-20260531"></script>
   <script src="/assets/js/moderation.js?v=polish-20260531"></script>
-  <script src="/assets/js/profile.js?v=session-sidebar-fix-20260531"></script>
+  <script src="/assets/js/profile.js?v=profile-tabs-bookmarks-20260531"></script>
 
   <script>
     (function () {
