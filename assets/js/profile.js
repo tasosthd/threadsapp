@@ -1914,8 +1914,16 @@ async function loadProfilePageData() {
     followersResponse.error ||
     followingResponse.error;
 
+  if (realError && typeof handleExpiredSession === "function" && await handleExpiredSession(realError)) {
+    return;
+  }
+
   if (realError && !isIOSLoadFailedError(realError)) {
-    setStatus(realError.message || "Could not fully load profile data.", "error");
+    const message = typeof cleanAuthErrorMessage === "function"
+      ? cleanAuthErrorMessage(realError.message || realError)
+      : (realError.message || "Could not fully load profile data.");
+
+    setStatus(message, "error");
   } else {
     setStatus("");
   }
@@ -2416,6 +2424,10 @@ async function initProfilePage() {
     }
     await loadProfilePageData();
   } catch (error) {
+    if (typeof handleExpiredSession === "function" && await handleExpiredSession(error)) {
+      return;
+    }
+
     console.warn("Profile init recovered:", error);
     profileThreads = [];
     profileLikes = [];

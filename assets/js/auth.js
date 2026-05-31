@@ -19,6 +19,74 @@ function getUserMeta(user) {
 }
 
 /* =========================
+   EXPIRED SESSION / JWT SAFETY
+========================= */
+
+function isExpiredAuthError(error) {
+  const message = String(error?.message || error || "").toLowerCase();
+
+  return (
+    message.includes("jwt expired") ||
+    message.includes("invalid jwt") ||
+    message.includes("expired token") ||
+    message.includes("refresh token not found") ||
+    message.includes("session not found")
+  );
+}
+
+function cleanAuthErrorMessage(message) {
+  return isExpiredAuthError(message)
+    ? "Your session expired. Please log in again."
+    : message;
+}
+
+function clearStoredSupabaseAuthTokens() {
+  try {
+    Object.keys(localStorage).forEach((key) => {
+      const normalizedKey = key.toLowerCase();
+
+      if (
+        normalizedKey.startsWith("sb-") ||
+        normalizedKey.includes("supabase") ||
+        normalizedKey.includes("auth-token")
+      ) {
+        localStorage.removeItem(key);
+      }
+    });
+  } catch (error) {
+    console.warn("Could not clear local Supabase auth storage:", error);
+  }
+}
+
+async function handleExpiredSession(error) {
+  if (!isExpiredAuthError(error)) return false;
+
+  if (window.__loomyvaHandlingExpiredSession) return true;
+  window.__loomyvaHandlingExpiredSession = true;
+
+  currentUser = null;
+  currentProfile = null;
+  clearStoredSupabaseAuthTokens();
+
+  try {
+    await supabaseClient.auth.signOut({ scope: "local" });
+  } catch (signOutError) {
+    console.warn("Expired session cleanup recovered:", signOutError);
+  }
+
+  updateSharedAuthUI();
+  setStatus("Your session expired. Please log in again.", "error");
+
+  if (!isAuthPage()) {
+    window.setTimeout(() => {
+      window.location.href = "/login/?expired=1";
+    }, 650);
+  }
+
+  return true;
+}
+
+/* =========================
    PROFILE UPSERT
 ========================= */
 
@@ -42,7 +110,8 @@ async function upsertProfile() {
     .maybeSingle();
 
   if (selectError) {
-    setStatus(selectError.message, "error");
+    if (await handleExpiredSession(selectError)) return;
+    setStatus(cleanAuthErrorMessage(selectError.message), "error");
     return;
   }
 
@@ -70,7 +139,8 @@ async function upsertProfile() {
     .single();
 
   if (error) {
-    setStatus(error.message, "error");
+    if (await handleExpiredSession(error)) return;
+    setStatus(cleanAuthErrorMessage(error.message), "error");
     return;
   }
 
@@ -298,7 +368,7 @@ async function signInWithEmailPassword(event) {
   setButtonLoading(emailLoginBtn, false, "Logging in...", "Log in");
 
   if (error) {
-    setStatus(error.message, "error");
+    setStatus(cleanAuthErrorMessage(error.message), "error");
     return;
   }
 
@@ -341,7 +411,7 @@ async function signUpWithEmailPassword(event) {
 
   if (usernameCheckError) {
     setButtonLoading(emailSignupBtn, false, "Creating account...", "Create account");
-    setStatus(usernameCheckError.message, "error");
+    setStatus(cleanAuthErrorMessage(usernameCheckError.message), "error");
     return;
   }
 
@@ -367,7 +437,7 @@ async function signUpWithEmailPassword(event) {
   setButtonLoading(emailSignupBtn, false, "Creating account...", "Create account");
 
   if (error) {
-    setStatus(error.message, "error");
+    setStatus(cleanAuthErrorMessage(error.message), "error");
     return;
   }
 
@@ -419,7 +489,7 @@ async function signInWithGoogle() {
   }
 
   if (error) {
-    setStatus(error.message, "error");
+    setStatus(cleanAuthErrorMessage(error.message), "error");
   }
 }
 
@@ -437,7 +507,7 @@ async function signOut() {
   const { error } = await supabaseClient.auth.signOut();
 
   if (error) {
-    setStatus(error.message, "error");
+    setStatus(cleanAuthErrorMessage(error.message), "error");
 
     if (logoutBtn) {
       logoutBtn.disabled = false;
@@ -470,7 +540,8 @@ async function restoreSession() {
   const { data, error } = await supabaseClient.auth.getSession();
 
   if (error) {
-    setStatus(error.message, "error");
+    if (await handleExpiredSession(error)) return;
+    setStatus(cleanAuthErrorMessage(error.message), "error");
     updateSharedAuthUI();
     return;
   }
@@ -497,6 +568,11 @@ async function restoreSession() {
     if (redirectLoggedOutUsersToLogin()) {
       return;
     }
+  }
+
+  if (isAuthPage() && new URLSearchParams(window.location.search).get("expired") === "1") {
+    setStatus("Your session expired. Please log in again.", "error");
+    return;
   }
 
   setStatus("");

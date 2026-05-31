@@ -431,9 +431,11 @@ html[data-theme="dark"] .btn.primary-btn { box-shadow: none; }
   transition: transform var(--med);
   border-radius: 0 28px 28px 0;
 }
-.app-sidebar.open { transform: translateX(0); }
+.app-sidebar.open,
+.app-sidebar.active { transform: translateX(0); }
 html[dir="rtl"] .app-sidebar { left: auto; right: 0; transform: translateX(110%); border-radius: 28px 0 0 28px; }
-html[dir="rtl"] .app-sidebar.open { transform: translateX(0); }
+html[dir="rtl"] .app-sidebar.open,
+.app-sidebar.active { transform: translateX(0); }
 .sidebar-backdrop {
   position: fixed; inset: 0; z-index: 190;
   background: rgba(11,18,32,.52); backdrop-filter: blur(8px);
@@ -1372,4 +1374,28 @@ html[data-theme="dark"] .social-action-btn.liked {
   .profile-product-info h1 {
     font-size: clamp(22px, 8vw, 30px);
   }
+}
+
+
+/* Sidebar open-state hard fix: JS uses .active, older CSS used .open */
+.app-sidebar.active {
+  transform: translateX(0) !important;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.sidebar-backdrop.active {
+  display: block !important;
+  z-index: 190 !important;
+}
+
+.app-sidebar {
+  z-index: 200 !important;
+}
+
+/* Keep profile name and @handle beside the avatar, no extra profile label */
+.profile-product-info .eyebrow,
+.profile-product-info [data-profile-label],
+.profile-product-info .profile-studio-label {
+  display: none !important;
 }

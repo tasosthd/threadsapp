@@ -131,11 +131,23 @@ function setStatus(message, type = "") {
 
 
   const normalizedMessage = String(message || "");
+  const lowerMessage = normalizedMessage.toLowerCase();
 
-  if (normalizedMessage.toLowerCase().includes("load failed")) {
+  if (lowerMessage.includes("load failed")) {
     console.warn("Suppressed iOS Safari Load failed message:", message);
     message = "";
     type = "";
+  }
+
+  if (
+    lowerMessage.includes("jwt expired") ||
+    lowerMessage.includes("invalid jwt") ||
+    lowerMessage.includes("expired token") ||
+    lowerMessage.includes("refresh token not found") ||
+    lowerMessage.includes("session not found")
+  ) {
+    message = "Your session expired. Please log in again.";
+    type = "error";
   }
 
   statusMsg.textContent = message || "";
@@ -229,7 +241,7 @@ function openSidebar() {
     updateSharedAuthUI();
   }
 
-  appSidebar.classList.add("active");
+  appSidebar.classList.add("active", "open");
   sidebarBackdrop.classList.add("active");
 
   appSidebar.setAttribute("aria-hidden", "false");
@@ -244,7 +256,7 @@ function closeSidebar() {
 
   if (!appSidebar || !sidebarBackdrop) return;
 
-  appSidebar.classList.remove("active");
+  appSidebar.classList.remove("active", "open");
   sidebarBackdrop.classList.remove("active");
 
   appSidebar.setAttribute("aria-hidden", "true");
@@ -258,7 +270,11 @@ function setupSidebar() {
   const sidebarComposeBtn = document.getElementById("sidebarComposeBtn");
 
   if (sidebarOpenBtn) {
-    sidebarOpenBtn.addEventListener("click", openSidebar);
+    sidebarOpenBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      openSidebar();
+    });
   }
 
   if (sidebarCloseBtn) {
