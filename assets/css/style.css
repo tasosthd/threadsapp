@@ -1703,3 +1703,476 @@ html[data-theme="dark"] .topbar-compose-link { box-shadow: none; }
   .chat-message { max-width: 88%; }
   .chat-direct-header img { width: 38px; height: 38px; }
 }
+
+/* =========================================================
+   2026 STRUCTURE + ACTION VISIBILITY HOTFIX
+   Fixes mobile hierarchy, invisible feed buttons, and compact social layout.
+========================================================= */
+:root {
+  --mobile-page-pad: 10px;
+}
+
+.app-shell {
+  max-width: 1440px;
+}
+
+.home-product-grid {
+  width: min(100%, 1040px);
+  grid-template-columns: minmax(0, 260px) minmax(0, 640px);
+  grid-template-areas:
+    "command feed"
+    "rail feed";
+  gap: 14px;
+}
+.home-command-card { grid-area: command; }
+.home-rail-panel { grid-area: rail; }
+.home-feed-panel { grid-area: feed; }
+.home-command-card,
+.home-rail-panel .glass-card,
+.feed-panel,
+.search-page-card,
+.latest-chats-panel,
+.profile-cover-card,
+.profile-posts-surface,
+.chat-direct-window {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface-solid) 88%, transparent);
+}
+.feed-panel {
+  gap: 14px;
+}
+.feed-top {
+  position: sticky;
+  top: calc(var(--topbar-h) + 8px);
+  z-index: 12;
+  padding: 12px;
+  margin: -4px -4px 0;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+}
+.thread-card {
+  position: relative;
+  overflow: visible;
+  padding: 14px;
+  border-radius: 22px;
+  background: var(--surface-solid);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.045);
+}
+html[data-theme="dark"] .thread-card,
+body.dark-theme .thread-card,
+body.theme-dark .thread-card {
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
+}
+.thread-top {
+  align-items: center;
+}
+.thread-user {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.thread-user img,
+.public-profile-main img,
+.user-search-main img,
+.latest-chat-card img,
+.chat-person-btn img,
+.chat-conversation-btn img {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  object-fit: cover;
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+}
+.thread-user img {
+  width: 42px;
+  height: 42px;
+}
+.thread-content {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.thread-image-wrap {
+  border-radius: 22px;
+  background: var(--surface-muted);
+}
+.thread-actions,
+.profile-thread-actions {
+  display: flex !important;
+  width: 100%;
+  align-items: center !important;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.social-actions {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+.thread-secondary-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.social-action-btn,
+.like-action,
+.reply-action {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  min-width: 0;
+  min-height: 38px !important;
+  padding: 8px 11px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--line-strong) !important;
+  background: var(--surface-muted) !important;
+  color: var(--text) !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+}
+.social-action-btn:hover,
+.like-action:hover,
+.reply-action:hover {
+  background: var(--surface-hover) !important;
+  border-color: var(--line-strong) !important;
+  transform: translateY(-1px);
+}
+.social-action-btn svg,
+.like-action svg,
+.reply-action svg {
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  max-width: 18px !important;
+  max-height: 18px !important;
+  color: currentColor !important;
+  fill: currentColor !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+}
+.social-action-btn svg path,
+.like-action svg path,
+.reply-action svg path {
+  fill: currentColor !important;
+  opacity: 1 !important;
+}
+.social-action-btn .action-count,
+.social-action-btn > span:first-of-type {
+  display: inline-flex !important;
+  min-width: 1ch;
+  color: currentColor !important;
+  font-size: 12px;
+  font-weight: 950;
+}
+.social-action-btn .action-label {
+  display: inline-flex !important;
+  color: currentColor !important;
+  font-size: 12px;
+  font-weight: 850;
+}
+.social-action-btn.liked,
+.like-action.liked {
+  background: rgba(226, 59, 85, 0.12) !important;
+  border-color: rgba(226, 59, 85, 0.34) !important;
+  color: var(--danger) !important;
+}
+html[data-theme="dark"] .social-action-btn,
+body.dark-theme .social-action-btn,
+body.theme-dark .social-action-btn {
+  background: #171d29 !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+.delete-action,
+.profile-delete-btn {
+  background: rgba(226, 59, 85, 0.1) !important;
+  color: var(--danger) !important;
+  border-color: rgba(226, 59, 85, 0.24) !important;
+}
+.thread-more-btn,
+.profile-more-btn {
+  display: grid !important;
+  place-items: center;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  color: var(--text);
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+}
+.thread-more-btn svg,
+.profile-more-btn svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* Search/profile/cards: cleaner stacked mobile behavior */
+.user-search-result,
+.followers-person-card,
+.following-person-card,
+.blocked-user-row,
+.latest-chat-card,
+.chat-person-btn,
+.chat-conversation-btn {
+  min-width: 0;
+  box-shadow: none;
+}
+.user-search-main,
+.followers-person-main,
+.following-person-main,
+.latest-chat-main,
+.chat-person-main {
+  min-width: 0;
+}
+.user-search-actions,
+.profile-user-modal-actions {
+  align-items: center;
+}
+
+@media (max-width: 1080px) {
+  .home-product-grid {
+    width: min(100%, 720px);
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "command"
+      "feed"
+      "rail";
+  }
+  .home-rail-panel {
+    display: none;
+  }
+  .feed-top {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  body {
+    background: var(--bg);
+  }
+  .app-shell {
+    padding-left: var(--mobile-page-pad);
+    padding-right: var(--mobile-page-pad);
+    padding-bottom: calc(var(--bottom-nav-h) + 18px + env(safe-area-inset-bottom));
+  }
+  .topbar {
+    top: 6px;
+    width: calc(100% - 12px);
+    min-height: 54px;
+    padding: 7px;
+    border-radius: 18px;
+  }
+  .topbar-left {
+    width: 100%;
+  }
+  .compact-brand {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .compact-brand h1 {
+    font-size: 16px;
+    letter-spacing: -0.03em;
+  }
+  .compact-brand p,
+  .brand p {
+    display: none !important;
+  }
+  .hamburger-btn,
+  .topbar-notification-btn {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+  }
+  .home-command-card {
+    display: none;
+  }
+  .main-grid,
+  .search-page-grid,
+  .messages-page-grid,
+  .profile-exact-page,
+  .notifications-page-main,
+  .legal-page-shell,
+  .app-legal-page-shell {
+    padding-top: calc(var(--topbar-h) + 10px);
+  }
+  .home-product-grid {
+    width: 100%;
+    grid-template-areas: "feed";
+  }
+  .feed-panel,
+  .search-page-card,
+  .latest-chats-panel,
+  .profile-posts-surface,
+  .notifications-page-card {
+    padding: 10px;
+    border-radius: 24px;
+  }
+  .feed-top {
+    display: grid;
+    gap: 10px;
+    padding: 10px;
+    margin: 0;
+    border-radius: 20px;
+  }
+  .feed-top h2 {
+    font-size: 24px;
+  }
+  .filter-pills {
+    width: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    gap: 7px;
+    overflow-x: auto;
+    padding-bottom: 3px;
+  }
+  .filter-pills .pill {
+    white-space: nowrap;
+    min-height: 34px;
+    padding: 7px 11px;
+    border-radius: 999px;
+  }
+  .threads-list {
+    gap: 10px;
+  }
+  .thread-card {
+    padding: 12px;
+    border-radius: 22px;
+  }
+  .thread-top {
+    gap: 8px;
+  }
+  .thread-user img {
+    width: 40px;
+    height: 40px;
+  }
+  .thread-user strong {
+    max-width: 52vw;
+    font-size: 14px;
+  }
+  .thread-user span {
+    max-width: 56vw;
+  }
+  .feed-follow-btn {
+    flex: 0 0 auto;
+    min-height: 34px;
+    padding: 7px 10px;
+  }
+  .thread-content {
+    font-size: 15px;
+  }
+  .thread-actions,
+  .profile-thread-actions {
+    align-items: center !important;
+    gap: 8px;
+  }
+  .social-actions {
+    flex: 1 1 auto;
+  }
+  .social-action-btn,
+  .like-action,
+  .reply-action {
+    min-height: 38px !important;
+    padding: 8px 10px !important;
+  }
+  .social-action-btn .action-label {
+    display: none !important;
+  }
+  .thread-secondary-actions {
+    margin-left: auto;
+  }
+  .bottom-nav {
+    width: min(calc(100% - 14px), 520px);
+    bottom: calc(7px + env(safe-area-inset-bottom));
+    min-height: 62px;
+    padding: 6px;
+    border-radius: 22px;
+  }
+  .bottom-nav-btn {
+    height: 50px;
+    border-radius: 17px;
+  }
+  .bottom-nav-btn span {
+    font-size: 9.5px;
+  }
+  .user-search-result {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .user-search-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+  .user-search-actions > * {
+    width: 100%;
+  }
+  .profile-cover-card {
+    border-radius: 24px;
+  }
+  .profile-product-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  :root { --mobile-page-pad: 6px; }
+  .thread-card {
+    padding: 11px;
+  }
+  .thread-user strong {
+    max-width: 46vw;
+  }
+  .thread-user span {
+    max-width: 50vw;
+  }
+  .feed-follow-btn {
+    max-width: 88px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .social-action-btn,
+  .like-action,
+  .reply-action {
+    min-width: 48px;
+    padding: 8px 9px !important;
+  }
+  .social-action-btn svg,
+  .like-action svg,
+  .reply-action svg {
+    width: 19px !important;
+    height: 19px !important;
+    min-width: 19px !important;
+  }
+  .thread-more-btn,
+  .profile-more-btn {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+  }
+  .bottom-nav-btn span {
+    display: none;
+  }
+  .bottom-nav-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+}
