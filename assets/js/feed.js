@@ -1268,6 +1268,11 @@ function syncPostSubmitState() {
   submit.disabled = (!hasText && !postPageImageFile) || over;
 }
 
+function postFallbackAvatar(seed) {
+  if (typeof fallbackAvatar === "function") return fallbackAvatar(seed || "Loomyva");
+  return "/assets/img/index.png";
+}
+
 function renderPostComposerIdentity() {
   const avatar = document.getElementById("postComposerAvatar");
   const name = document.getElementById("postComposerName");
@@ -1275,18 +1280,19 @@ function renderPostComposerIdentity() {
 
   if (!currentUser) {
     if (name) name.textContent = postT("signIn", "Sign in");
-    if (handle) handle.textContent = postT("chatSignInText", "Sign in to post.");
-    if (avatar) avatar.src = fallbackAvatar("Loomyva");
+    if (handle) handle.textContent = postT("signInToPostText", "Sign in to post.");
+    if (avatar) avatar.src = postFallbackAvatar("Loomyva");
     return;
   }
 
+  // Works even if the profile row is still loading: fall back to auth metadata.
   const meta = typeof getUserMeta === "function" ? getUserMeta(currentUser) : {};
-  const displayName = currentProfile?.full_name || meta.name || "Loomyva User";
-  const username = currentProfile?.username || (meta.email ? meta.email.split("@")[0] : "user");
+  const displayName = currentProfile?.full_name || meta.name || meta.username || "Loomyva User";
+  const username = currentProfile?.username || meta.username || (meta.email ? meta.email.split("@")[0] : "user");
 
   if (name) name.textContent = displayName;
   if (handle) handle.textContent = `@${username}`;
-  if (avatar) avatar.src = currentProfile?.avatar_url || meta.avatar || fallbackAvatar(displayName);
+  if (avatar) avatar.src = currentProfile?.avatar_url || meta.avatar || postFallbackAvatar(displayName);
 }
 
 function updatePostPageAuthState() {
@@ -1435,39 +1441,69 @@ function bindPostPageUI() {
   });
 }
 
+function safeCall(fn) {
+  try {
+    if (typeof fn === "function") fn();
+  } catch (error) {
+    console.warn("Post page setup step recovered:", error);
+  }
+}
+
 async function initPostPage() {
   document.body.classList.add("post-only-page");
 
-  if (typeof setupSidebar === "function") setupSidebar();
-  if (typeof setupThemeToggle === "function") setupThemeToggle();
-  if (typeof applyTheme === "function" && typeof getSavedTheme === "function") applyTheme(getSavedTheme());
-  if (typeof setupLanguageSwitcher === "function") setupLanguageSwitcher();
-  if (typeof setupAuthButtons === "function") setupAuthButtons();
+  /*
+    CRITICAL ORDERING:
+    The composer must be made visible and interactive BEFORE any async work
+    (session restore, profile fetch) so that a slow or failing Supabase call
+    can never leave the composer hidden, blank, or unbound. Each shared-UI
+    setup step is isolated so one failing helper cannot abort the rest.
+  */
+  safeCall(() => { if (typeof setupSidebar === "function") setupSidebar(); });
+  safeCall(() => { if (typeof setupThemeToggle === "function") setupThemeToggle(); });
+  safeCall(() => { if (typeof applyTheme === "function" && typeof getSavedTheme === "function") applyTheme(getSavedTheme()); });
+  safeCall(() => { if (typeof setupLanguageSwitcher === "function") setupLanguageSwitcher(); });
+  safeCall(() => { if (typeof setupAuthButtons === "function") setupAuthButtons(); });
 
-  bindPostPageUI();
-  updatePostCharCount();
-  syncPostSubmitState();
+  // Bind composer controls and reveal it immediately (no awaits before this).
+  safeCall(bindPostPageUI);
+  safeCall(updatePostPageAuthState);
+  safeCall(updatePostCharCount);
+  safeCall(autoGrowPostInput);
+  safeCall(syncPostSubmitState);
 
-  if (typeof restoreSession === "function") {
-    await restoreSession();
+  // Restore the session WITHOUT the global "redirect logged-out users to /login/"
+  // behavior, so the composer (with a sign-in card) is always reachable.
+  // Any failure here is non-fatal: the composer is already visible and usable.
+  try {
+    if (typeof refreshSharedAuthUIFromSession === "function") {
+      await refreshSharedAuthUIFromSession();
+    } else if (typeof restoreSession === "function") {
+      await restoreSession();
+    }
+  } catch (error) {
+    console.warn("Session restore recovered on post page:", error);
   }
 
-  updatePostPageAuthState();
+  // Re-render identity / auth state now that the session (if any) is known.
+  safeCall(updatePostPageAuthState);
 
   window.addEventListener("loomyva:language-change", () => {
-    updatePostCharCount();
-    renderPostComposerIdentity();
+    safeCall(updatePostCharCount);
+    safeCall(renderPostComposerIdentity);
   });
 
   if (typeof listenForAuthChanges === "function") {
-    listenForAuthChanges({
-      onSignedIn: async () => { updatePostPageAuthState(); },
-      onSignedOut: async () => { updatePostPageAuthState(); }
-    });
+    safeCall(() => listenForAuthChanges({
+      onSignedIn: async () => { safeCall(updatePostPageAuthState); },
+      onSignedOut: async () => { safeCall(updatePostPageAuthState); }
+    }));
   }
 
   setTimeout(() => {
     const input = document.getElementById("postPageInput");
-    if (input && currentUser) input.focus();
+    if (input && currentUser) {
+      try { input.focus(); } catch (error) { /* focus is best-effort */ }
+    }
   }, 200);
 }

@@ -1016,6 +1016,14 @@ html[data-theme="dark"] .social-action-btn.liked {
 .post-status-message.error { color: #e5484d; }
 
 .post-composer { display: grid; }
+/* Safety net: on the dedicated post page the composer must always be visible,
+   even if a stale stylesheet or a stray class tries to hide it. The sign-in
+   card is the only thing allowed to toggle. */
+.post-only-page #postComposer { display: grid !important; }
+.post-only-page #postComposer .post-composer-body,
+.post-only-page #postComposer .post-composer-footer { visibility: visible !important; opacity: 1 !important; }
+.post-only-page .post-textarea { display: block !important; }
+.post-only-page .post-media-btn { display: grid !important; }
 .post-composer-body { display: flex; gap: 14px; padding: 20px; }
 .post-composer-avatar {
   width: 52px; height: 52px; border-radius: 50%; object-fit: cover; flex: 0 0 auto;
