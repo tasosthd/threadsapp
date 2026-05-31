@@ -1004,6 +1004,17 @@ html[data-theme="dark"] .social-action-btn.liked {
 .post-signin-card h2 { font-size: 19px; font-weight: 800; }
 .post-signin-card p { color: var(--muted); }
 
+.post-status-message {
+  min-height: 20px;
+  margin: 0;
+  padding: 0 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.post-status-message.success { color: #17803d; }
+.post-status-message.error { color: #e5484d; }
+
 .post-composer { display: grid; }
 .post-composer-body { display: flex; gap: 14px; padding: 20px; }
 .post-composer-avatar {

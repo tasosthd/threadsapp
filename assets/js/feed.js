@@ -1293,15 +1293,21 @@ function updatePostPageAuthState() {
   const signInCard = document.getElementById("postSignInCard");
   const composer = document.getElementById("postComposer");
 
+  // Keep the composer visible at all times.
+  // If the user is not signed in, the Post action will ask them to sign in,
+  // but the textarea + gallery/camera controls must still be visible.
+  composer?.classList.remove("hidden");
+
   if (!currentUser) {
     signInCard?.classList.remove("hidden");
-    composer?.classList.add("hidden");
+    renderPostComposerIdentity();
+    syncPostSubmitState();
     return;
   }
 
   signInCard?.classList.add("hidden");
-  composer?.classList.remove("hidden");
   renderPostComposerIdentity();
+  syncPostSubmitState();
 }
 
 async function submitPostPage() {
