@@ -26,7 +26,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=engagement-live-20260531" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=phone-dm-polish-20260531" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -240,6 +240,21 @@
       </section>
 
       <section class="messages-workbench messages-inbox-workbench">
+        <section id="chatFriendsPanel" class="glass-card chat-friends-panel" aria-live="polite">
+          <div class="chat-friends-head">
+            <div>
+              <span class="eyebrow" data-i18n="friends">Friends</span>
+              <h2 data-i18n="allFriendsTitle">All your friends</h2>
+              <p>Tap anyone to start a new message.</p>
+            </div>
+            <span id="chatFriendsCount" class="latest-chats-count">0</span>
+          </div>
+
+          <div id="chatFriendsList" class="chat-friends-list">
+            <div class="chat-loading" data-i18n="loading">Loading...</div>
+          </div>
+        </section>
+
         <section id="latestChatsPanel" class="glass-card latest-chats-panel latest-chats-dock inbox-only-panel" aria-live="polite">
           <div class="latest-chats-head inbox-only-head">
             <div>
@@ -273,12 +288,12 @@
   </script>
 
   <!-- App Scripts -->
-  <script src="/assets/js/config.js?v=engagement-live-20260531"></script>
-  <script src="/assets/js/language.js?v=engagement-live-20260531"></script>
-  <script src="/assets/js/ui.js?v=session-sidebar-fix-20260531"></script>
-  <script src="/assets/js/auth.js?v=session-sidebar-fix-20260531"></script>
-  <script src="/assets/js/notifications.js?v=engagement-live-20260531"></script>
-  <script src="/assets/js/chat.js?v=engagement-live-20260531"></script>
+  <script src="/assets/js/config.js?v=phone-dm-polish-20260531"></script>
+  <script src="/assets/js/language.js?v=phone-dm-polish-20260531"></script>
+  <script src="/assets/js/ui.js?v=phone-dm-polish-20260531"></script>
+  <script src="/assets/js/auth.js?v=phone-dm-polish-20260531"></script>
+  <script src="/assets/js/notifications.js?v=phone-dm-polish-20260531"></script>
+  <script src="/assets/js/chat.js?v=phone-dm-polish-20260531"></script>
   <script>
     async function bootMessagesPage() {
       if (typeof mountSharedUI === "function") {

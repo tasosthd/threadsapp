@@ -196,6 +196,38 @@ function renderChatPeople() {
   });
 }
 
+function renderChatFriends() {
+  const wrap = document.getElementById("chatFriendsList");
+  const count = document.getElementById("chatFriendsCount");
+  if (!wrap) return;
+
+  if (!chatCurrentUser) {
+    if (count) count.textContent = "0";
+    wrap.innerHTML = `<div class="chat-friends-empty">${chatT("chatSignInText", "Sign in to use real-time chat.")}</div>`;
+    return;
+  }
+
+  const people = chatProfiles.filter((profile) => profile.id !== chatCurrentUser?.id);
+
+  if (count) count.textContent = String(people.length);
+
+  if (!people.length) {
+    wrap.innerHTML = `<div class="chat-friends-empty">${chatT("chatNoPeople", "No people found yet.")}</div>`;
+    return;
+  }
+
+  wrap.innerHTML = people.map((profile) => `
+    <button class="chat-friend-chip" type="button" data-chat-friend-id="${chatEscape(profile.id)}" aria-label="Message ${chatEscape(chatName(profile))}">
+      <img src="${chatEscape(chatAvatar(profile))}" alt="${chatEscape(chatName(profile))} avatar" />
+      <span class="chat-friend-name">${chatEscape(chatName(profile))}</span>
+    </button>
+  `).join("");
+
+  wrap.querySelectorAll("[data-chat-friend-id]").forEach((button) => {
+    button.addEventListener("click", () => navigateToChatWithUser(button.dataset.chatFriendId));
+  });
+}
+
 function renderConversationList() {
   const list = document.getElementById("chatConversationList");
   if (!list) return;
@@ -341,18 +373,37 @@ function renderChatHeader() {
     return;
   }
 
-  const backButton = window.location.pathname.toLowerCase().startsWith("/chat")
-    ? `<a class="chat-back-link" href="/messages/" aria-label="Back to messages">←</a>`
+  const onChatPage = window.location.pathname.toLowerCase().startsWith("/chat");
+
+  // Back button: an arrow icon ("<") that returns to the inbox.
+  const backButton = onChatPage
+    ? `
+      <button class="chat-back-link" type="button" data-chat-back aria-label="${chatT("backToMessages", "Back to messages")}">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15.5 4.5a1 1 0 0 1 0 1.4L9.4 12l6.1 6.1a1 1 0 1 1-1.4 1.4l-6.8-6.8a1 1 0 0 1 0-1.4l6.8-6.8a1 1 0 0 1 1.4 0Z"/>
+        </svg>
+      </button>
+    `
     : "";
 
+  // Name + profile picture shown on the top-right of the chat header.
   header.innerHTML = `
     ${backButton}
-    <img src="${chatEscape(chatAvatar(profile))}" alt="${chatEscape(chatName(profile))} avatar" />
-    <div>
-      <strong>${chatEscape(chatName(profile))}</strong>
-      <span>@${chatEscape(profile.username || "user")}</span>
+    <div class="chat-active-peer">
+      <div class="chat-active-peer-copy">
+        <strong>${chatEscape(chatName(profile))}</strong>
+        <span>@${chatEscape(profile.username || "user")}</span>
+      </div>
+      <img class="chat-active-peer-avatar" src="${chatEscape(chatAvatar(profile))}" alt="${chatEscape(chatName(profile))} avatar" />
     </div>
   `;
+
+  const backBtn = header.querySelector("[data-chat-back]");
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      window.location.href = "/messages/";
+    });
+  }
 }
 
 async function loadMessages(conversationId) {
@@ -518,6 +569,7 @@ async function initChatPage() {
   if (!chatCurrentUser) {
     signInCard?.classList.remove("hidden");
     app?.classList.add("hidden");
+    renderChatFriends();
     renderLatestChatsPanel();
     return;
   }
@@ -529,6 +581,7 @@ async function initChatPage() {
   await loadConversations();
 
   renderChatPeople();
+  renderChatFriends();
   renderConversationList();
   renderLatestChatsPanel();
   renderChatHeader();
@@ -565,6 +618,7 @@ function bindChatPageUI() {
 
   window.addEventListener("loomyva:language-change", () => {
     renderChatPeople();
+    renderChatFriends();
     renderConversationList();
     renderLatestChatsPanel();
     renderChatHeader();
