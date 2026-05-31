@@ -827,8 +827,10 @@ html[data-theme="dark"] .social-action-btn.liked {
 }
 .latest-chat-side, .chat-conversation-time {
   color: var(--muted-2); font-size: 11px; font-weight: 800; white-space: nowrap;
-  display: grid; justify-items: end; gap: 4px;
+  display: grid; justify-items: end; gap: 4px; flex: 0 0 auto;
 }
+.latest-chat-side em { font-style: normal; white-space: nowrap; }
+.latest-chat-side b { font-weight: 800; color: var(--muted); }
 .latest-chat-empty { min-height: 120px; }
 
 /* =========================================================
@@ -1314,9 +1316,12 @@ html[data-theme="dark"] .social-action-btn.liked {
   /* Messages inbox */
   .latest-chat-card, .chat-conversation-btn {
     grid-template-columns: 52px minmax(0, 1fr) auto !important;
-    padding: 15px !important; gap: 13px !important;
+    padding: 15px !important; gap: 12px !important;
   }
   .latest-chat-card img, .chat-conversation-btn img { width: 52px !important; height: 52px !important; }
+  .latest-chat-side { font-size: 10.5px !important; gap: 3px !important; max-width: 84px !important; }
+  .latest-chat-side em { font-size: 10.5px !important; overflow: hidden !important; text-overflow: ellipsis !important; max-width: 84px !important; }
+  .latest-chat-side b { display: none !important; }
 
   /* Profile */
   .profile-identity-area { margin-top: -46px !important; padding-inline: 18px !important; align-items: flex-start !important; }
@@ -1376,8 +1381,10 @@ html[data-theme="dark"] .social-action-btn.liked {
   .user-search-actions .user-search-follow { flex: 1 1 0 !important; min-height: 42px !important; }
   .user-search-actions .chat-message-link,
   .user-search-actions .search-message-btn { flex: 0 0 auto !important; min-height: 42px !important; }
-  .latest-chat-card { grid-template-columns: 48px minmax(0, 1fr) 20px !important; }
+  .latest-chat-card { grid-template-columns: 48px minmax(0, 1fr) auto !important; gap: 11px !important; }
   .latest-chat-card img { width: 48px !important; height: 48px !important; }
+  .latest-chat-side { max-width: 62px !important; }
+  .latest-chat-side em { max-width: 62px !important; }
   .profile-exact-stats { grid-template-columns: 1fr 1fr !important; }
   .chat-message { max-width: 92% !important; }
   .profile-exact-tabs button { min-width: 90px !important; }

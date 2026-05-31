@@ -61,7 +61,19 @@ function chatExactDateTime(value) {
 }
 
 function chatCompactDateTime(value) {
-  return chatExactDateTime(value);
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const today = chatStartOfLocalDay(new Date());
+  const messageDay = chatStartOfLocalDay(date);
+  const diffDays = Math.round((today.getTime() - messageDay.getTime()) / 86400000);
+
+  // Today -> just the time (15:25). Yesterday -> "Yesterday".
+  // Older -> short date (02 Jun). Keeps inbox cards from overflowing on phones.
+  if (diffDays === 0) return chatClockTime(date);
+  if (diffDays === 1) return chatT("yesterday", "Yesterday");
+  return date.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
 }
 
 function chatShortPreview(value, maxLength = 76) {
