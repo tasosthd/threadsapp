@@ -26,7 +26,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=post-composer-hardened-20260531" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=post-page-fix-20260531" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -269,7 +269,7 @@
                 class="post-textarea"
                 maxlength="280"
                 rows="3"
-                placeholder="What's happening?"
+                placeholder="What are you building today?"
                 data-i18n-placeholder="modalPlaceholder"
               ></textarea>
 
@@ -309,20 +309,19 @@
     </main>
   </div>
 
-  <!-- Post page globals -->
-  <script>
-    var threads = [];
-    var profiles = [];
-  </script>
+  <!-- Feed state is owned by assets/js/feed.js.
+       Do not predeclare threads/profiles here: classic-script var declarations
+       collide with feed.js top-level let declarations and can stop the composer
+       buttons from binding in the browser. -->
 
   <!-- App Scripts -->
-  <script src="/assets/js/config.js?v=post-composer-hardened-20260531"></script>
-  <script src="/assets/js/language.js?v=post-composer-hardened-20260531"></script>
-  <script src="/assets/js/ui.js?v=post-composer-hardened-20260531"></script>
-  <script src="/assets/js/auth.js?v=post-composer-hardened-20260531"></script>
-  <script src="/assets/js/notifications.js?v=post-composer-hardened-20260531"></script>
-  <script src="/assets/js/follows.js?v=post-composer-hardened-20260531"></script>
-  <script src="/assets/js/feed.js?v=post-composer-hardened-20260531"></script>
+  <script src="/assets/js/config.js?v=post-page-fix-20260531"></script>
+  <script src="/assets/js/language.js?v=post-page-fix-20260531"></script>
+  <script src="/assets/js/ui.js?v=post-page-fix-20260531"></script>
+  <script src="/assets/js/auth.js?v=post-page-fix-20260531"></script>
+  <script src="/assets/js/notifications.js?v=post-page-fix-20260531"></script>
+  <script src="/assets/js/follows.js?v=post-page-fix-20260531"></script>
+  <script src="/assets/js/feed.js?v=post-page-fix-20260531"></script>
   <script>
     async function bootPostPage() {
       await initPostPage();

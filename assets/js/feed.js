@@ -1268,11 +1268,6 @@ function syncPostSubmitState() {
   submit.disabled = (!hasText && !postPageImageFile) || over;
 }
 
-function postFallbackAvatar(seed) {
-  if (typeof fallbackAvatar === "function") return fallbackAvatar(seed || "Loomyva");
-  return "/assets/img/index.png";
-}
-
 function renderPostComposerIdentity() {
   const avatar = document.getElementById("postComposerAvatar");
   const name = document.getElementById("postComposerName");
@@ -1280,19 +1275,18 @@ function renderPostComposerIdentity() {
 
   if (!currentUser) {
     if (name) name.textContent = postT("signIn", "Sign in");
-    if (handle) handle.textContent = postT("signInToPostText", "Sign in to post.");
-    if (avatar) avatar.src = postFallbackAvatar("Loomyva");
+    if (handle) handle.textContent = postT("chatSignInText", "Sign in to post.");
+    if (avatar) avatar.src = fallbackAvatar("Loomyva");
     return;
   }
 
-  // Works even if the profile row is still loading: fall back to auth metadata.
   const meta = typeof getUserMeta === "function" ? getUserMeta(currentUser) : {};
-  const displayName = currentProfile?.full_name || meta.name || meta.username || "Loomyva User";
-  const username = currentProfile?.username || meta.username || (meta.email ? meta.email.split("@")[0] : "user");
+  const displayName = currentProfile?.full_name || meta.name || "Loomyva User";
+  const username = currentProfile?.username || (meta.email ? meta.email.split("@")[0] : "user");
 
   if (name) name.textContent = displayName;
   if (handle) handle.textContent = `@${username}`;
-  if (avatar) avatar.src = currentProfile?.avatar_url || meta.avatar || postFallbackAvatar(displayName);
+  if (avatar) avatar.src = currentProfile?.avatar_url || meta.avatar || fallbackAvatar(displayName);
 }
 
 function updatePostPageAuthState() {
@@ -1323,6 +1317,11 @@ async function submitPostPage() {
 
   const content = input.value.trim();
   const imageFile = postPageImageFile;
+
+  if (typeof supabaseClient === "undefined" || !supabaseClient) {
+    setStatus(postT("connectionError", "Connection error. Please reload the page and try again."), "error");
+    return;
+  }
 
   if (!currentUser) {
     setStatus(postT("signInFirstThread", "Sign in first to create a thread."), "error");
@@ -1409,13 +1408,34 @@ function bindPostPageUI() {
     });
   }
 
+  const openFilePicker = (fileInput, fallbackMessage) => {
+    if (!fileInput) return;
+
+    // Some mobile browsers are picky with programmatic file picker clicks.
+    // showPicker is the modern path; click remains the broad fallback.
+    try {
+      if (typeof fileInput.showPicker === "function") {
+        fileInput.showPicker();
+      } else {
+        fileInput.click();
+      }
+    } catch (err) {
+      console.warn("[post page] file picker could not open:", err);
+      setStatus(fallbackMessage, "error");
+    }
+  };
+
   if (galleryBtn && galleryInput) {
-    galleryBtn.addEventListener("click", () => galleryInput.click());
+    galleryBtn.addEventListener("click", () => {
+      openFilePicker(galleryInput, "Could not open gallery. Try tapping the image button again.");
+    });
     galleryInput.addEventListener("change", handlePostPageImageSelect);
   }
 
   if (cameraBtn && cameraInput) {
-    cameraBtn.addEventListener("click", () => cameraInput.click());
+    cameraBtn.addEventListener("click", () => {
+      openFilePicker(cameraInput, "Could not open camera. Try selecting from gallery instead.");
+    });
     cameraInput.addEventListener("change", handlePostPageImageSelect);
   }
 
@@ -1441,69 +1461,58 @@ function bindPostPageUI() {
   });
 }
 
-function safeCall(fn) {
+// Run an optional setup step without letting its failure abort init.
+// The composer's own bindings must never depend on page chrome (sidebar,
+// theme, language switcher) succeeding.
+function safeSetup(label, fn) {
+  if (typeof fn !== "function") return;
   try {
-    if (typeof fn === "function") fn();
-  } catch (error) {
-    console.warn("Post page setup step recovered:", error);
+    fn();
+  } catch (err) {
+    console.error(`[post page] ${label} failed (non-fatal):`, err);
   }
 }
 
 async function initPostPage() {
   document.body.classList.add("post-only-page");
 
-  /*
-    CRITICAL ORDERING:
-    The composer must be made visible and interactive BEFORE any async work
-    (session restore, profile fetch) so that a slow or failing Supabase call
-    can never leave the composer hidden, blank, or unbound. Each shared-UI
-    setup step is isolated so one failing helper cannot abort the rest.
-  */
-  safeCall(() => { if (typeof setupSidebar === "function") setupSidebar(); });
-  safeCall(() => { if (typeof setupThemeToggle === "function") setupThemeToggle(); });
-  safeCall(() => { if (typeof applyTheme === "function" && typeof getSavedTheme === "function") applyTheme(getSavedTheme()); });
-  safeCall(() => { if (typeof setupLanguageSwitcher === "function") setupLanguageSwitcher(); });
-  safeCall(() => { if (typeof setupAuthButtons === "function") setupAuthButtons(); });
+  // Bind the composer controls FIRST so Post / Back / gallery / camera always
+  // work, even if optional page chrome below throws.
+  bindPostPageUI();
+  updatePostCharCount();
+  syncPostSubmitState();
 
-  // Bind composer controls and reveal it immediately (no awaits before this).
-  safeCall(bindPostPageUI);
-  safeCall(updatePostPageAuthState);
-  safeCall(updatePostCharCount);
-  safeCall(autoGrowPostInput);
-  safeCall(syncPostSubmitState);
+  safeSetup("setupSidebar", typeof setupSidebar === "function" ? setupSidebar : null);
+  safeSetup("setupThemeToggle", typeof setupThemeToggle === "function" ? setupThemeToggle : null);
+  safeSetup("applyTheme", (typeof applyTheme === "function" && typeof getSavedTheme === "function")
+    ? () => applyTheme(getSavedTheme()) : null);
+  safeSetup("setupLanguageSwitcher", typeof setupLanguageSwitcher === "function" ? setupLanguageSwitcher : null);
+  safeSetup("setupAuthButtons", typeof setupAuthButtons === "function" ? setupAuthButtons : null);
 
-  // Restore the session WITHOUT the global "redirect logged-out users to /login/"
-  // behavior, so the composer (with a sign-in card) is always reachable.
-  // Any failure here is non-fatal: the composer is already visible and usable.
-  try {
-    if (typeof refreshSharedAuthUIFromSession === "function") {
-      await refreshSharedAuthUIFromSession();
-    } else if (typeof restoreSession === "function") {
+  if (typeof restoreSession === "function") {
+    try {
       await restoreSession();
+    } catch (err) {
+      console.error("[post page] restoreSession failed (non-fatal):", err);
     }
-  } catch (error) {
-    console.warn("Session restore recovered on post page:", error);
   }
 
-  // Re-render identity / auth state now that the session (if any) is known.
-  safeCall(updatePostPageAuthState);
+  updatePostPageAuthState();
 
   window.addEventListener("loomyva:language-change", () => {
-    safeCall(updatePostCharCount);
-    safeCall(renderPostComposerIdentity);
+    updatePostCharCount();
+    renderPostComposerIdentity();
   });
 
   if (typeof listenForAuthChanges === "function") {
-    safeCall(() => listenForAuthChanges({
-      onSignedIn: async () => { safeCall(updatePostPageAuthState); },
-      onSignedOut: async () => { safeCall(updatePostPageAuthState); }
-    }));
+    listenForAuthChanges({
+      onSignedIn: async () => { updatePostPageAuthState(); },
+      onSignedOut: async () => { updatePostPageAuthState(); }
+    });
   }
 
   setTimeout(() => {
     const input = document.getElementById("postPageInput");
-    if (input && currentUser) {
-      try { input.focus(); } catch (error) { /* focus is best-effort */ }
-    }
+    if (input && currentUser) input.focus();
   }, 200);
 }

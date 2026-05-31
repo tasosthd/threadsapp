@@ -337,7 +337,13 @@ function isAuthPage() {
 }
 
 function redirectLoggedOutUsersToLogin() {
-  if (!currentUser && !isAuthPage()) {
+  // Pages can opt out of the logged-out redirect (e.g. the /post/ page,
+  // which keeps its composer + "Sign in to post" card visible for guests).
+  const allowsGuests =
+    document.body?.dataset.allowGuests === "true" ||
+    document.body?.classList.contains("post-only-page");
+
+  if (!currentUser && !isAuthPage() && !allowsGuests) {
     window.location.href = "/login/";
     return true;
   }
@@ -537,6 +543,13 @@ async function signOut() {
 ========================= */
 
 async function restoreSession() {
+  if (typeof supabaseClient === "undefined" || !supabaseClient) {
+    currentUser = null;
+    currentProfile = null;
+    if (typeof updateSharedAuthUI === "function") updateSharedAuthUI();
+    return;
+  }
+
   const { data, error } = await supabaseClient.auth.getSession();
 
   if (error) {
