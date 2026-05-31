@@ -26,7 +26,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=worldclass-20260530" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=polish-20260531" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -91,7 +91,7 @@
 
           <div>
             <h1>Loomyva</h1>
-            <p><span data-i18n="creatorMenu">Your creator menu.</span></p>
+            <p><span data-i18n="creatorMenu">Menu</span></p>
           </div>
         </div>
 
@@ -232,33 +232,20 @@
 
     <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
-    <main id="mainContent" class="search-page-grid">
-      <section class="glass-card page-hero search-page-hero">
-        <span class="eyebrow" data-i18n="searchEyebrow">Search</span>
-
-        <h2 data-i18n="searchHeroTitle">Find creators fast.</h2>
-
-        <p>
-          <span data-i18n="searchHeroText">
-            Search usernames, names, and bios. Open profiles, follow people, and build the network effect.
-          </span>
-        </p>
-      </section>
-
-      <p id="statusMsg" class="status-msg hidden"></p>
-
-      <section id="userSearchCard" class="user-search-card search-page-card">
-        <div class="user-search-head">
+    <main id="mainContent" class="search-page-grid search-discovery-layout">
+      <section id="userSearchCard" class="user-search-card search-page-card search-command-panel">
+        <div class="user-search-head search-command-head">
           <div>
             <span class="eyebrow" data-i18n="discoverPeople">Discover people</span>
-            <h2 data-i18n="searchUsers">Search users</h2>
+            <h1 data-i18n="searchUsers">Search users</h1>
             <p data-i18n="searchUsersText">
               Find creators by name or username, open their profile, and follow them.
             </p>
           </div>
+          <div class="search-command-chip">People</div>
         </div>
 
-        <div class="user-search-box">
+        <div class="user-search-box search-primary-box">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M10.5 3a7.5 7.5 0 0 1 5.93 12.1l4.24 4.23a1 1 0 0 1-1.42 1.42l-4.23-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"></path>
           </svg>
@@ -279,6 +266,18 @@
 
         <div id="userSearchResults" class="user-search-results"></div>
       </section>
+
+      <section class="glass-card page-hero search-page-hero search-context-panel">
+        <span class="eyebrow" data-i18n="searchEyebrow">Search</span>
+        <h2 data-i18n="searchHeroTitle">Find people fast.</h2>
+        <p>
+          <span data-i18n="searchHeroText">
+            Search names and usernames. Open profiles, follow creators, and start conversations.
+          </span>
+        </p>
+      </section>
+
+      <p id="statusMsg" class="status-msg hidden"></p>
     </main>
   </div>
 
@@ -289,15 +288,15 @@
   </script>
 
   <!-- App Scripts -->
-  <script src="/assets/js/config.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/language.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/ui.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/auth.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/notifications.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/moderation.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/follows.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/user-search.js?v=worldclass-20260530"></script>
-  <script src="/assets/js/chat.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/config.js?v=polish-20260531"></script>
+  <script src="/assets/js/language.js?v=polish-20260531"></script>
+  <script src="/assets/js/ui.js?v=polish-20260531"></script>
+  <script src="/assets/js/auth.js?v=polish-20260531"></script>
+  <script src="/assets/js/notifications.js?v=polish-20260531"></script>
+  <script src="/assets/js/moderation.js?v=polish-20260531"></script>
+  <script src="/assets/js/follows.js?v=polish-20260531"></script>
+  <script src="/assets/js/user-search.js?v=polish-20260531"></script>
+  <script src="/assets/js/chat.js?v=polish-20260531"></script>
   <script>
     async function bootSearchPage() {
       await initSearchPage();

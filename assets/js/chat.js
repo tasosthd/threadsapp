@@ -33,20 +33,41 @@ function chatName(profile) {
   return profile?.full_name || profile?.username || "Loomyva User";
 }
 
-function chatRelativeTime(value) {
+function chatStartOfLocalDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function chatClockTime(date) {
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+}
+
+function chatCalendarDate(date) {
+  return date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).replace(/,/g, "");
+}
+
+function chatExactDateTime(value) {
   if (!value) return "";
   const date = new Date(value);
-  const diff = Date.now() - date.getTime();
-  const minute = 60 * 1000;
-  const hour = 60 * minute;
-  const day = 24 * hour;
-
   if (Number.isNaN(date.getTime())) return "";
-  if (diff < minute) return chatT("justNow", "Just now");
-  if (diff < hour) return `${Math.floor(diff / minute)}m`;
-  if (diff < day) return `${Math.floor(diff / hour)}h`;
-  if (diff < day * 7) return `${Math.floor(diff / day)}d`;
-  return date.toLocaleDateString([], { month: "short", day: "numeric" });
+
+  const today = chatStartOfLocalDay(new Date());
+  const messageDay = chatStartOfLocalDay(date);
+  const diffDays = Math.round((today.getTime() - messageDay.getTime()) / 86400000);
+  const time = chatClockTime(date);
+
+  if (diffDays === 0) return `Today, ${time}`;
+  if (diffDays === 1) return `Yesterday, ${time}`;
+  return `${chatCalendarDate(date)}, ${time}`;
+}
+
+function chatCompactDateTime(value) {
+  return chatExactDateTime(value);
+}
+
+function chatShortPreview(value, maxLength = 76) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength - 1).trim()}…`;
 }
 
 function getConversationLastMessage(conversation) {
@@ -168,8 +189,9 @@ function renderChatPeople() {
   `).join("");
 
   peopleWrap.querySelectorAll("[data-chat-user-id]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      await openConversationWithUser(button.dataset.chatUserId);
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      navigateToChatWithUser(button.dataset.chatUserId);
     });
   });
 }
@@ -191,23 +213,25 @@ function renderConversationList() {
   list.innerHTML = chatConversations.map((conversation) => {
     const otherId = otherParticipant(conversation);
     const profile = getProfileById(otherId);
-    const lastMessages = conversation.chat_messages || [];
-    const last = lastMessages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+    const last = getConversationLastMessage(conversation);
     const active = conversation.id === activeConversationId ? "active" : "";
+    const preview = last ? chatShortPreview(last.body, 54) : chatT("chatNewConversation", "New conversation");
+    const time = chatCompactDateTime(last?.created_at || conversation.updated_at || conversation.created_at);
 
     return `
       <button class="chat-conversation-btn ${active}" type="button" data-conversation-id="${chatEscape(conversation.id)}">
         <img src="${chatEscape(chatAvatar(profile))}" alt="${chatEscape(chatName(profile))} avatar" />
-        <span>
+        <span class="chat-conversation-copy">
           <strong>${chatEscape(chatName(profile))}</strong>
-          <small>${last ? chatEscape(last.body) : chatT("chatNewConversation", "New conversation")}</small>
+          <small>${chatEscape(preview)}</small>
         </span>
+        <em class="chat-conversation-time">${chatEscape(time)}</em>
       </button>
     `;
   }).join("");
 
   list.querySelectorAll("[data-conversation-id]").forEach((button) => {
-    button.addEventListener("click", () => openConversation(button.dataset.conversationId));
+    button.addEventListener("click", () => navigateToChatConversation(button.dataset.conversationId));
   });
 
   renderLatestChatsPanel();
@@ -257,8 +281,8 @@ function renderLatestChatsPanel() {
     const profile = getProfileById(otherId);
     const last = getConversationLastMessage(conversation);
     const active = conversation.id === activeConversationId ? "active" : "";
-    const preview = last ? last.body : chatT("chatNewConversation", "New conversation");
-    const time = chatRelativeTime(last?.created_at || conversation.updated_at || conversation.created_at);
+    const preview = last ? chatShortPreview(last.body, 92) : chatT("chatNewConversation", "New conversation");
+    const time = chatCompactDateTime(last?.created_at || conversation.updated_at || conversation.created_at);
 
     return `
       <button class="latest-chat-card ${active}" type="button" data-latest-conversation-id="${chatEscape(conversation.id)}">
@@ -268,7 +292,7 @@ function renderLatestChatsPanel() {
           <small>${chatEscape(preview)}</small>
         </span>
         <span class="latest-chat-side">
-          <em>${chatEscape(time)}</em>
+          <em title="${chatEscape(time)}">${chatEscape(time)}</em>
           <b>↗</b>
         </span>
       </button>
@@ -276,10 +300,8 @@ function renderLatestChatsPanel() {
   }).join("");
 
   list.querySelectorAll("[data-latest-conversation-id]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      await openConversation(button.dataset.latestConversationId);
-      document.getElementById("chatApp")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      setTimeout(() => document.getElementById("chatMessageInput")?.focus(), 320);
+    button.addEventListener("click", () => {
+      navigateToChatConversation(button.dataset.latestConversationId);
     });
   });
 }
@@ -319,7 +341,12 @@ function renderChatHeader() {
     return;
   }
 
+  const backButton = window.location.pathname.toLowerCase().startsWith("/chat")
+    ? `<a class="chat-back-link" href="/messages/" aria-label="Back to messages">←</a>`
+    : "";
+
   header.innerHTML = `
+    ${backButton}
     <img src="${chatEscape(chatAvatar(profile))}" alt="${chatEscape(chatName(profile))} avatar" />
     <div>
       <strong>${chatEscape(chatName(profile))}</strong>
@@ -365,16 +392,18 @@ function renderMessages(messages) {
 
   wrap.innerHTML = messages.map((message) => {
     const own = message.sender_id === chatCurrentUser?.id ? "own" : "";
-    const time = new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const time = chatExactDateTime(message.created_at);
     return `
       <div class="chat-message ${own}">
-        <p>${chatEscape(message.body)}</p>
-        <small>${chatEscape(time)}</small>
+        <p class="chat-message-body">${chatEscape(message.body)}</p>
+        <small class="chat-message-time">${chatEscape(time)}</small>
       </div>
     `;
   }).join("");
 
-  wrap.scrollTop = wrap.scrollHeight;
+  requestAnimationFrame(() => {
+    wrap.scrollTo({ top: wrap.scrollHeight, behavior: "smooth" });
+  });
 }
 
 function appendMessage(message) {
@@ -403,11 +432,15 @@ async function sendChatMessage(event) {
     return;
   }
 
+  const submitBtn = event.currentTarget?.querySelector('button[type="submit"]');
   input.value = "";
+  if (submitBtn) submitBtn.disabled = true;
 
   const { error } = await supabaseClient
     .from("chat_messages")
     .insert({ conversation_id: activeConversationId, sender_id: chatCurrentUser.id, body });
+
+  if (submitBtn) submitBtn.disabled = false;
 
   if (error) {
     console.error("Send message error:", error);
@@ -503,7 +536,19 @@ async function initChatPage() {
   subscribeToAllMessages();
 
   const params = new URLSearchParams(window.location.search);
+  const conversationId = params.get("conversation");
   const userId = params.get("user");
+
+  if (conversationId) {
+    const exists = chatConversations.some((conversation) => conversation.id === conversationId);
+    if (exists) {
+      await openConversation(conversationId);
+    } else {
+      showChatStatus(chatT("chatLoadError", "Could not load messages."), true);
+    }
+    return;
+  }
+
   if (userId) {
     await openConversationWithUser(userId);
   }
@@ -536,7 +581,16 @@ async function bootChat() {
   }
 }
 
-function openChatWithUser(userId) {
+function navigateToChatWithUser(userId) {
   if (!userId) return;
-  window.location.href = `/messages/?user=${encodeURIComponent(userId)}`;
+  window.location.href = `/chat/?user=${encodeURIComponent(userId)}`;
+}
+
+function navigateToChatConversation(conversationId) {
+  if (!conversationId) return;
+  window.location.href = `/chat/?conversation=${encodeURIComponent(conversationId)}`;
+}
+
+function openChatWithUser(userId) {
+  navigateToChatWithUser(userId);
 }
