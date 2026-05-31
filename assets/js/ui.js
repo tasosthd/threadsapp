@@ -726,28 +726,28 @@ function renderBottomNav() {
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M3 11.5 12 4l9 7.5V21a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-9.5Z"></path>
         </svg>
-        <span data-i18n="navHome">${typeof t === "function" ? t("navHome") : "Home"}</span>
+        <span class="bottom-nav-label" data-i18n="navHome">${typeof t === "function" ? t("navHome") : "Home"}</span>
       </button>
 
       <button id="bottomSearchBtn" class="bottom-nav-btn" type="button" aria-label="Go to search">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M10.5 3a7.5 7.5 0 0 1 5.93 12.1l4.24 4.23a1 1 0 0 1-1.42 1.42l-4.23-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"></path>
         </svg>
-        <span data-i18n="navSearch">${typeof t === "function" ? t("navSearch") : "Search"}</span>
+        <span class="bottom-nav-label" data-i18n="navSearch">${typeof t === "function" ? t("navSearch") : "Search"}</span>
       </button>
 
       <button id="bottomComposeBtn" class="bottom-nav-btn" type="button" aria-label="Create thread">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 5a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H6a1 1 0 1 1 0-2h5V6a1 1 0 0 1 1-1Z"></path>
         </svg>
-        <span data-i18n="navCreate">${typeof t === "function" ? t("navCreate") : "Create"}</span>
+        <span class="bottom-nav-label" data-i18n="navCreate">${typeof t === "function" ? t("navCreate") : "Create"}</span>
       </button>
 
       <button id="bottomInboxBtn" class="bottom-nav-btn bottom-nav-inbox-btn" type="button" aria-label="Open inbox">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 3.2V18h16V7.2l-7.38 5.53a1 1 0 0 1-1.2 0L4 7.2Zm1.6-1.2 6.4 4.8L18.4 6H5.6Z"></path>
         </svg>
-        <span data-i18n="navInbox">${typeof t === "function" ? t("navInbox") : "Inbox"}</span>
+        <span class="bottom-nav-label" data-i18n="navInbox">${typeof t === "function" ? t("navInbox") : "Inbox"}</span>
         <span id="bottomNotificationsBadge" class="bottom-nav-badge hidden">0</span>
       </button>
 
@@ -755,7 +755,7 @@ function renderBottomNav() {
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.42 0-8 2.24-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.76-3.58-5-8-5Z"></path>
         </svg>
-        <span data-i18n="navProfile">${typeof t === "function" ? t("navProfile") : "Profile"}</span>
+        <span class="bottom-nav-label" data-i18n="navProfile">${typeof t === "function" ? t("navProfile") : "Profile"}</span>
       </button>
     </nav>
   `;
