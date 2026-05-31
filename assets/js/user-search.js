@@ -428,7 +428,7 @@ function bindUserSearchResultActions() {
 
   document.querySelectorAll("[data-open-chat-user-id]").forEach((button) => {
     button.addEventListener("click", () => {
-      window.location.href = `/chat/?user=${encodeURIComponent(button.dataset.openChatUserId)}`;
+      openSearchChatModal(button.dataset.openChatUserId);
     });
   });
 

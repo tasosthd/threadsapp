@@ -26,7 +26,7 @@
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=spacious-revision-20260531" />
+  <link rel="stylesheet" href="/assets/css/style.css?v=worldclass-20260530" />
 
   <!-- Load saved theme before page paints -->
   <script>
@@ -91,7 +91,7 @@
 
           <div>
             <h1>Loomyva</h1>
-            <p><span data-i18n="creatorMenu">Menu</span></p>
+            <p><span data-i18n="creatorMenu">Your creator menu.</span></p>
           </div>
         </div>
 
@@ -236,7 +236,7 @@
       <section class="profile-cover-card" aria-label="Your profile">
         <div class="profile-cover-strip"></div>
 
-        <div class="profile-identity-area profile-product-identity">
+        <div class="profile-identity-area">
           <div class="profile-avatar-control profile-exact-avatar">
             <img id="profileEditorAvatar" src="" alt="Profile avatar" />
 
@@ -254,22 +254,16 @@
             />
           </div>
 
-          <div class="profile-exact-info profile-product-info">
-            <span class="eyebrow">Profile studio</span>
-            <h1 id="profileEditorName">Loomyva User</h1>
-            <p id="profileEditorEmail" class="profile-exact-username">@username</p>
-            <p id="profileBioDisplay" class="profile-exact-bio"></p>
-          </div>
-
-          <div class="profile-product-actions">
-            <button id="profileEditToggleBtn" class="profile-exact-edit-btn" type="button">Edit Profile</button>
-            <button id="goHomeBtn" class="btn ghost-btn profile-home-btn" type="button">
-              <span data-i18n="backToFeed">Back to feed</span>
-            </button>
-          </div>
+          <button id="profileEditToggleBtn" class="profile-exact-edit-btn" type="button">Edit Profile</button>
         </div>
 
-        <div class="profile-exact-stats profile-product-stats" aria-label="Profile stats">
+        <div class="profile-exact-info">
+          <h1 id="profileEditorName">Loomyva User</h1>
+          <p id="profileEditorEmail" class="profile-exact-username">@username</p>
+          <p id="profileBioDisplay" class="profile-exact-bio"></p>
+        </div>
+
+        <div class="profile-exact-stats" aria-label="Profile stats">
           <div class="profile-inline-stat">
             <strong id="profilePostCount">0</strong>
             <span>Posts</span>
@@ -334,7 +328,11 @@
             ></textarea>
           </label>
 
-          <div class="profile-actions profile-editor-actions">
+          <div class="profile-actions">
+            <button id="goHomeBtn" class="btn ghost-btn" type="button">
+              <span data-i18n="backToFeed">Back to feed</span>
+            </button>
+
             <button id="saveProfilePageBtn" class="btn primary-btn save-profile-right-btn" type="button">
               <span data-i18n="saveProfile">Save profile</span>
             </button>
@@ -350,13 +348,13 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="/assets/js/config.js?v=spacious-revision-20260531"></script>
-  <script src="/assets/js/language.js?v=spacious-revision-20260531"></script>
-  <script src="/assets/js/ui.js?v=spacious-revision-20260531"></script>
-  <script src="/assets/js/auth.js?v=spacious-revision-20260531"></script>
-  <script src="/assets/js/notifications.js?v=spacious-revision-20260531"></script>
-  <script src="/assets/js/moderation.js?v=spacious-revision-20260531"></script>
-  <script src="/assets/js/profile.js?v=spacious-revision-20260531"></script>
+  <script src="/assets/js/config.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/language.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/ui.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/auth.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/notifications.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/moderation.js?v=worldclass-20260530"></script>
+  <script src="/assets/js/profile.js?v=worldclass-20260530"></script>
 
   <script>
     (function () {
