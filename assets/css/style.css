@@ -976,7 +976,11 @@ html[data-theme="dark"] .social-action-btn.liked {
 /* =========================================================
    14b. Post composer page (/post/) — Twitter-style
    ========================================================= */
-.post-page-main { width: min(100%, 680px); }
+.post-page-main {
+  width: min(100%, 680px);
+  margin-inline: auto;
+  padding-top: calc(var(--topbar-h) + 32px);
+}
 .post-only-page .bottom-nav { display: none !important; }
 .post-only-page .app-shell {
   padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
