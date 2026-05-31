@@ -1893,13 +1893,13 @@ function renderProfileModalPosts(modalThreads, modalLikes) {
     return `
       <section class="profile-user-modal-posts">
         <div class="profile-user-modal-posts-head">
-          <span class="eyebrow">Latest posts</span>
-          <h3>Recent Threads</h3>
+          <span class="eyebrow">${typeof t === "function" ? t("latestPosts") : "Latest posts"}</span>
+          <h3>${typeof t === "function" ? t("recentThreads") : "Recent Threads"}</h3>
         </div>
 
         <div class="profile-user-modal-posts-empty">
           <strong>${typeof t === "function" ? t("noThreadsYet") : "No posts yet."}</strong>
-          <span>This creator has not posted anything yet.</span>
+          <span>${typeof t === "function" ? t("creatorNoPosts") : "This creator has not posted anything yet."}</span>
         </div>
       </section>
     `;
@@ -1950,8 +1950,8 @@ function renderProfileModalPosts(modalThreads, modalLikes) {
   return `
     <section class="profile-user-modal-posts">
       <div class="profile-user-modal-posts-head">
-        <span class="eyebrow">Latest posts</span>
-        <h3>Recent Threads</h3>
+        <span class="eyebrow">${typeof t === "function" ? t("latestPosts") : "Latest posts"}</span>
+        <h3>${typeof t === "function" ? t("recentThreads") : "Recent Threads"}</h3>
       </div>
 
       <div class="profile-user-modal-posts-list">
@@ -1969,14 +1969,14 @@ async function loadProfileUserModal(userId) {
   if (typeof isModerationHiddenUser === "function" && isModerationHiddenUser(userId)) {
     profileUserModalBody.innerHTML = `
       <div class="profile-user-modal-empty">
-        <strong>Profile hidden.</strong>
-        <span>This profile is hidden because of a block.</span>
+        <strong>${typeof t === "function" ? t("profileHidden") : "Profile hidden."}</strong>
+        <span>${typeof t === "function" ? t("profileHiddenByBlock") : "This profile is hidden because of a block."}</span>
       </div>
     `;
     return;
   }
 
-  profileUserModalBody.innerHTML = `<div class="profile-user-modal-state">Loading profile...</div>`;
+  profileUserModalBody.innerHTML = `<div class="profile-user-modal-state">${typeof t === "function" ? t("loading") : "Loading..."}</div>`;
 
   const { data: profile, error: profileError } = await supabaseClient
     .from("profiles")
@@ -1987,7 +1987,7 @@ async function loadProfileUserModal(userId) {
   if (profileError) {
     profileUserModalBody.innerHTML = `
       <div class="profile-user-modal-empty error">
-        <strong>Could not load profile.</strong>
+        <strong>${typeof t === "function" ? t("couldNotLoadProfile") : "Could not load profile."}</strong>
         <span>${escapeHTML(profileError.message)}</span>
       </div>
     `;
@@ -1997,8 +1997,8 @@ async function loadProfileUserModal(userId) {
   if (!profile) {
     profileUserModalBody.innerHTML = `
       <div class="profile-user-modal-empty">
-        <strong>Profile not found.</strong>
-        <span>This creator profile does not exist anymore.</span>
+        <strong>${typeof t === "function" ? t("profileNotFound") : "Profile not found."}</strong>
+        <span>${typeof t === "function" ? t("profileNoLongerExists") : "This creator profile does not exist anymore."}</span>
       </div>
     `;
     return;
@@ -2027,7 +2027,7 @@ async function loadProfileUserModal(userId) {
   } catch (error) {
     profileUserModalBody.innerHTML = `
       <div class="profile-user-modal-empty error">
-        <strong>Could not load profile data.</strong>
+        <strong>${typeof t === "function" ? t("couldNotLoadProfile") : "Could not load profile."}</strong>
         <span>${escapeHTML(error.message)}</span>
       </div>
     `;
@@ -2045,7 +2045,7 @@ async function loadProfileUserModal(userId) {
   const followButton = isOwnProfile
     ? `
       <button class="btn ghost-btn profile-user-modal-follow-btn" type="button" disabled>
-        Your profile
+        ${typeof t === "function" ? t("yourProfile") : "Your profile"}
       </button>
     `
     : `
@@ -2063,7 +2063,7 @@ async function loadProfileUserModal(userId) {
         type="button"
         data-profile-modal-message-user-id="${escapeHTML(userId)}"
       >
-        Message
+        ${typeof t === "function" ? t("message") : "Message"}
       </button>
 
       <button
@@ -2087,7 +2087,7 @@ async function loadProfileUserModal(userId) {
       <img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)} avatar" />
 
       <div>
-        <span class="eyebrow">Creator profile</span>
+        <span class="eyebrow">${typeof t === "function" ? t("creatorProfile") : "Creator profile"}</span>
         <h2 id="profileUserModalName">${escapeHTML(name)}</h2>
         <p>${escapeHTML(username)}</p>
       </div>
@@ -2098,12 +2098,12 @@ async function loadProfileUserModal(userId) {
     <div class="profile-user-modal-stats">
       <div>
         <strong>${stats.posts}</strong>
-        <span>Posts</span>
+        <span>${typeof t === "function" ? t("postsLabel") : "Posts"}</span>
       </div>
 
       <div>
         <strong>${stats.likes}</strong>
-        <span>Likes</span>
+        <span>${typeof t === "function" ? t("likes") : "Likes"}</span>
       </div>
 
       <div>

@@ -393,8 +393,9 @@ html[data-theme="dark"] .btn.primary-btn { box-shadow: none; }
   gap: 6px;
   border-radius: 28px;
   background: color-mix(in srgb, var(--surface) 95%, transparent);
-  border: 0; /* Removed the unwanted thin divider/outline around the bottom bar */
-  box-shadow: var(--shadow-md);
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 60;
@@ -415,6 +416,17 @@ html[data-theme="dark"] .btn.primary-btn { box-shadow: none; }
 .bottom-nav-btn.active { background: var(--brand); color: var(--bg-soft); }
 .bottom-nav-btn:hover:not(.active) { background: var(--surface-hover); color: var(--text); transform: translateY(-1px); }
 .bottom-nav-badge { position: absolute; top: 6px; right: 12px; }
+.bottom-nav, .bottom-nav * {
+  box-shadow: none;
+}
+.bottom-nav::before, .bottom-nav::after {
+  content: none !important;
+  display: none !important;
+}
+body::after {
+  content: none !important;
+}
+
 
 /* =========================================================
    09. Sidebar drawer
@@ -1227,22 +1239,177 @@ html[data-theme="dark"] .social-action-btn.liked {
 
 /* Profile user modal */
 .profile-user-modal {
-  position: fixed; inset: 50% auto auto 50%; transform: translate(-50%, -50%); z-index: 100;
-  width: min(700px, calc(100vw - 24px)); max-height: min(840px, calc(100vh - 24px));
-  overflow-y: auto; background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  width: min(680px, calc(100vw - 24px));
+  max-height: min(840px, calc(100vh - 24px));
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  box-shadow: var(--shadow-lg);
 }
-.profile-user-modal-close { position: sticky; top: 12px; left: calc(100% - 56px); z-index: 1; margin: 12px 12px 0 auto; }
-.profile-user-modal-body { padding: 0 24px 24px; display: grid; gap: 20px; }
-.profile-user-modal-hero { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.profile-user-modal-hero img { width: 78px; height: 78px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line-strong); }
-.profile-user-modal-bio { color: var(--text-soft); overflow-wrap: anywhere; line-height: 1.68; }
-.profile-user-modal-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.profile-user-modal-stats span { padding: 12px 8px; border-radius: var(--radius-md); background: var(--surface-muted); text-align: center; font-size: 12px; font-weight: 800; color: var(--text-soft); }
-.profile-user-modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.profile-user-modal-posts { display: grid; gap: 14px; }
-.profile-user-modal-posts-head { display: flex; justify-content: space-between; align-items: center; }
-.profile-user-modal-post-card { padding: 16px 18px; gap: 12px; }
+.profile-user-modal-close {
+  position: sticky;
+  top: 12px;
+  left: calc(100% - 56px);
+  z-index: 2;
+  margin: 12px 12px 0 auto;
+}
+.profile-user-modal-body {
+  padding: 0 clamp(16px, 3vw, 26px) clamp(18px, 3vw, 28px);
+  display: grid;
+  gap: 18px;
+}
+.profile-user-modal-hero {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 4px 2px 2px;
+}
+.profile-user-modal-hero img {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--line-strong);
+  background: var(--surface-muted);
+}
+.profile-user-modal-hero h2 {
+  margin: 2px 0 3px;
+  font-size: clamp(22px, 4vw, 30px);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+.profile-user-modal-hero p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+.profile-user-modal-bio {
+  margin: 0;
+  color: var(--text-soft);
+  overflow-wrap: anywhere;
+  line-height: 1.62;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface-muted);
+}
+.profile-user-modal-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.profile-user-modal-stats > div {
+  min-width: 0;
+  padding: 12px 8px;
+  border-radius: 18px;
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+  text-align: center;
+}
+.profile-user-modal-stats strong {
+  display: block;
+  font-size: 16px;
+  line-height: 1;
+}
+.profile-user-modal-stats span {
+  display: block;
+  margin-top: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.profile-user-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.profile-user-modal-actions .btn {
+  min-height: 40px;
+  padding-inline: 16px;
+}
+.profile-user-modal-actions .profile-more-btn {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+}
+.profile-user-modal-posts { display: grid; gap: 12px; }
+.profile-user-modal-posts-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+.profile-user-modal-posts-head h3 { margin: 0; }
+.profile-user-modal-posts-list { display: grid; gap: 10px; }
+.profile-user-modal-post-card {
+  padding: 14px 15px;
+  gap: 10px;
+  border-radius: 22px;
+}
+.profile-user-modal-post-image-wrap img {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+}
+.profile-user-modal-post-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.profile-user-modal-post-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.profile-user-modal-post-meta svg {
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  fill: currentColor;
+}
+.profile-user-modal-posts-empty {
+  padding: 16px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 20px;
+  background: var(--surface-muted);
+  display: grid;
+  gap: 4px;
+}
+.profile-settings-dots-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-muted);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: transform var(--fast), background var(--fast), color var(--fast), border-color var(--fast);
+}
+.profile-settings-dots-btn:hover {
+  transform: translateY(-1px);
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.profile-settings-dots-btn svg { width: 21px; height: 21px; }
 
 /* Moderation modal */
 .moderation-menu-modal { grid-template-rows: auto auto auto 1fr; }
@@ -2050,4 +2217,33 @@ html[data-theme="dark"] .rich-empty-state {
 .bottom-nav {
   border: 0 !important;
   outline: 0 !important;
+}
+
+
+/* Final requested polish: no bottom divider, compact profile modal on mobile */
+.bottom-nav { border-top: 0 !important; border-bottom: 0 !important; box-shadow: none !important; }
+.bottom-nav::before, .bottom-nav::after { display: none !important; content: none !important; }
+@media (max-width: 640px) {
+  .profile-user-modal-body { gap: 14px; }
+  .profile-user-modal-hero { grid-template-columns: 64px minmax(0, 1fr); gap: 12px; }
+  .profile-user-modal-hero img { width: 64px; height: 64px; }
+  .profile-user-modal-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .profile-user-modal-actions { display: grid; grid-template-columns: 1fr 1fr 42px; }
+  .profile-user-modal-actions .btn { width: 100%; }
+  .profile-product-actions { align-items: center; }
+}
+
+/* Remove the stubborn divider line visible across Home / Profile / Create Post chrome */
+.topbar,
+.app-topbar,
+.post-composer-topbar,
+.profile-cover-card,
+.home-command-card {
+  border-top-color: transparent !important;
+}
+.topbar,
+.app-topbar,
+.post-composer-topbar {
+  border-bottom: 0 !important;
+  box-shadow: none !important;
 }
