@@ -246,6 +246,44 @@ function getVisibleThreads() {
   return safeThreads;
 }
 
+
+function renderFeedEmptyState({ title, body, actionText = "Create a thread", action = "compose" } = {}) {
+  const safeTitle = title || "No posts yet.";
+  const safeBody = body || "Start the conversation with your first founder thought.";
+  const actionButton = currentUser && action === "compose"
+    ? `<button class="empty-state-action" type="button" data-empty-compose="true">${escapeHTML(actionText)}</button>`
+    : !currentUser
+      ? `<button class="empty-state-action" type="button" data-empty-login="true">Sign in</button>`
+      : "";
+
+  return `
+    <div class="empty-state rich-empty-state">
+      <span class="empty-state-icon" aria-hidden="true">✦</span>
+      <strong>${escapeHTML(safeTitle)}</strong>
+      <span>${escapeHTML(safeBody)}</span>
+      ${actionButton}
+    </div>
+  `;
+}
+
+function bindFeedEmptyStateActions() {
+  document.querySelectorAll("[data-empty-compose]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (typeof openThreadModal === "function") {
+        openThreadModal();
+      }
+    });
+  });
+
+  document.querySelectorAll("[data-empty-login]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (typeof signInWithGoogle === "function") {
+        signInWithGoogle();
+      }
+    });
+  });
+}
+
 function renderThreads() {
   const threadsList = document.getElementById("threadsList");
   if (!threadsList) return;
@@ -253,20 +291,29 @@ function renderThreads() {
   const visibleThreads = getVisibleThreads();
 
   if (!visibleThreads.length) {
-    const message = viewedProfileId
-      ? typeof t === "function" ? t("thisProfileNoPosts") : "This profile has not posted yet."
+    const title = viewedProfileId
+      ? "No posts from this creator yet."
       : activeFilter === "mine"
-        ? typeof t === "function" ? t("youNoPosts") : "You have not posted yet. Drop your first founder thought."
+        ? "Your profile is waiting."
         : activeFilter === "following"
-          ? "Follow people to see their posts here."
-          : typeof t === "function" ? t("firstPost") : "Be the first founder to post something powerful.";
+          ? "Your following feed is empty."
+          : (typeof t === "function" ? t("noThreadsYet") : "No threads yet.");
 
-    threadsList.innerHTML = `
-      <div class="empty-state">
-        <strong>${activeFilter === "following" ? "Your feed is empty" : (typeof t === "function" ? t("noThreadsYet") : "No threads yet.")}</strong>
-        ${message}
-      </div>
-    `;
+    const body = viewedProfileId
+      ? (typeof t === "function" ? t("thisProfileNoPosts") : "This profile has not posted yet.")
+      : activeFilter === "mine"
+        ? (typeof t === "function" ? t("youNoPosts") : "Drop your first founder thought and start building signal.")
+        : activeFilter === "following"
+          ? "Follow creators to turn this into a live stream of ideas."
+          : (typeof t === "function" ? t("firstPost") : "Be the first founder to post something powerful.");
+
+    threadsList.innerHTML = renderFeedEmptyState({
+      title,
+      body,
+      actionText: activeFilter === "following" ? "Find creators" : "Create thread",
+      action: activeFilter === "following" ? "none" : "compose"
+    });
+    bindFeedEmptyStateActions();
     return;
   }
 
@@ -860,6 +907,12 @@ async function toggleBookmarkThread(id) {
 
     if (data) {
       bookmarks = [data, ...bookmarks];
+    } else {
+      bookmarks = [{ id: `local-${Date.now()}`, thread_id: id, user_id: currentUser.id, created_at: new Date().toISOString() }, ...bookmarks];
+    }
+
+    if (typeof createBookmarkNotification === "function") {
+      await createBookmarkNotification(id);
     }
 
     setStatus("Saved to bookmarks.", "success");
@@ -895,28 +948,38 @@ async function likeThread(id) {
       return;
     }
 
+    likes = likes.filter((like) => !(like.thread_id === id && like.user_id === currentUser.id));
     setStatus(typeof t === "function" ? t("likeRemoved") : "Like removed.");
   } else {
-    const { error } = await supabaseClient
+    const { data, error } = await supabaseClient
       .from("thread_likes")
       .insert({
         thread_id: id,
         user_id: currentUser.id
-      });
+      })
+      .select()
+      .single();
 
     if (error) {
       setStatus(error.message, "error");
       return;
     }
 
+    if (data) {
+      likes = [data, ...likes];
+    } else {
+      likes = [{ id: `local-${Date.now()}`, thread_id: id, user_id: currentUser.id, created_at: new Date().toISOString() }, ...likes];
+    }
+
     if (typeof createLikeNotification === "function") {
       await createLikeNotification(id);
     }
 
-    setStatus(typeof t === "function" ? t("liked") : "Liked ð", "success");
+    setStatus(typeof t === "function" ? t("liked") : "Liked 🚀", "success");
   }
 
-  await loadFeed();
+  renderFeedStats();
+  renderThreads();
 }
 
 async function deleteThread(id) {

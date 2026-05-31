@@ -65,6 +65,10 @@ function getNotificationText(notification) {
     return `${actorName} commented on your post.`;
   }
 
+  if (notification.type === "bookmark") {
+    return `${actorName} saved your post.`;
+  }
+
   return `${actorName} interacted with you.`;
 }
 
@@ -72,6 +76,7 @@ function getNotificationTypeLabel(type) {
   if (type === "follow") return "New follower";
   if (type === "like") return "Post like";
   if (type === "comment") return "New comment";
+  if (type === "bookmark") return "Post saved";
   return "Notification";
 }
 
@@ -96,6 +101,14 @@ function getNotificationIcon(type) {
     return `
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Zm-2 12H6v-2h12v2Zm0-3H6V9h12v2Zm0-3H6V6h12v2Z"></path>
+      </svg>
+    `;
+  }
+
+  if (type === "bookmark") {
+    return `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Zm2 2v12.55l4-2.29 4 2.29V5H8Z"></path>
       </svg>
     `;
   }
@@ -168,7 +181,9 @@ async function createNotification({
           ? `${actorSnapshot.actor_name} liked your post.`
           : type === "comment"
             ? `${actorSnapshot.actor_name} commented on your post.`
-            : `${actorSnapshot.actor_name} interacted with you.`
+            : type === "bookmark"
+              ? `${actorSnapshot.actor_name} saved your post.`
+              : `${actorSnapshot.actor_name} interacted with you.`
     );
 
   const payload = {
@@ -234,6 +249,44 @@ async function createLikeNotification(threadId) {
     userId: targetThread.user_id,
     actorId: currentUser.id,
     type: "like",
+    threadId
+  });
+}
+
+async function createBookmarkNotification(threadId) {
+  if (!currentUser || !threadId) return false;
+
+  let targetThread = null;
+
+  if (typeof threads !== "undefined" && Array.isArray(threads)) {
+    targetThread = threads.find((thread) => thread.id === threadId);
+  }
+
+  if (!targetThread && typeof profileAllThreads !== "undefined" && Array.isArray(profileAllThreads)) {
+    targetThread = profileAllThreads.find((thread) => thread.id === threadId);
+  }
+
+  if (!targetThread && typeof profileThreads !== "undefined" && Array.isArray(profileThreads)) {
+    targetThread = profileThreads.find((thread) => thread.id === threadId);
+  }
+
+  if (!targetThread) {
+    const { data, error } = await supabaseClient
+      .from("threads")
+      .select("id, user_id")
+      .eq("id", threadId)
+      .maybeSingle();
+
+    if (error || !data) return false;
+    targetThread = data;
+  }
+
+  if (!targetThread.user_id || targetThread.user_id === currentUser.id) return false;
+
+  return createNotification({
+    userId: targetThread.user_id,
+    actorId: currentUser.id,
+    type: "bookmark",
     threadId
   });
 }
@@ -505,7 +558,7 @@ async function openNotification(notificationId) {
     return;
   }
 
-  if ((notification.type === "like" || notification.type === "comment") && notification.thread_id) {
+  if ((notification.type === "like" || notification.type === "comment" || notification.type === "bookmark") && notification.thread_id) {
     if (typeof openCommentsModal === "function" && notification.type === "comment") {
       openCommentsModal(notification.thread_id);
       return;
@@ -534,7 +587,7 @@ function renderNotificationsModalShell() {
           <div>
             <span class="eyebrow">Activity</span>
             <h2 id="notificationsModalTitle">Notifications</h2>
-            <p>Follows, likes, and comments in one clean inbox.</p>
+            <p>Follows, likes, replies, and saves in one clean inbox.</p>
           </div>
 
           <button id="notificationsModalCloseBtn" class="notifications-modal-close" type="button" aria-label="Close notifications">

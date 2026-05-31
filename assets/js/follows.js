@@ -74,18 +74,27 @@ async function toggleFollowUser(userId) {
       return;
     }
 
+    follows = follows.filter((follow) => !(follow.follower_id === currentUser.id && follow.following_id === userId));
     setStatus(typeof t === "function" ? t("unfollowed") : "Unfollowed.");
   } else {
-    const { error } = await supabaseClient
+    const { data, error } = await supabaseClient
       .from("thread_follows")
       .insert({
         follower_id: currentUser.id,
         following_id: userId
-      });
+      })
+      .select()
+      .single();
 
     if (error) {
       setStatus(error.message, "error");
       return;
+    }
+
+    if (data) {
+      follows = [data, ...follows];
+    } else {
+      follows = [{ id: `local-${Date.now()}`, follower_id: currentUser.id, following_id: userId, created_at: new Date().toISOString() }, ...follows];
     }
 
     if (typeof createFollowNotification === "function") {
@@ -94,8 +103,6 @@ async function toggleFollowUser(userId) {
 
     setStatus(typeof t === "function" ? t("followed") : "Followed 🚀", "success");
   }
-
-  await loadFollows();
 
   if (typeof updatePublicProfileUI === "function") {
     updatePublicProfileUI();

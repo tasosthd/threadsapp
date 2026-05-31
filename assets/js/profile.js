@@ -218,6 +218,46 @@ function getProfileEmptyState(tab = activeProfileTab) {
   return states[tab] || states.posts;
 }
 
+
+function renderProfileEmptyState(tab = activeProfileTab) {
+  const emptyState = getProfileEmptyState(tab);
+  const actions = {
+    posts: currentUser ? `<button class="empty-state-action" type="button" data-profile-empty-compose="true">Create your first post</button>` : "",
+    replies: `<a class="empty-state-action" href="/">Find posts to reply to</a>`,
+    media: currentUser ? `<button class="empty-state-action" type="button" data-profile-empty-compose="true">Post with media</button>` : "",
+    likes: `<a class="empty-state-action" href="/">Discover posts</a>`,
+    bookmarks: `<a class="empty-state-action" href="/">Find posts to save</a>`
+  };
+
+  return `
+    <div class="empty-state rich-empty-state profile-tab-empty-state">
+      <span class="empty-state-icon" aria-hidden="true">✦</span>
+      <strong>${escapeHTML(emptyState.title)}</strong>
+      <span>${escapeHTML(emptyState.body)}</span>
+      ${actions[tab] || ""}
+    </div>
+  `;
+}
+
+function bindProfileEmptyStateActions() {
+  document.querySelectorAll("[data-profile-empty-compose]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const profileEditPanel = document.getElementById("profileEditPanel");
+      const editProfileToggle = document.getElementById("editProfileToggle");
+
+      if (typeof openThreadModal === "function") {
+        openThreadModal();
+        return;
+      }
+
+      if (profileEditPanel) {
+        profileEditPanel.hidden = false;
+        editProfileToggle?.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+}
+
 function renderProfileThreadCard(thread, options = {}) {
   const isOwner = currentUser && thread.user_id === currentUser.id;
   const profile = getProfileThreadAuthor(thread);
@@ -446,14 +486,8 @@ function renderProfilePosts() {
   const items = getProfileTabItems();
 
   if (!items.length) {
-    const emptyState = getProfileEmptyState(activeProfileTab);
-
-    profilePostsList.innerHTML = `
-      <div class="empty-state">
-        <strong>${escapeHTML(emptyState.title)}</strong>
-        ${escapeHTML(emptyState.body)}
-      </div>
-    `;
+    profilePostsList.innerHTML = renderProfileEmptyState(activeProfileTab);
+    bindProfileEmptyStateActions();
     return;
   }
 
@@ -556,12 +590,20 @@ async function toggleProfileThreadLike(threadId) {
       return;
     }
 
-    if (data) profileLikes = [data, ...profileLikes];
+    if (data) {
+      profileLikes = [data, ...profileLikes];
+    } else {
+      profileLikes = [{ id: `local-${Date.now()}`, thread_id: threadId, user_id: currentUser.id, created_at: new Date().toISOString() }, ...profileLikes];
+    }
+
+    if (typeof createLikeNotification === "function") {
+      await createLikeNotification(threadId);
+    }
   }
 
   renderProfileStats();
   renderProfilePosts();
-  setStatus("");
+  setStatus( existingLike ? "Like removed." : "Liked 🚀", existingLike ? "" : "success");
 }
 
 async function toggleProfileThreadBookmark(threadId) {
@@ -605,7 +647,16 @@ async function toggleProfileThreadBookmark(threadId) {
       return;
     }
 
-    if (data) profileBookmarks = [data, ...profileBookmarks];
+    if (data) {
+      profileBookmarks = [data, ...profileBookmarks];
+    } else {
+      profileBookmarks = [{ id: `local-${Date.now()}`, thread_id: threadId, user_id: currentUser.id, created_at: new Date().toISOString() }, ...profileBookmarks];
+    }
+
+    if (typeof createBookmarkNotification === "function") {
+      await createBookmarkNotification(threadId);
+    }
+
     setStatus("Saved to bookmarks.", "success");
   }
 

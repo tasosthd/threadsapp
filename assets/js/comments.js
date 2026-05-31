@@ -221,7 +221,7 @@ async function createComment() {
       user_id: currentUser.id,
       content
     })
-    .select("id")
+    .select("*")
     .single();
 
   if (commentUploadBtn) {
@@ -241,11 +241,23 @@ async function createComment() {
     await createCommentNotification(activeCommentThreadId, createdComment?.id || null);
   }
 
+  if (createdComment) {
+    comments = [...comments, createdComment].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  } else {
+    await loadComments();
+  }
+
   setStatus("Reply uploaded 🚀", "success");
 
-  await loadComments();
   renderCommentsModalContent();
-  renderThreads();
+
+  if (typeof renderThreads === "function") {
+    renderThreads();
+  }
+
+  if (typeof renderProfilePosts === "function") {
+    renderProfilePosts();
+  }
 }
 
 async function deleteComment(commentId) {
