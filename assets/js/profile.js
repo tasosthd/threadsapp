@@ -1919,6 +1919,7 @@ function renderProfileModalPosts(modalThreads, modalLikes) {
         ? `
           <div class="profile-user-modal-post-image-wrap">
             <img
+              class="profile-user-modal-post-media"
               src="${escapeHTML(thread.image_url)}"
               alt="Post image"
               loading="lazy"

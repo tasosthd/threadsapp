@@ -2247,3 +2247,160 @@ html[data-theme="dark"] .rich-empty-state {
   border-bottom: 0 !important;
   box-shadow: none !important;
 }
+
+
+/* =========================================================
+   Surgical media/icon overflow fix — 31 May
+   Keeps post media big, keeps UI icons small.
+   ========================================================= */
+.thread-image-wrap,
+.profile-thread-image-wrap,
+.profile-user-modal-post-image-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.thread-image-wrap > img.thread-image,
+.profile-thread-image-wrap > img.profile-thread-image,
+.profile-user-modal-post-image-wrap > img.profile-user-modal-post-media,
+.profile-user-modal-post-image-wrap > img[src] {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 420px !important;
+  display: block !important;
+  object-fit: cover !important;
+  border-radius: inherit !important;
+}
+
+.profile-user-modal-post-image-wrap > img.profile-user-modal-post-media,
+.profile-user-modal-post-image-wrap > img[src] {
+  max-height: 240px !important;
+}
+
+.thread-actions svg,
+.profile-thread-actions svg,
+.social-action-btn svg,
+.like-action svg,
+.reply-action svg,
+.bookmark-action svg,
+.comment-action svg,
+.thread-secondary-actions svg,
+.profile-user-modal-post-meta svg,
+.profile-user-modal-actions svg,
+.bottom-nav svg,
+.topbar svg,
+.sidebar-links svg {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  max-height: 20px !important;
+  flex: 0 0 20px !important;
+  display: inline-block !important;
+  object-fit: contain !important;
+  overflow: visible !important;
+}
+
+.thread-actions img,
+.profile-thread-actions img,
+.social-action-btn img,
+.like-action img,
+.reply-action img,
+.bookmark-action img,
+.comment-action img,
+.profile-user-modal-post-meta img {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  max-height: 20px !important;
+  flex: 0 0 20px !important;
+  object-fit: contain !important;
+}
+
+.social-action-btn,
+.like-action,
+.reply-action,
+.bookmark-action,
+.comment-action {
+  width: auto !important;
+  max-width: max-content !important;
+  overflow: hidden !important;
+}
+
+.profile-user-modal-post-card,
+.profile-tab-thread-card,
+.thread-card {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.profile-user-modal-post-meta {
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.profile-user-modal-post-meta span {
+  width: auto !important;
+  max-width: 100% !important;
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+}
+
+.profile-user-modal-post-meta span:last-child {
+  justify-content: flex-end !important;
+  white-space: nowrap !important;
+}
+
+.profile-user-modal {
+  overflow: hidden !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+.profile-user-modal-body {
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+}
+
+.profile-user-modal-posts-list {
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+@media (max-width: 640px) {
+  .thread-image-wrap > img.thread-image,
+  .profile-thread-image-wrap > img.profile-thread-image {
+    max-height: 340px !important;
+  }
+
+  .profile-user-modal-post-image-wrap > img.profile-user-modal-post-media,
+  .profile-user-modal-post-image-wrap > img[src] {
+    max-height: 220px !important;
+  }
+
+  .thread-actions svg,
+  .profile-thread-actions svg,
+  .social-action-btn svg,
+  .like-action svg,
+  .reply-action svg,
+  .bookmark-action svg,
+  .comment-action svg,
+  .profile-user-modal-post-meta svg {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
+    flex-basis: 18px !important;
+  }
+}
