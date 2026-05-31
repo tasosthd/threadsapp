@@ -1399,59 +1399,258 @@ html[data-theme="dark"] .social-action-btn.liked {
 .profile-product-info .profile-studio-label {
   display: none !important;
 }
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(8px);
-  z-index: 9998;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
+
+/* =========================================================
+   Sidebar premium drawer full repair
+   Fixes: oversized mobile drawer, giant empty white area,
+   huge theme icons, overlay stacking, and bottom nav bleeding.
+   ========================================================= */
+:root {
+  --sidebar-width-premium: min(360px, calc(100vw - 28px));
 }
 
-.sidebar-overlay.active,
-.sidebar-overlay.open {
-  opacity: 1;
-  pointer-events: auto;
+.sidebar-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99980 !important;
+  background: rgba(15, 23, 42, 0.58) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  display: block !important;
+  transition: opacity 220ms ease, visibility 220ms ease !important;
 }
 
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: min(360px, 92vw);
-  height: 100dvh;
-  background: #ffffff;
-  z-index: 9999;
-  border-radius: 0 28px 28px 0;
-  box-shadow: 24px 0 80px rgba(15, 23, 42, 0.24);
-  transform: translateX(-105%);
-  transition: transform 0.28s ease;
-  overflow-y: auto;
-  padding: 18px;
+.sidebar-backdrop.active,
+.sidebar-backdrop.open {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
-.sidebar.active,
-.sidebar.open {
-  transform: translateX(0);
+.app-sidebar {
+  position: fixed !important;
+  top: 12px !important;
+  bottom: auto !important;
+  left: 12px !important;
+  right: auto !important;
+  inset-block: auto !important;
+  width: var(--sidebar-width-premium) !important;
+  height: auto !important;
+  max-height: calc(100dvh - 24px) !important;
+  min-height: 0 !important;
+  z-index: 99990 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  padding: 16px !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  border: 1px solid rgba(148, 163, 184, 0.26) !important;
+  border-radius: 26px !important;
+  background: var(--surface) !important;
+  box-shadow: 0 28px 90px rgba(15, 23, 42, 0.28) !important;
+  transform: translateX(calc(-100% - 28px)) scale(0.985) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: transform 260ms cubic-bezier(.2,.8,.2,1), opacity 220ms ease, visibility 220ms ease !important;
 }
 
-.sidebar-content {
-  min-height: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+.app-sidebar.active,
+.app-sidebar.open {
+  transform: translateX(0) scale(1) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
-.sidebar-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+html[dir="rtl"] .app-sidebar {
+  left: auto !important;
+  right: 12px !important;
+  transform: translateX(calc(100% + 28px)) scale(0.985) !important;
+  border-radius: 26px !important;
 }
 
-.sidebar-menu a,
-.sidebar-menu button {
-  min-height: 44px;
-  border-radius: 14px;
+html[dir="rtl"] .app-sidebar.active,
+html[dir="rtl"] .app-sidebar.open {
+  transform: translateX(0) scale(1) !important;
+}
+
+.sidebar-head {
+  gap: 10px !important;
+  padding-bottom: 2px !important;
+}
+
+.sidebar-brand .brand-logo,
+.sidebar-head .brand-logo {
+  width: 38px !important;
+  height: 38px !important;
+  flex: 0 0 38px !important;
+}
+
+.sidebar-brand h1 {
+  font-size: 18px !important;
+  line-height: 1.05 !important;
+}
+
+.sidebar-brand p {
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+.sidebar-close-btn {
+  width: 38px !important;
+  height: 38px !important;
+  flex: 0 0 38px !important;
+  font-size: 20px !important;
+}
+
+.sidebar-auth,
+.sidebar-email-auth,
+.sidebar-theme-box,
+.sidebar-language-box,
+.sidebar-links {
+  gap: 8px !important;
+}
+
+.sidebar-account-row {
+  padding: 10px 12px !important;
+  border-radius: 18px !important;
+  gap: 10px !important;
+}
+
+.sidebar-account-avatar {
+  width: 42px !important;
+  height: 42px !important;
+  flex-basis: 42px !important;
+}
+
+.sidebar-account-meta strong {
+  font-size: 14px !important;
+  line-height: 1.2 !important;
+}
+
+.sidebar-account-meta span {
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+.sidebar-logout-btn {
+  width: 34px !important;
+  height: 34px !important;
+  flex: 0 0 34px !important;
+}
+
+.sidebar-theme-head span {
+  font-size: 15px !important;
+  line-height: 1.15 !important;
+}
+
+.sidebar-theme-head small {
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+}
+
+.theme-toggle-group,
+.language-toggle-group {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.theme-toggle-btn {
+  min-height: 42px !important;
+  height: auto !important;
+  padding: 9px 10px !important;
+  border-radius: 16px !important;
+  font-size: 12px !important;
+  line-height: 1.1 !important;
+  gap: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.theme-toggle-btn svg {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  flex: 0 0 20px !important;
+}
+
+#lightThemeBtn,
+#darkThemeBtn {
+  min-height: 58px !important;
+}
+
+#lightThemeBtn svg,
+#darkThemeBtn svg {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  flex-basis: 30px !important;
+}
+
+.sidebar-links a,
+.sidebar-links button {
+  min-height: 42px !important;
+  padding: 10px 13px !important;
+  border-radius: 15px !important;
+  font-size: 13px !important;
+  line-height: 1.15 !important;
+}
+
+.sidebar-legal-links {
+  padding-top: 2px !important;
+  gap: 8px !important;
+}
+
+.sidebar-legal-link {
+  min-height: 36px !important;
+  padding: 9px 13px !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 14px !important;
+  background: var(--surface-muted) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+body.sidebar-is-open .bottom-nav {
+  z-index: 1 !important;
+}
+
+@media (max-width: 520px) {
+  :root { --sidebar-width-premium: min(342px, calc(100vw - 24px)); }
+
+  .app-sidebar {
+    top: 10px !important;
+    left: 10px !important;
+    max-height: calc(100dvh - 20px) !important;
+    padding: 14px !important;
+    gap: 12px !important;
+    border-radius: 24px !important;
+  }
+
+  html[dir="rtl"] .app-sidebar {
+    right: 10px !important;
+  }
+
+  #lightThemeBtn,
+  #darkThemeBtn {
+    min-height: 52px !important;
+  }
+
+  #lightThemeBtn svg,
+  #darkThemeBtn svg {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    max-width: 26px !important;
+    flex-basis: 26px !important;
+  }
 }

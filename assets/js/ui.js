@@ -242,7 +242,8 @@ function openSidebar() {
   }
 
   appSidebar.classList.add("active", "open");
-  sidebarBackdrop.classList.add("active");
+  sidebarBackdrop.classList.add("active", "open");
+  document.body.classList.add("sidebar-is-open");
 
   appSidebar.setAttribute("aria-hidden", "false");
   lockBodyScroll();
@@ -257,7 +258,8 @@ function closeSidebar() {
   if (!appSidebar || !sidebarBackdrop) return;
 
   appSidebar.classList.remove("active", "open");
-  sidebarBackdrop.classList.remove("active");
+  sidebarBackdrop.classList.remove("active", "open");
+  document.body.classList.remove("sidebar-is-open");
 
   appSidebar.setAttribute("aria-hidden", "true");
   unlockBodyScroll();
@@ -283,6 +285,17 @@ function setupSidebar() {
 
   if (sidebarBackdrop) {
     sidebarBackdrop.addEventListener("click", closeSidebar);
+  }
+
+  // sidebarEscapeClosePatched: premium drawer behavior
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeSidebar();
+  });
+
+  if (appSidebar) {
+    appSidebar.querySelectorAll("a[href]").forEach((link) => {
+      link.addEventListener("click", () => closeSidebar());
+    });
   }
 
   if (sidebarComposeBtn) {
