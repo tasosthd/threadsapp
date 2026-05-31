@@ -885,9 +885,9 @@ function setupTopbarCompose() {
 function mountSharedUI({ includeModal = false } = {}) {
   applyTheme(getSavedTheme());
 
-  // Bottom navigation removed by request. The sidebar/topbar remains available
-  // so users can still navigate without the floating Home/Search/Create/Inbox/Profile bar.
-  document.querySelectorAll(".bottom-nav").forEach((nav) => nav.remove());
+  if (!document.getElementById("bottomHomeBtn")) {
+    document.body.insertAdjacentHTML("beforeend", renderBottomNav());
+  }
 
   if (includeModal && !document.getElementById("threadModalBackdrop")) {
     document.body.insertAdjacentHTML("beforeend", renderThreadModal());

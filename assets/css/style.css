@@ -2045,21 +2045,3 @@ html[data-theme="dark"] .rich-empty-state {
     border-radius: 14px;
   }
 }
-
-/* =========================================================
-   Removed floating bottom bar
-   Keeps Home/Profile/Create Post clean with no bottom dock.
-   ========================================================= */
-.bottom-nav {
-  display: none !important;
-}
-
-.app-shell {
-  padding-bottom: 40px !important;
-}
-
-@media (max-width: 980px) {
-  .app-shell {
-    padding-bottom: calc(28px + env(safe-area-inset-bottom)) !important;
-  }
-}
