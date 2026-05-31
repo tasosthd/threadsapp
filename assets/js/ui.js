@@ -301,15 +301,7 @@ function setupSidebar() {
   if (sidebarComposeBtn) {
     sidebarComposeBtn.addEventListener("click", () => {
       closeSidebar();
-
-      if (getPageName() !== "home") {
-        window.location.href = "/?compose=1";
-        return;
-      }
-
-      if (typeof openThreadModal === "function") {
-        openThreadModal();
-      }
+      window.location.href = "/post/";
     });
   }
 
@@ -516,14 +508,7 @@ function setupBottomNav() {
 
   if (bottomComposeBtn) {
     bottomComposeBtn.addEventListener("click", () => {
-      if (pageName !== "home") {
-        window.location.href = "/?compose=1";
-        return;
-      }
-
-      if (typeof openThreadModal === "function") {
-        openThreadModal();
-      }
+      window.location.href = "/post/";
     });
   }
 
@@ -891,14 +876,7 @@ function setupTopbarCompose() {
     if (button.dataset.bound === "true") return;
     button.dataset.bound = "true";
     button.addEventListener("click", () => {
-      if (getPageName() !== "home") {
-        window.location.href = "/?compose=1";
-        return;
-      }
-
-      if (typeof openThreadModal === "function") {
-        openThreadModal();
-      }
+      window.location.href = "/post/";
     });
   });
 }

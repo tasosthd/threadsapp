@@ -974,6 +974,85 @@ html[data-theme="dark"] .social-action-btn.liked {
 }
 
 /* =========================================================
+   14b. Post composer page (/post/) — Twitter-style
+   ========================================================= */
+.post-page-main { width: min(100%, 680px); }
+.post-only-page .bottom-nav { display: none !important; }
+.post-only-page .app-shell {
+  padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+}
+
+.post-composer-card { padding: 0; overflow: hidden; }
+
+.post-composer-topbar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; background: var(--surface); z-index: 2;
+}
+.post-composer-title { flex: 1; font-size: 16px; font-weight: 800; }
+.post-submit-btn {
+  min-height: 40px; min-width: 84px; padding-inline: 22px;
+  border-radius: var(--radius-pill); font-weight: 800;
+}
+.post-submit-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.post-signin-card { padding: var(--space-6); text-align: center; display: grid; gap: 14px; justify-items: center; }
+.post-signin-card h2 { font-size: 19px; font-weight: 800; }
+.post-signin-card p { color: var(--muted); }
+
+.post-composer { display: grid; }
+.post-composer-body { display: flex; gap: 14px; padding: 20px; }
+.post-composer-avatar {
+  width: 52px; height: 52px; border-radius: 50%; object-fit: cover; flex: 0 0 auto;
+  border: 1.5px solid var(--line); background: var(--surface-muted);
+}
+.post-composer-fields { flex: 1; min-width: 0; display: grid; gap: 10px; }
+.post-composer-identity { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.post-composer-identity strong { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.post-composer-identity span { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.post-textarea {
+  width: 100%; min-height: 120px; max-height: 460px; resize: none;
+  border: 0; background: transparent; color: var(--text);
+  font-family: inherit; font-size: 18px; line-height: 1.6; padding: 4px 0;
+  outline: none;
+}
+.post-textarea::placeholder { color: var(--muted-2); }
+
+.post-image-preview-wrap {
+  position: relative; border-radius: var(--radius-lg); overflow: hidden;
+  border: 1px solid var(--line); max-width: 100%;
+}
+.post-image-preview-wrap img { display: block; width: 100%; max-height: 420px; object-fit: cover; }
+.post-image-remove {
+  position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  background: rgba(11,18,32,.66); color: #fff; border: 0; backdrop-filter: blur(6px);
+  transition: transform var(--fast), background var(--fast);
+}
+.post-image-remove svg { width: 17px; height: 17px; fill: currentColor; }
+.post-image-remove:hover { background: rgba(11,18,32,.85); transform: scale(1.06); }
+
+/* Footer: media icons bottom-left, char count right */
+.post-composer-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 20px; border-top: 1px solid var(--line); background: var(--surface);
+}
+.post-media-actions { display: flex; align-items: center; gap: 8px; }
+.post-media-btn {
+  width: 42px; height: 42px; border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center; flex: 0 0 auto;
+  background: transparent; border: 1px solid transparent; color: var(--brand);
+  transition: transform 200ms cubic-bezier(.22,.61,.36,1), background var(--fast), color var(--fast);
+}
+.post-media-btn svg { width: 23px; height: 23px; fill: currentColor; }
+.post-media-btn:hover { background: var(--surface-muted); transform: translateY(-2px); }
+.post-media-btn:active { transform: scale(.92); }
+.post-hidden-input { display: none; }
+.post-char-count { font-size: 12.5px; font-weight: 800; color: var(--muted); white-space: nowrap; }
+.post-char-count.over { color: #e5484d; }
+
+/* =========================================================
    15. Profile page
    ========================================================= */
 .profile-cover-card { position: relative; overflow: hidden; padding: 0; }
@@ -1345,6 +1424,15 @@ html[data-theme="dark"] .social-action-btn.liked {
   .chat-back-link { width: 38px !important; height: 38px !important; }
   .chat-friend-chip { width: 68px !important; }
   .chat-friend-chip img { width: 56px !important; height: 56px !important; }
+
+  /* Post composer */
+  .post-page-main { width: 100% !important; padding-top: calc(var(--topbar-h) + 14px) !important; }
+  .post-composer-body { padding: 16px !important; gap: 12px !important; }
+  .post-composer-avatar { width: 44px !important; height: 44px !important; }
+  .post-textarea { font-size: 17px !important; min-height: 130px !important; }
+  .post-composer-footer { padding: 11px 14px !important; }
+  .post-media-btn { width: 44px !important; height: 44px !important; }
+  .post-image-preview-wrap img { max-height: 320px !important; }
   .chat-messages { padding: 16px !important; gap: 11px !important; }
   .chat-message { max-width: 88% !important; }
   .chat-message-body { padding: 11px 14px !important; }

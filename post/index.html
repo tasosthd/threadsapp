@@ -3,16 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Terms of Service | Loomyva</title>
+
+  <title>Loomyva Search</title>
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Favicons -->
   <link rel="icon" type="image/png" href="/assets/img/index.png" />
   <link rel="shortcut icon" type="image/png" href="/assets/img/index.png" />
   <link rel="apple-touch-icon" href="/assets/img/index.png" />
+
   <meta name="theme-color" content="#050816" />
   <meta name="description" content="Loomyva is a premium creator network for posting ideas, discovering builders, messaging people, and growing a social graph." />
   <meta name="application-name" content="Loomyva" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Main CSS -->
   <link rel="stylesheet" href="/assets/css/style.css?v=post-page-20260531" />
+
+  <!-- Load saved theme before page paints -->
   <script>
     (function () {
       const savedTheme = localStorage.getItem("loomyva-theme") || "light";
@@ -20,6 +36,7 @@
     })();
   </script>
 </head>
+
 <body>
   <a class="skip-link" href="#mainContent">Skip to main content</a>
   <div class="bg-orb orb-one"></div>
@@ -44,7 +61,7 @@
 
           <div>
             <h1>Loomyva</h1>
-            <p><span data-i18n="appSubtitleLegal">Simple, clear rules.</span></p>
+            <p><span data-i18n="appSubtitleHome">Post ideas. Sync everywhere.</span></p>
           </div>
         </a>
 
@@ -74,7 +91,7 @@
 
           <div>
             <h1>Loomyva</h1>
-            <p><span data-i18n="creatorMenu">Your creator menu.</span></p>
+            <p><span data-i18n="creatorMenu">Menu</span></p>
           </div>
         </div>
 
@@ -172,6 +189,25 @@
         </div>
       </div>
 
+      <div class="sidebar-language-box">
+        <div class="sidebar-theme-head">
+          <span data-i18n="language">Language</span>
+          <small data-i18n="chooseLanguage">Choose app language</small>
+        </div>
+
+        <div class="theme-toggle-group language-toggle-group" role="group" aria-label="Choose language">
+          <button class="theme-toggle-btn language-toggle-btn" type="button" data-language-option="en">
+            <span>EN</span>
+            <span data-i18n="english">English</span>
+          </button>
+
+          <button class="theme-toggle-btn language-toggle-btn" type="button" data-language-option="el">
+            <span>EL</span>
+            <span data-i18n="greek">Ελληνικά</span>
+          </button>
+        </div>
+      </div>
+
       <nav class="sidebar-links">
         <a href="/" data-i18n="navHome">Home</a>
         <a href="/search/" data-i18n="navSearch">Search</a>
@@ -196,72 +232,108 @@
 
     <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
-    <main id="mainContent" class="legal-page-shell app-legal-page-shell">
-      <section class="glass-card legal-page-card">
-        <a class="brand auth-page-brand" href="/" aria-label="Loomyva home">
-          <img src="/assets/img/index.png" alt="Loomyva logo" class="brand-logo" />
-          <div>
-            <h1>Loomyva</h1>
-            <p data-i18n="termsSubtitle"></p>
+    <main id="mainContent" class="post-page-main">
+      <section class="glass-card post-composer-card">
+        <header class="post-composer-topbar">
+          <button id="postBackBtn" class="chat-back-link" type="button" aria-label="Go back">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15.5 4.5a1 1 0 0 1 0 1.4L9.4 12l6.1 6.1a1 1 0 1 1-1.4 1.4l-6.8-6.8a1 1 0 0 1 0-1.4l6.8-6.8a1 1 0 0 1 1.4 0Z"/>
+            </svg>
+          </button>
+
+          <strong class="post-composer-title" data-i18n="createThread">Create thread</strong>
+
+          <button id="postPageSubmitBtn" class="btn primary-btn post-submit-btn" type="button" data-i18n="postAction" disabled>Post</button>
+        </header>
+
+        <section id="postSignInCard" class="post-signin-card hidden">
+          <h2 data-i18n="signInToPost">Sign in to post</h2>
+          <p data-i18n="signInToPostText">Sign in to share an idea with the network.</p>
+          <button class="btn primary-btn" type="button" data-open-post-login data-i18n="signIn">Sign in</button>
+        </section>
+
+        <div id="postComposer" class="post-composer hidden">
+          <div class="post-composer-body">
+            <img id="postComposerAvatar" class="post-composer-avatar" src="" alt="Your avatar" />
+
+            <div class="post-composer-fields">
+              <div class="post-composer-identity">
+                <strong id="postComposerName">User</strong>
+                <span id="postComposerHandle">@user</span>
+              </div>
+
+              <textarea
+                id="postPageInput"
+                class="post-textarea"
+                maxlength="280"
+                rows="3"
+                placeholder="What are you building today?"
+                data-i18n-placeholder="modalPlaceholder"
+              ></textarea>
+
+              <div id="postImagePreviewWrap" class="post-image-preview-wrap hidden">
+                <img id="postImagePreview" src="" alt="Selected image preview" />
+                <button id="postRemoveImageBtn" class="post-image-remove" type="button" aria-label="Remove image">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5Z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
-        </a>
 
-        <span class="eyebrow" data-i18n="legal"></span>
-        <h1 data-i18n="termsTitle"></h1>
-        <p class="legal-updated" data-i18n="legalUpdated"></p>
+          <footer class="post-composer-footer">
+            <div class="post-media-actions">
+              <button id="postGalleryBtn" class="post-media-btn" type="button" aria-label="Add from gallery" title="Gallery">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 20a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H5Zm0-2h14a1 1 0 0 0 1-1v-1.6l-3.7-3.7a1 1 0 0 0-1.4 0L12 14.6l-1.8-1.8a1 1 0 0 0-1.4 0L4 17.6A1 1 0 0 0 5 18Zm3.5-7.5A1.5 1.5 0 1 0 8.5 7a1.5 1.5 0 0 0 0 3.5Z"/>
+                </svg>
+              </button>
 
-        <div class="legal-section">
-          <h2 data-i18n="termsAgreementTitle"></h2>
-          <p data-i18n="termsAgreementText"></p>
-        </div>
-        <div class="legal-section">
-          <h2 data-i18n="termsAccountTitle"></h2>
-          <p data-i18n="termsAccountText"></p>
-        </div>
-        <div class="legal-section">
-          <h2 data-i18n="termsContentTitle"></h2>
-          <p data-i18n="termsContentText"></p>
-        </div>
-        <div class="legal-section">
-          <h2 data-i18n="termsRulesTitle"></h2>
-          <p data-i18n="termsRulesText"></p>
-        </div>
-        <div class="legal-section">
-          <h2 data-i18n="termsAvailabilityTitle"></h2>
-          <p data-i18n="termsAvailabilityText"></p>
-        </div>
-        <div class="legal-section">
-          <h2 data-i18n="termsChangesTitle"></h2>
-          <p data-i18n="termsChangesText"></p>
-        </div>
-        <div class="legal-section">
-          <h2 data-i18n="termsContactTitle"></h2>
-          <p data-i18n="termsContactText"></p>
-        </div>
+              <button id="postCameraBtn" class="post-media-btn" type="button" aria-label="Take a photo" title="Camera">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9.2 4a1 1 0 0 0-.83.45L7.5 5.8A1 1 0 0 1 6.67 6.25H5A3 3 0 0 0 2 9.25V17a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V9.25a3 3 0 0 0-3-3h-1.67a1 1 0 0 1-.83-.45l-.87-1.35A1 1 0 0 0 14.8 4H9.2Zm2.8 5.25a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
+                </svg>
+              </button>
 
-        <div class="legal-page-actions">
-          <a class="btn primary-btn" href="/" data-i18n="backToLoomyva"></a>
-          <a class="btn ghost-btn" href="/privacy/" data-i18n="privacyTitle"></a>
+              <input id="postGalleryInput" class="post-hidden-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
+              <input id="postCameraInput" class="post-hidden-input" type="file" accept="image/*" capture="environment" />
+            </div>
+
+            <span id="postPageCharCount" class="post-char-count">0 / 280</span>
+          </footer>
         </div>
       </section>
     </main>
   </div>
 
+  <!-- Post page globals -->
+  <script>
+    var threads = [];
+    var profiles = [];
+  </script>
+
+  <!-- App Scripts -->
   <script src="/assets/js/config.js?v=post-page-20260531"></script>
   <script src="/assets/js/language.js?v=post-page-20260531"></script>
   <script src="/assets/js/ui.js?v=post-page-20260531"></script>
   <script src="/assets/js/auth.js?v=post-page-20260531"></script>
   <script src="/assets/js/notifications.js?v=post-page-20260531"></script>
+  <script src="/assets/js/follows.js?v=post-page-20260531"></script>
+  <script src="/assets/js/feed.js?v=post-page-20260531"></script>
   <script>
-    mountSharedUI({ includeModal: false });
-    setupAuthButtons();
-    restoreSession();
-    listenForAuthChanges();
-    if (typeof initNotificationsSystem === "function") {
-      initNotificationsSystem();
+    async function bootPostPage() {
+      await initPostPage();
+
+      if (typeof initNotificationsSystem === "function") {
+        await initNotificationsSystem();
+      }
     }
+
+    bootPostPage();
   </script>
 
+  <!-- iOS Safari/PWA cleanup: remove old service worker registrations -->
   <script>
     (function () {
       if ("serviceWorker" in navigator) {

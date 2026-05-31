@@ -242,6 +242,11 @@ function renderProfileEmptyState(tab = activeProfileTab) {
 function bindProfileEmptyStateActions() {
   document.querySelectorAll("[data-profile-empty-compose]").forEach((button) => {
     button.addEventListener("click", () => {
+      window.location.href = "/post/";
+    });
+  });
+  document.querySelectorAll("[data-profile-empty-compose-LEGACY]").forEach((button) => {
+    button.addEventListener("click", () => {
       const profileEditPanel = document.getElementById("profileEditPanel");
       const editProfileToggle = document.getElementById("editProfileToggle");
 

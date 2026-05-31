@@ -269,9 +269,7 @@ function renderFeedEmptyState({ title, body, actionText = "Create a thread", act
 function bindFeedEmptyStateActions() {
   document.querySelectorAll("[data-empty-compose]").forEach((button) => {
     button.addEventListener("click", () => {
-      if (typeof openThreadModal === "function") {
-        openThreadModal();
-      }
+      window.location.href = "/post/";
     });
   });
 
@@ -1118,7 +1116,7 @@ async function initFeedPage() {
   setupAuthButtons();
   setupFeedButtons();
 
-  mountSharedUI({ includeModal: true });
+  mountSharedUI({ includeModal: false });
 
   if (typeof setupCommentsModal === "function") {
     setupCommentsModal();
@@ -1139,11 +1137,8 @@ async function initFeedPage() {
   const params = new URLSearchParams(window.location.search);
 
   if (params.get("compose") === "1") {
-    setTimeout(() => {
-      openThreadModal();
-
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }, 400);
+    window.location.href = "/post/";
+    return;
   }
 
   const profileParam = params.get("profile");
@@ -1189,4 +1184,284 @@ async function initFeedPage() {
   subscribeToRealtime();
 
   appStarted = true;
+}
+
+
+/* =========================================================
+   Dedicated Post page (/post/) — Twitter-style composer
+   ========================================================= */
+let postPageImageFile = null;
+
+function postT(key, fallback) {
+  return typeof t === "function" ? t(key) : fallback;
+}
+
+function updatePostCharCount() {
+  const input = document.getElementById("postPageInput");
+  const count = document.getElementById("postPageCharCount");
+  if (!input || !count) return;
+
+  const len = input.value.length;
+  count.textContent = `${len} / 280`;
+  count.classList.toggle("over", len > 280);
+}
+
+function autoGrowPostInput() {
+  const input = document.getElementById("postPageInput");
+  if (!input) return;
+  input.style.height = "auto";
+  input.style.height = `${Math.min(input.scrollHeight, 460)}px`;
+}
+
+function resetPostPageImage() {
+  postPageImageFile = null;
+
+  const gallery = document.getElementById("postGalleryInput");
+  const camera = document.getElementById("postCameraInput");
+  const previewWrap = document.getElementById("postImagePreviewWrap");
+  const preview = document.getElementById("postImagePreview");
+
+  if (gallery) gallery.value = "";
+  if (camera) camera.value = "";
+  if (preview) preview.src = "";
+  if (previewWrap) previewWrap.classList.add("hidden");
+
+  syncPostSubmitState();
+}
+
+function handlePostPageImageSelect(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+  if (!allowedTypes.includes(file.type)) {
+    setStatus("Please upload a JPG, PNG, WEBP, or GIF image.", "error");
+    return;
+  }
+
+  const maxSizeInBytes = 6 * 1024 * 1024;
+  if (file.size > maxSizeInBytes) {
+    setStatus("Image must be under 6MB.", "error");
+    return;
+  }
+
+  postPageImageFile = file;
+
+  const previewWrap = document.getElementById("postImagePreviewWrap");
+  const preview = document.getElementById("postImagePreview");
+  const previewUrl = URL.createObjectURL(file);
+
+  if (preview) preview.src = previewUrl;
+  if (previewWrap) previewWrap.classList.remove("hidden");
+
+  setStatus("");
+  syncPostSubmitState();
+}
+
+function syncPostSubmitState() {
+  const input = document.getElementById("postPageInput");
+  const submit = document.getElementById("postPageSubmitBtn");
+  if (!submit) return;
+
+  const hasText = Boolean(input && input.value.trim());
+  const over = Boolean(input && input.value.length > 280);
+  submit.disabled = (!hasText && !postPageImageFile) || over;
+}
+
+function renderPostComposerIdentity() {
+  const avatar = document.getElementById("postComposerAvatar");
+  const name = document.getElementById("postComposerName");
+  const handle = document.getElementById("postComposerHandle");
+
+  if (!currentUser) {
+    if (name) name.textContent = postT("signIn", "Sign in");
+    if (handle) handle.textContent = postT("chatSignInText", "Sign in to post.");
+    if (avatar) avatar.src = fallbackAvatar("Loomyva");
+    return;
+  }
+
+  const meta = typeof getUserMeta === "function" ? getUserMeta(currentUser) : {};
+  const displayName = currentProfile?.full_name || meta.name || "Loomyva User";
+  const username = currentProfile?.username || (meta.email ? meta.email.split("@")[0] : "user");
+
+  if (name) name.textContent = displayName;
+  if (handle) handle.textContent = `@${username}`;
+  if (avatar) avatar.src = currentProfile?.avatar_url || meta.avatar || fallbackAvatar(displayName);
+}
+
+function updatePostPageAuthState() {
+  const signInCard = document.getElementById("postSignInCard");
+  const composer = document.getElementById("postComposer");
+
+  if (!currentUser) {
+    signInCard?.classList.remove("hidden");
+    composer?.classList.add("hidden");
+    return;
+  }
+
+  signInCard?.classList.add("hidden");
+  composer?.classList.remove("hidden");
+  renderPostComposerIdentity();
+}
+
+async function submitPostPage() {
+  const input = document.getElementById("postPageInput");
+  const submit = document.getElementById("postPageSubmitBtn");
+  if (!input) return;
+
+  const content = input.value.trim();
+  const imageFile = postPageImageFile;
+
+  if (!currentUser) {
+    setStatus(postT("signInFirstThread", "Sign in first to create a thread."), "error");
+    if (typeof signInWithGoogle === "function") signInWithGoogle();
+    return;
+  }
+
+  if (!content && !imageFile) {
+    setStatus(postT("writeOrImage", "Write something or add an image first."), "error");
+    return;
+  }
+
+  if (content.length > 280) {
+    setStatus(postT("keepUnder280", "Keep it under 280 characters."), "error");
+    return;
+  }
+
+  if (submit) {
+    submit.disabled = true;
+    submit.textContent = imageFile ? postT("uploadingImage", "Uploading image...") : postT("publishing", "Publishing...");
+  }
+
+  let imageUrl = null;
+
+  if (imageFile) {
+    imageUrl = await uploadThreadImage(imageFile);
+    if (!imageUrl) {
+      if (submit) {
+        submit.disabled = false;
+        submit.textContent = postT("postAction", "Post");
+      }
+      return;
+    }
+  }
+
+  if (submit) submit.textContent = postT("publishing", "Publishing...");
+
+  const meta = getUserMeta(currentUser);
+
+  const { error } = await supabaseClient
+    .from("threads")
+    .insert({
+      user_id: currentUser.id,
+      user_email: currentProfile?.email || meta.email,
+      user_name: currentProfile?.full_name || meta.name,
+      user_avatar: currentProfile?.avatar_url || meta.avatar,
+      content,
+      image_url: imageUrl
+    });
+
+  if (error) {
+    if (submit) {
+      submit.disabled = false;
+      submit.textContent = postT("postAction", "Post");
+    }
+    setStatus(error.message, "error");
+    return;
+  }
+
+  input.value = "";
+  updatePostCharCount();
+  resetPostPageImage();
+  setStatus(postT("threadUploaded", "Thread uploaded"), "success");
+
+  // Return to the home feed so the new post is visible.
+  window.location.href = "/";
+}
+
+function bindPostPageUI() {
+  const input = document.getElementById("postPageInput");
+  const submit = document.getElementById("postPageSubmitBtn");
+  const galleryBtn = document.getElementById("postGalleryBtn");
+  const cameraBtn = document.getElementById("postCameraBtn");
+  const galleryInput = document.getElementById("postGalleryInput");
+  const cameraInput = document.getElementById("postCameraInput");
+  const removeBtn = document.getElementById("postRemoveImageBtn");
+  const backBtn = document.getElementById("postBackBtn");
+
+  if (input) {
+    input.addEventListener("input", () => {
+      updatePostCharCount();
+      autoGrowPostInput();
+      syncPostSubmitState();
+    });
+  }
+
+  if (galleryBtn && galleryInput) {
+    galleryBtn.addEventListener("click", () => galleryInput.click());
+    galleryInput.addEventListener("change", handlePostPageImageSelect);
+  }
+
+  if (cameraBtn && cameraInput) {
+    cameraBtn.addEventListener("click", () => cameraInput.click());
+    cameraInput.addEventListener("change", handlePostPageImageSelect);
+  }
+
+  if (removeBtn) removeBtn.addEventListener("click", resetPostPageImage);
+
+  if (submit) submit.addEventListener("click", submitPostPage);
+
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = "/";
+      }
+    });
+  }
+
+  document.querySelectorAll("[data-open-post-login]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (typeof openSidebar === "function") openSidebar();
+      else if (typeof signInWithGoogle === "function") signInWithGoogle();
+    });
+  });
+}
+
+async function initPostPage() {
+  document.body.classList.add("post-only-page");
+
+  if (typeof setupSidebar === "function") setupSidebar();
+  if (typeof setupThemeToggle === "function") setupThemeToggle();
+  if (typeof applyTheme === "function" && typeof getSavedTheme === "function") applyTheme(getSavedTheme());
+  if (typeof setupLanguageSwitcher === "function") setupLanguageSwitcher();
+  if (typeof setupAuthButtons === "function") setupAuthButtons();
+
+  bindPostPageUI();
+  updatePostCharCount();
+  syncPostSubmitState();
+
+  if (typeof restoreSession === "function") {
+    await restoreSession();
+  }
+
+  updatePostPageAuthState();
+
+  window.addEventListener("loomyva:language-change", () => {
+    updatePostCharCount();
+    renderPostComposerIdentity();
+  });
+
+  if (typeof listenForAuthChanges === "function") {
+    listenForAuthChanges({
+      onSignedIn: async () => { updatePostPageAuthState(); },
+      onSignedOut: async () => { updatePostPageAuthState(); }
+    });
+  }
+
+  setTimeout(() => {
+    const input = document.getElementById("postPageInput");
+    if (input && currentUser) input.focus();
+  }, 200);
 }
