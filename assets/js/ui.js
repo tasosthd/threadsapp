@@ -109,7 +109,7 @@ function getPageName() {
     return "search";
   }
 
-  if (path === "/messages/" || path === "/messages" || path === "/notifications/" || path === "/notifications") {
+  if (path === "/messages/" || path === "/messages" || path === "/chat/" || path === "/chat" || path === "/notifications/" || path === "/notifications") {
     return "inbox";
   }
 

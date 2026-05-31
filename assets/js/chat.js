@@ -189,8 +189,9 @@ function renderChatPeople() {
   `).join("");
 
   peopleWrap.querySelectorAll("[data-chat-user-id]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      await openConversationWithUser(button.dataset.chatUserId);
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      navigateToChatWithUser(button.dataset.chatUserId);
     });
   });
 }
@@ -230,7 +231,7 @@ function renderConversationList() {
   }).join("");
 
   list.querySelectorAll("[data-conversation-id]").forEach((button) => {
-    button.addEventListener("click", () => openConversation(button.dataset.conversationId));
+    button.addEventListener("click", () => navigateToChatConversation(button.dataset.conversationId));
   });
 
   renderLatestChatsPanel();
@@ -299,10 +300,8 @@ function renderLatestChatsPanel() {
   }).join("");
 
   list.querySelectorAll("[data-latest-conversation-id]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      await openConversation(button.dataset.latestConversationId);
-      document.getElementById("chatApp")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      setTimeout(() => document.getElementById("chatMessageInput")?.focus(), 320);
+    button.addEventListener("click", () => {
+      navigateToChatConversation(button.dataset.latestConversationId);
     });
   });
 }
@@ -342,7 +341,12 @@ function renderChatHeader() {
     return;
   }
 
+  const backButton = window.location.pathname.toLowerCase().startsWith("/chat")
+    ? `<a class="chat-back-link" href="/messages/" aria-label="Back to messages">←</a>`
+    : "";
+
   header.innerHTML = `
+    ${backButton}
     <img src="${chatEscape(chatAvatar(profile))}" alt="${chatEscape(chatName(profile))} avatar" />
     <div>
       <strong>${chatEscape(chatName(profile))}</strong>
@@ -532,7 +536,19 @@ async function initChatPage() {
   subscribeToAllMessages();
 
   const params = new URLSearchParams(window.location.search);
+  const conversationId = params.get("conversation");
   const userId = params.get("user");
+
+  if (conversationId) {
+    const exists = chatConversations.some((conversation) => conversation.id === conversationId);
+    if (exists) {
+      await openConversation(conversationId);
+    } else {
+      showChatStatus(chatT("chatLoadError", "Could not load messages."), true);
+    }
+    return;
+  }
+
   if (userId) {
     await openConversationWithUser(userId);
   }
@@ -565,7 +581,16 @@ async function bootChat() {
   }
 }
 
-function openChatWithUser(userId) {
+function navigateToChatWithUser(userId) {
   if (!userId) return;
-  window.location.href = `/messages/?user=${encodeURIComponent(userId)}`;
+  window.location.href = `/chat/?user=${encodeURIComponent(userId)}`;
+}
+
+function navigateToChatConversation(conversationId) {
+  if (!conversationId) return;
+  window.location.href = `/chat/?conversation=${encodeURIComponent(conversationId)}`;
+}
+
+function openChatWithUser(userId) {
+  navigateToChatWithUser(userId);
 }

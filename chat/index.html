@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <title>Loomyva Messages</title>
+  <title>Loomyva Chat</title>
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -241,35 +241,23 @@
 
     <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
-    <main id="mainContent" class="messages-page-grid messages-inbox-layout">
-      <section class="glass-card page-hero messages-page-hero messages-inbox-hero">
-        <span class="eyebrow" data-i18n="messages">Messages</span>
-        <h1>Inbox built for fast DMs.</h1>
-        <p>Only your latest conversations live here. To start a new message, open someone’s profile or use Search.</p>
+    <main id="mainContent" class="chat-page-main">
+      <section id="chatSignInCard" class="glass-card chat-signin-card hidden">
+        <h2 data-i18n="chatSignInTitle">Sign in to chat</h2>
+        <p data-i18n="chatSignInText">Sign in to use real-time chat.</p>
+        <button class="btn primary-btn" type="button" data-open-chat-login data-i18n="signIn">Sign in</button>
       </section>
 
-      <section class="messages-workbench messages-inbox-workbench">
-        <section id="latestChatsPanel" class="glass-card latest-chats-panel latest-chats-dock inbox-only-panel" aria-live="polite">
-          <div class="latest-chats-head inbox-only-head">
-            <div>
-              <span class="eyebrow" data-i18n="chatInbox">Chat inbox</span>
-              <h2 data-i18n="latestChatsTitle">Latest chats</h2>
-              <p>Tap a conversation to open the dedicated chat page.</p>
-            </div>
-            <span id="latestChatsCount" class="latest-chats-count">0</span>
-          </div>
+      <p id="chatStatus" class="status-msg hidden"></p>
 
-          <div id="latestChatsList" class="latest-chats-list inbox-only-list">
-            <div class="chat-loading" data-i18n="loading">Loading...</div>
-          </div>
-        </section>
-
-        <p id="chatStatus" class="status-msg hidden"></p>
-
-        <section id="chatSignInCard" class="glass-card chat-signin-card hidden">
-          <h2 data-i18n="chatSignInTitle">Sign in to chat</h2>
-          <p data-i18n="chatSignInText">Sign in to use real-time chat.</p>
-          <button class="btn primary-btn" type="button" data-open-chat-login data-i18n="signIn">Sign in</button>
+      <section id="chatApp" class="chat-app-shell chat-direct-shell hidden">
+        <section class="chat-window glass-card chat-focus-window chat-direct-window">
+          <header id="chatActiveHeader" class="chat-active-header chat-direct-header"></header>
+          <div id="chatMessages" class="chat-messages chat-direct-messages"></div>
+          <form id="chatMessageForm" class="chat-message-form chat-direct-form">
+            <input id="chatMessageInput" type="text" placeholder="Write a message..." data-i18n-placeholder="chatMessagePlaceholder" maxlength="1000" autocomplete="off" />
+            <button class="btn primary-btn" type="submit" data-i18n="send">Send</button>
+          </form>
         </section>
       </section>
     </main>

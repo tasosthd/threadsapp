@@ -1661,6 +1661,14 @@ async function loadProfileUserModal(userId) {
       </button>
 
       <button
+        class="btn ghost-btn profile-user-modal-message-btn"
+        type="button"
+        data-profile-modal-message-user-id="${escapeHTML(userId)}"
+      >
+        Message
+      </button>
+
+      <button
         class="profile-more-btn"
         data-open-moderation-menu="true"
         data-moderation-user-id="${escapeHTML(userId)}"
@@ -1719,10 +1727,17 @@ async function loadProfileUserModal(userId) {
   `;
 
   const profileUserModalFollowBtn = document.getElementById("profileUserModalFollowBtn");
+  const profileUserModalMessageBtn = document.querySelector("[data-profile-modal-message-user-id]");
 
   if (profileUserModalFollowBtn) {
     profileUserModalFollowBtn.addEventListener("click", async () => {
       await toggleFollowFromProfileModal(profileUserModalFollowBtn.dataset.profileModalFollowUserId);
+    });
+  }
+
+  if (profileUserModalMessageBtn) {
+    profileUserModalMessageBtn.addEventListener("click", () => {
+      window.location.href = `/chat/?user=${encodeURIComponent(profileUserModalMessageBtn.dataset.profileModalMessageUserId)}`;
     });
   }
 
