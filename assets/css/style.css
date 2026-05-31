@@ -1309,14 +1309,67 @@ html[data-theme="dark"] .social-action-btn.liked {
   .profile-exact-tabs button { min-width: 90px !important; }
 }
 
-/* Profile header name placement fix - 2026-05-31
-   Removes the top label gap so the user name owns the header area. */
+/* Profile identity placement fix: keep display name + handle directly beside avatar */
+.profile-product-identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: end;
+  justify-content: start;
+  column-gap: 18px;
+  row-gap: 14px;
+}
+
 .profile-product-info {
-  padding-top: 0;
+  padding: 0 0 18px !important;
+  margin: 0 !important;
+  min-width: 0;
+  align-self: end;
 }
+
 .profile-product-info .eyebrow {
-  display: none;
+  display: none !important;
 }
+
 .profile-product-info h1 {
-  margin-top: 0;
+  margin: 0;
+  line-height: 1.03;
+}
+
+.profile-product-info .profile-exact-username {
+  margin: 4px 0 0;
+}
+
+.profile-product-info .profile-exact-bio {
+  margin-top: 8px;
+}
+
+.profile-product-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.profile-product-actions .profile-exact-edit-btn,
+.profile-product-actions .profile-home-btn {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 560px) {
+  .profile-product-identity {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: end;
+    column-gap: 12px;
+    padding-inline: 16px;
+  }
+
+  .profile-product-info {
+    padding-bottom: 10px !important;
+  }
+
+  .profile-product-info h1 {
+    font-size: clamp(22px, 8vw, 30px);
+  }
 }
