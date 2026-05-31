@@ -270,6 +270,7 @@ function setupSidebar() {
   const sidebarCloseBtn = document.getElementById("sidebarCloseBtn");
   const sidebarBackdrop = document.getElementById("sidebarBackdrop");
   const sidebarComposeBtn = document.getElementById("sidebarComposeBtn");
+  const appSidebar = document.getElementById("appSidebar");
 
   if (sidebarOpenBtn) {
     sidebarOpenBtn.addEventListener("click", (event) => {
