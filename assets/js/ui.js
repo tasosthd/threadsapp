@@ -150,8 +150,15 @@ function setStatus(message, type = "") {
     type = "error";
   }
 
-  statusMsg.textContent = message || "";
+  const finalMessage = String(message || "").trim();
+
+  statusMsg.textContent = finalMessage;
   statusMsg.className = "status-msg";
+
+  if (!finalMessage) {
+    statusMsg.classList.add("hidden");
+    return;
+  }
 
   if (type) {
     statusMsg.classList.add(type);

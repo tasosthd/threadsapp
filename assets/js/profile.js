@@ -356,7 +356,6 @@ function renderProfileThreadCard(thread, options = {}) {
               <path d="M12.1 21.35 10.65 20.03C5.4 15.26 2 12.18 2 8.4 2 5.32 4.42 2.9 7.5 2.9c1.74 0 3.41.81 4.5 2.09C13.09 3.71 14.76 2.9 16.5 2.9 19.58 2.9 22 5.32 22 8.4c0 3.78-3.4 6.86-8.65 11.63l-1.25 1.32Z"></path>
             </svg>
             <span class="action-count">${likeCount}</span>
-            <span class="action-label">Like</span>
           </button>
 
           <button
@@ -369,7 +368,6 @@ function renderProfileThreadCard(thread, options = {}) {
               <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Zm-2 12H6v-2h12v2Zm0-3H6V9h12v2Zm0-3H6V6h12v2Z"></path>
             </svg>
             <span class="action-count">${replyCount}</span>
-            <span class="action-label">Reply</span>
           </button>
 
           <button
@@ -381,7 +379,6 @@ function renderProfileThreadCard(thread, options = {}) {
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Zm2 2v12.55l4-2.29 4 2.29V5H8Z"></path>
             </svg>
-            <span class="action-label">${bookmarkedByUser ? "Saved" : "Save"}</span>
           </button>
         </div>
 
@@ -2060,11 +2057,14 @@ async function loadProfileUserModal(userId) {
       </button>
 
       <button
-        class="btn ghost-btn profile-user-modal-message-btn"
+        class="btn ghost-btn profile-user-modal-message-btn icon-only-action"
         type="button"
         data-profile-modal-message-user-id="${escapeHTML(userId)}"
+        aria-label="${typeof t === "function" ? t("message") : "Message"}"
       >
-        ${typeof t === "function" ? t("message") : "Message"}
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2ZM4 14V4h16v10H4Z"></path>
+        </svg>
       </button>
 
       <button

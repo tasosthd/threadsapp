@@ -2404,3 +2404,127 @@ html[data-theme="dark"] .rich-empty-state {
     flex-basis: 18px !important;
   }
 }
+
+
+/* =========================================================
+   Global polish: icon-only post actions + no empty status bar
+   ========================================================= */
+.status-msg.hidden,
+.status-msg:empty {
+  display: none !important;
+}
+
+.thread-actions,
+.profile-thread-actions {
+  align-items: center !important;
+}
+
+.social-actions {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  width: auto !important;
+}
+
+.social-action-btn,
+.like-action,
+.reply-action,
+.bookmark-action,
+.comment-action {
+  width: auto !important;
+  min-width: 44px !important;
+  max-width: max-content !important;
+  min-height: 42px !important;
+  padding: 0 14px !important;
+  gap: 7px !important;
+  line-height: 1 !important;
+  overflow: visible !important;
+}
+
+.social-action-btn .action-label,
+.like-action .action-label,
+.reply-action .action-label,
+.bookmark-action .action-label,
+.comment-action .action-label {
+  display: none !important;
+}
+
+.social-action-btn svg,
+.like-action svg,
+.reply-action svg,
+.bookmark-action svg,
+.comment-action svg,
+.thread-actions svg,
+.profile-thread-actions svg,
+.profile-user-modal-post-meta svg,
+.profile-user-modal-actions svg {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  min-height: 20px !important;
+  max-height: 20px !important;
+  flex: 0 0 20px !important;
+}
+
+.social-action-btn .action-count {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  min-width: 1ch !important;
+}
+
+@media (max-width: 640px) {
+  .social-actions {
+    display: inline-flex !important;
+    width: auto !important;
+    gap: 8px !important;
+  }
+
+  .social-action-btn,
+  .like-action,
+  .reply-action,
+  .bookmark-action,
+  .comment-action {
+    width: auto !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    padding: 0 12px !important;
+  }
+
+  .social-action-btn svg,
+  .like-action svg,
+  .reply-action svg,
+  .bookmark-action svg,
+  .comment-action svg,
+  .thread-actions svg,
+  .profile-thread-actions svg,
+  .profile-user-modal-post-meta svg,
+  .profile-user-modal-actions svg {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    max-width: 18px !important;
+    min-height: 18px !important;
+    max-height: 18px !important;
+    flex-basis: 18px !important;
+  }
+}
+
+.profile-user-modal-message-btn.icon-only-action {
+  width: 42px !important;
+  min-width: 42px !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  padding: 0 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+}
+
+.profile-user-modal-message-btn.icon-only-action svg {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  fill: currentColor !important;
+}
