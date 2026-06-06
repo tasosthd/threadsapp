@@ -1125,6 +1125,10 @@ async function initFeedPage() {
   }
   await loadFeed();
 
+  if (typeof initStoriesSystem === "function") {
+    await initStoriesSystem();
+  }
+
   window.addEventListener("loomyva:language-change", () => {
     updateFilterUI();
     updatePublicProfileUI();
@@ -1154,6 +1158,10 @@ async function initFeedPage() {
       }
       await loadFeed();
 
+      if (typeof loadStories === "function") {
+        await loadStories();
+      }
+
       if (typeof initNotificationsSystem === "function") {
         await initNotificationsSystem();
       }
@@ -1171,6 +1179,10 @@ async function initFeedPage() {
       setBottomNavActive("home");
 
       await loadFeed();
+
+      if (typeof loadStories === "function") {
+        await loadStories();
+      }
 
       if (typeof resetNotificationsSystem === "function") {
         resetNotificationsSystem();
